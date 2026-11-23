@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？ · IT面试题库</title>
+  <meta name="description" content="先给结论 出口网关加速 EGA 解决的是「国内云上 VPC 访问境外资源」慢、不稳、超时的问题，业务一般不用改代码，仍然访问原始域名，由网络侧把命中规则的流量导到加速出口。 能不能访问成功，要同时满足五个条件：VPC 已开通 EGA、目标域名在白名单、域名被正确解析和导流、所在区域的出口能访问这个目标、业务侧用了…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？ · IT面试题库">
+  <meta property="og:description" content="先给结论 出口网关加速 EGA 解决的是「国内云上 VPC 访问境外资源」慢、不稳、超时的问题，业务一般不用改代码，仍然访问原始域名，由网络侧把命中规则的流量导到加速出口。 能不能访问成功，要同时满足五个条件：VPC 已开通 EGA、目标域名在白名单、域名被正确解析和导流、所在区域的出口能访问这个目标、业务侧用了…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/2077.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/2077.jpg">
+  <meta property="og:url" content="https://itinterview.com.cn/q/2077">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？ · IT面试题库">
+  <meta name="twitter:description" content="先给结论 出口网关加速 EGA 解决的是「国内云上 VPC 访问境外资源」慢、不稳、超时的问题，业务一般不用改代码，仍然访问原始域名，由网络侧把命中规则的流量导到加速出口。 能不能访问成功，要同时满足五个条件：VPC 已开通 EGA、目标域名在白名单、域名被正确解析和导流、所在区域的出口能访问这个目标、业务侧用了…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/2077.jpg">
+  <meta name="twitter:image:alt" content="百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？ · IT面试题库">
+  <link rel="canonical" href="https://itinterview.com.cn/q/2077">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？","text":"场景：某具身智能客户在百度智能云苏州区域使用开发机和分布式训练，需要访问境外的 Hugging Face 模型和数据集、GitHub 代码、Docker 镜像、arXiv 论文以及 OpenAI / ChatGPT 服务。客户所在 VPC 已开通全球加速 GA 的出口网关加速 EGA，openai.com、.openai.com、chatgpt.com、.chatgpt.com 等域名也已加入白名单，但开发机上仍然访问不了 ChatGPT，客户还询问能否在开发机上直接使用 Codex。请说明 EGA 的原理、接入流程、开发机和训练任务中的使用与验证方法，以及该故障的根因和解决办法。","answerCount":1,"datePublished":"2026-11-23T10:21:00.554Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"先给结论 出口网关加速 EGA 解决的是「国内云上 VPC 访问境外资源」慢、不稳、超时的问题，业务一般不用改代码，仍然访问原始域名，由网络侧把命中规则的流量导到加速出口。 能不能访问成功，要同时满足五个条件：VPC 已开通 EGA、目标域名在白名单、域名被正确解析和导流、所在区域的出口能访问这个目标、业务侧用了正确的接入方式。少一个都不行。 本例的关键故障：OpenAI、ChatGPT 相关域名都已开白，苏州开发机仍然连不上。根因是苏州区域 GA 当时的出口在香港，该出口对 OpenAI、Codex 相关域名存在访问限制。白名单、VPC、DNS、路由都可能是对的，但实际出口到不了目标。 处理办法：不是反复重新申请白名单，而是换成能承载这类流量的北京 GA 出口方案，开发机通过 https_proxy 转发，端到端测试成功。 一句话记住：「已开白」只说明目标进了配置范围，不能证明端到端可达；区域出口是关键变量。 案例背景 客户：某具身智能客户，做机器人和 AI 训练，在百度智能云开发机和分布式训练环境里需要访问境外的代码、模型、数据集、镜像和 API。 客户提供或讨论过的域名（不代表全部已最终开白，以运营核验和客户最终清单为准）： Hugging Face：huggingface.co、cas-bridge.xethub.hf.co、cdn-lfs.hf.co、us.aws.cdn.hf.co GitHub：github.com、codeload.github.com、raw.githubusercontent.com、objects.githubusercontent.com、gist.githubusercontent.com Docker：docker.io、registry-1.docker.io、auth.docker.io arXiv：arxiv.org、www.arxiv.org、export.arxiv.org、static.arxiv.org、status.arxiv.org、info.arxiv.org、oaipmh.arxiv.org OpenAI / ChatGPT：openai.com、.openai.com、chatgpt.com、.chatgpt.com、api.openai.com、api.chatgpt.com、auth.openai.com、ws.chatgpt.com、files.oaiusercontent.com、desktop.chatgpt.com 其他：singnet.com.sg、compute-1.amazonaws.com、wandb.ai 等 客户的七个诉求 开发机和分布式训练任务稳定访问境外依赖和数据源。 下载 Hugging Face 数据集、模型、大文件时少超时、少断连、速度别太慢。 拉取 GitHub 代码、Release 和依赖文件。 拉取 Docker 境外镜像。 访问 OpenAI / ChatGPT 等境外 API 或开发工具（客户还问了能否在开发机上直接用 Codex）。 尽量不改业务代码，让开发机和训练任务通过统一的网络能力生效。 国内网站和非目标流量保留可控的访问路径。 EGA 原理：方向、路径、三个机制 | 能力 | 流量方向 | 主要解决的问题 | 和本例的关系 | | --- | --- | --- | --- | | 出口网关加速 EGA | 国内云上 VPC → 境外资源 | 云上业务访问境外资源慢、不稳定、超时或失败 | 本例使用的能力 | | 接入加速 IGA | 境外用户 → 国内云上服务 | 境外用户访问国内业务延迟高、抖动大、丢包高 | 不是本例重点 | 典型路径：开发机 / 容器 / 训练任务访问原始域名 → DNS 解析，命中白名单的进入加速解析和导流 → VPC 路由送往 EGA 出口网关 → 网关做目标识别、出口选择和转发 → 全球加速网络 → 境外目标域名、API、数据源。 机制一，白名单控制：决定哪些域名能进入加速范围，可以配单个域名，也可以配通配域名。不要一开始就无限扩大，按客户真实访问链路，结合 DNS、重定向和依赖域名逐步补齐。 机制二，DNS 解析与目标识别：业务访问原始域名，命中规则的域名进入 EGA 解析和导流。排查时不能只看命令里写的域名，还要看实际解析到的地址、有没有 3xx 重定向、下载链接是否跳到 CDN / 对象存储 / 分片域名、认证和数据是不是两套域名。所以 Hugging Face、GitHub、Docker、OpenAI 这类场景，要同时梳理主站、认证、下载和 CDN 域名。 机制三，VPC 路由和出口网关：要确认开发机或训练节点确实在已开通 EGA 的 VPC；目标流量没有被其他自定义路由、代理或安全策略截走；目标区域的出口能访问对应服务；同一 VPC 里不同子网、不同开发机、不同训练节点是否都在实际生效范围内。 接入流程：四步走 第一步，按业务类型梳理域名清单。不要只给一个主站域名，要把认证、下载、CDN、对象存储一起列出来： | 业务类型 | 需要梳理的域名类别 | | --- | --- | | 模型 / 数据集（如 Hugging Face） | 首页、认证、文件下载、CDN、对象存储、分片下载 | | GitHub | 主站、代码下载、Release 附件、Raw 文件、对象存储、镜像 | | Docker 境外镜像 | Registry、认证服务、镜像层存储、重定向地址 | | OpenAI / ChatGPT | 登录认证、API、WebSocket、文件服务、桌面端、主站 | | arXiv | 主站、导出服务、静态资源、状态页、OAI-PMH 接口 | 第二步，开白核验。逐个域名核对以下六项： 是否在 EGA 可加速范围内。 客户的 VPC 和区域是否已开通 EGA。 当前白名单是否已经包含该域名或对应通配域名。 缺的域名是否需要补申请。 是否存在合规、地域或出口方面的限制。 是否依赖额外的认证、重定向或 CDN 域名。 注意：「常用域名默认支持」不能当作已开白的证据，必须拿客户真实清单逐项比对。 第三步，确认 VPC 和资源归属。客户提供开发机实例 ID（如 dv-xxxx），平台侧据此定位到所在的苏州区域业务 VPC。如果测试人员没有平台登录权限，按下面分工： 平台侧：核对 VPC、区域、EGA 开通状态和白名单。 客户侧：在开发机上做 DNS、建连和下载测试。 双方：对齐测试时间、域名、出口方案和结果，避免各说各话。 第四步，确认 EGA 配置真正生效： 地域和 VPC 正确，并且就是开发机 / 训练任务实际所在的 VPC。 白名单覆盖了真实访问的全部域名。 检查是否涉及多个区域或多个 VPC，每个都要单独确认。 状态是「已生效」，不能只看「提交成功」。 路由和网关关联已经下发。 开发机和分布式训练怎么用 原则：正常情况下业务代码不用改，流量按域名自动导流；只有当出口方案要求显式代理时，才需要配置代理环境变量。 开发机下载测试，先测解析，再测建连，最后测真实下载： 第 4 步的占位符必须换成客户真实要下载的地址，首页能打开不代表大文件能下载。 Docker 镜像拉取： 要分别看 Registry、认证服务、manifest 指向的真实存储地址，以及镜像层下载时的重定向地址。 如果 docker login 成功但 pull 失败，优先排查镜像层存储域名有没有开白。 分布式训练按六步推进： 1. 在主节点测试 DNS、HTTPS 和小文件下载。 2. 在真实参与训练的节点上重复测试。 3. 确认所有训练节点都在已开通 EGA 的同一 VPC。 4. 分别测试四类流量：数据集、模型权重、代码依赖、镜像。 5. 按节点记录成功率、耗时和下载速率。 6. 全部通过后再启动全量下载或正式训练。 一台机器测通不代表整个集群都通，子网、路由、代理变量、DNS 配置或区域都可能不同。 代理方式（出口方案要求时使用）： https_proxy 对当前会话全局生效，不只影响境外域名。 国内网站也会经过代理，可能变慢或访问异常。 开启前后都要记录测试结果，方便对比和回退。 需要时用 no_proxy 排除国内域名和内网地址。 代理地址和端口与具体环境绑定，不能直接复制给其他客户使用。 关键故障：域名已开白，ChatGPT 仍然访问不了 现象：客户 VPC 已开通 EGA，openai.com、.openai.com、chatgpt.com、.chatgpt.com 都已加入白名单，但开发机上仍然访问不了 ChatGPT / OpenAI 服务。客户同时在问能不能在开发机上直接使用 Codex。 这类问题最容易出现五种误判： 「已加白，就一定能访问。」 「开发机在已开通 EGA 的 VPC，就能访问任何境外网站。」 「Hugging Face、GitHub 能访问，OpenAI 也一定能。」 「命令行工具报错，就是客户端故障。」 「换一个域名测成功了，就算全部恢复。」 原因：EGA 解决的是「怎么把流量送出去」，它消除不了目标服务侧的地域限制、出口封禁、账号认证、账号策略和服务可用性限制。 根因：当时苏州 GA 方案的出口在香港，而该出口对 Codex / OpenAI 相关域名存在访问限制。也就是说，白名单、VPC、DNS、路由可能都配对了，但流量从香港出口出去后，被目标服务拒绝。「白名单正确」和「目标可达」是两层不同的问题。 按十项证据链逐层排除： 1. 实例与 VPC：开发机到底在哪个 VPC。 2. VPC 地域：该 VPC 属于哪个区域。 3. EGA 状态：是否已生效。 4. 是否开白：目标域名和通配域名是否在白名单。 5. DNS：是否解析成功，解析结果是否走了加速。 6. TCP / TLS：建连和握手是否成功。 7. HTTP 状态码和重定向：返回什么状态码，跳转到哪里。 8. 实际出口地域和线路：流量最终从哪个地域出去。 9. 同 VPC 其他境外域名：Hugging Face、GitHub 等是否正常，用来区分是整体链路问题还是单个目标问题。 10. 目标服务的地域、出口和账号限制：目标侧是否对该出口地域做了限制。 解决：切换到北京 GA 出口方案，在开发机按方案配置 https_proxy 转发到北京出口，然后做端到端测试，确认 OpenAI / ChatGPT 相关域名可以访问。重点是换一个能实际承载目标流量的出口，而不是反复重新申请白名单。 端到端验证 变更前先留底，记录八项信息：测试时间、开发机、VPC 和地域、EGA 状态、白名单版本、代理变量状态、域名清单、执行的命令和结果。 DNS 验证： 对比已开白和未开白域名的解析差异。 对比变更前后的解析结果。 注意本地 DNS 缓存，必要时清缓存后再测。 留意一个域名返回多条 A / AAAA 记录的情况。 TCP / TLS 验证： 按阶段判断失败位置：DNS 解析失败 → TCP 建连失败 → TLS 握手失败 → HTTP 返回 403 / 429 / 5xx → 认证失败。 只有前几个阶段（DNS、TCP、TLS）的失败，才主要是链路或出口问题；拿到 HTTP 状态码后，问题多半已经到了目标服务侧。 重定向验证： 大文件下载经常跳转到 CDN、对象存储或分片域名，这些域名也要开白。 按业务场景验收： | 场景 | 建议验证 | 关键指标 | | --- | --- | --- | | Hugging Face | 先下小文件，再下真实数据集 | 成功率、总耗时、平均速率、重试次数 | | GitHub | Clone、Release 下载、Raw 文件 | DNS、TLS、耗时、是否断连 | | Docker | 登录后拉取镜像 | 认证成功率、每层耗时、失败的层 | | OpenAI | API、Web、Codex 相关域名逐个测 | 建连、TLS、HTTP 状态码、认证结果 | | 分布式训练 | 多节点并行下载 | 节点成功率、慢节点、超时和重试 | 非目标流量回归，确认四点： 非目标流量没有被导入 EGA。 通配域名没有配得过宽。 代理变量有没有改成全局生效。 原有访问路径没有被破坏。 定位矩阵 | 现象 | 可能原因 | 排查方法 | 处理 | | --- | --- | --- | --- | | 域名解析失败 | DNS 配置、缓存、域名拼写、resolv 配置 | getent hosts、dig | 修正 DNS，清缓存 | | 首页能打开，文件下载失败 | 下载、CDN、对象存储域名未开白 | curl -L -I -v 看跳转 | 补齐依赖域名 | | 配置后完全不生效 | 不在目标 VPC、未生效、路由未下发 | 查 VPC、地域、EGA 状态 | 修正关联，等待生效 | | GitHub 正常，Hugging Face 异常 | 两者依赖的域名和 CDN 不同 | 分别记录测试结果 | 按实际依赖补白 | | Docker 登录成功，拉取失败 | 镜像层下载走了另外的域名 | 看拉取日志 | 补 Registry、认证、存储域名 | | OpenAI 已开白仍失败 | 区域出口限制、目标封禁、认证问题 | 核验出口地域，分层测试 | 调整出口方案，认证问题单独处理 | | 开代理后国内网站变慢 | https_proxy 全局生效 | 检查代理变量和 no_proxy | 缩小代理范围 | | 训练部分节点失败 | 节点间 VPC、DNS、代理或策略不一致 | 逐节点取证 | 统一节点配置 | | 能连通但返回 401 / 403 / 429 | 账号、权限、配额、目标策略 | 看状态码和响应内容 | 转业务侧处理，不要误判为 EGA 问题 | 交付清单 平台侧： 确认产品在客户区域支持 EGA。 确认 VPC 和地域在开通范围内。 核验白名单与客户域名清单一致。 补齐认证、重定向、CDN 等依赖域名。 确认出口地域和线路能访问目标服务。 确认配置状态为已生效。 异常时提供证据：域名、地域、失败阶段、时间。 变更出口方案时，说明影响范围、验证方法和回退方式。 客户侧： 提供开发机 / 训练节点名称。 确认节点所在 VPC 和地域。 提供真实业务的域名清单。 完成 DNS、TLS、HTTP 和下载验证。 在训练节点上重复验证。 记录开启代理前后的差异。 反馈失败的域名、时间和命令输出。 用真实业务做最终验收。 验收标准： VPC 和节点范围明确。 域名清单已逐项核验。 代表域名的 DNS、TLS、HTTP 全部通过。 至少一个真实下载或 API 调用成功。 训练关键节点全部通过。 非目标流量回归正常。 代理方式、出口地域和已知限制已记录。 客户知道如何开启、关闭和回退。 经验总结 1. EGA 解决网络链路，不等于账号权限或 API 权限。 2. 「已开白」不能证明端到端可达，必须实测。 3. 境外服务的依赖链很复杂：认证、重定向、CDN、对象存储、WebSocket 都可能是独立域名。 4. 区域出口是关键变量，同一份白名单换个出口结果可能完全不同。 5. OpenAI 类访问失败，先分清是 EGA 配置、区域出口、目标服务策略还是账号问题。 6. 分布式训练必须多节点验证，不能用单机结果代表集群。 7. https_proxy 见效快，但会改变国内流量路径，要记录变更并给出取消方式。 8. 不要向客户承诺「所有境外网站都能访问」。 可复用模板 客户信息收集： 排查记录： 适用边界 白名单范围、区域出口能力、访问限制和合规要求，以平台实际配置和官方文档为准：https://cloud.baidu.com/doc/GA/s/5mrepeyji 文中「香港出口对 OpenAI 相关域名存在限制」描述的是案例发生时的情况，后续可能变化，处理新问题时要重新实测。","url":"https://itinterview.com.cn/question/2077"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"百度云","item":"https://itinterview.com.cn/category?cat=285"},{"@type":"ListItem","position":4,"name":"百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？","item":"https://itinterview.com.cn/q/2077"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">网络运维工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">百度智能云</span><span class="chip tag">全球加速GA</span><span class="chip tag">出口网关加速EGA</span><span class="chip tag">白名单</span><span class="chip tag">开发机</span><span class="chip tag">分布式训练</span></div>
+    <div class="card"><h2>题目</h2><p>场景：某具身智能客户在百度智能云苏州区域使用开发机和分布式训练，需要访问境外的 Hugging Face 模型和数据集、GitHub 代码、Docker 镜像、arXiv 论文以及 OpenAI / ChatGPT 服务。客户所在 VPC 已开通全球加速 GA 的出口网关加速 EGA，openai.com、<em>.openai.com、chatgpt.com、</em>.chatgpt.com 等域名也已加入白名单，但开发机上仍然访问不了 ChatGPT，客户还询问能否在开发机上直接使用 Codex。请说明 EGA 的原理、接入流程、开发机和训练任务中的使用与验证方法，以及该故障的根因和解决办法。</p></div>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+<ul>
+<li>出口网关加速 EGA 解决的是「国内云上 VPC 访问境外资源」慢、不稳、超时的问题，业务一般不用改代码，仍然访问原始域名，由网络侧把命中规则的流量导到加速出口。</li>
+<li>能不能访问成功，要同时满足五个条件：VPC 已开通 EGA、目标域名在白名单、域名被正确解析和导流、所在区域的出口能访问这个目标、业务侧用了正确的接入方式。少一个都不行。</li>
+<li>本例的关键故障：OpenAI、ChatGPT 相关域名都已开白，苏州开发机仍然连不上。根因是苏州区域 GA 当时的出口在香港，该出口对 OpenAI、Codex 相关域名存在访问限制。白名单、VPC、DNS、路由都可能是对的，但实际出口到不了目标。</li>
+<li>处理办法：不是反复重新申请白名单，而是换成能承载这类流量的北京 GA 出口方案，开发机通过 <code>https_proxy</code> 转发，端到端测试成功。</li>
+<li>一句话记住：「已开白」只说明目标进了配置范围，不能证明端到端可达；区域出口是关键变量。</li>
+</ul>
+<p><strong>案例背景</strong></p>
+<ul>
+<li>客户：某具身智能客户，做机器人和 AI 训练，在百度智能云开发机和分布式训练环境里需要访问境外的代码、模型、数据集、镜像和 API。</li>
+<li>客户提供或讨论过的域名（不代表全部已最终开白，以运营核验和客户最终清单为准）：</li>
+<li>Hugging Face：<code>huggingface.co</code>、<code>cas-bridge.xethub.hf.co</code>、<code>cdn-lfs.hf.co</code>、<code>us.aws.cdn.hf.co</code></li>
+<li>GitHub：<code>github.com</code>、<code>codeload.github.com</code>、<code>raw.githubusercontent.com</code>、<code>objects.githubusercontent.com</code>、<code>gist.githubusercontent.com</code></li>
+<li>Docker：<code>docker.io</code>、<code>registry-1.docker.io</code>、<code>auth.docker.io</code></li>
+<li>arXiv：<code>arxiv.org</code>、<code>www.arxiv.org</code>、<code>export.arxiv.org</code>、<code>static.arxiv.org</code>、<code>status.arxiv.org</code>、<code>info.arxiv.org</code>、<code>oaipmh.arxiv.org</code></li>
+<li>OpenAI / ChatGPT：<code>openai.com</code>、<code><em>.openai.com</code>、<code>chatgpt.com</code>、<code></em>.chatgpt.com</code>、<code>api.openai.com</code>、<code>api.chatgpt.com</code>、<code>auth.openai.com</code>、<code>ws.chatgpt.com</code>、<code>files.oaiusercontent.com</code>、<code>desktop.chatgpt.com</code></li>
+<li>其他：<code>singnet.com.sg</code>、<code>compute-1.amazonaws.com</code>、<code>wandb.ai</code> 等</li>
+</ul>
+<p><strong>客户的七个诉求</strong></p>
+<ul>
+<li>开发机和分布式训练任务稳定访问境外依赖和数据源。</li>
+<li>下载 Hugging Face 数据集、模型、大文件时少超时、少断连、速度别太慢。</li>
+<li>拉取 GitHub 代码、Release 和依赖文件。</li>
+<li>拉取 Docker 境外镜像。</li>
+<li>访问 OpenAI / ChatGPT 等境外 API 或开发工具（客户还问了能否在开发机上直接用 Codex）。</li>
+<li>尽量不改业务代码，让开发机和训练任务通过统一的网络能力生效。</li>
+<li>国内网站和非目标流量保留可控的访问路径。</li>
+</ul>
+<p><strong>EGA 原理：方向、路径、三个机制</strong></p>
+<p>| 能力 | 流量方向 | 主要解决的问题 | 和本例的关系 |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| 出口网关加速 EGA | 国内云上 VPC → 境外资源 | 云上业务访问境外资源慢、不稳定、超时或失败 | 本例使用的能力 |</p>
+<p>| 接入加速 IGA | 境外用户 → 国内云上服务 | 境外用户访问国内业务延迟高、抖动大、丢包高 | 不是本例重点 |</p>
+<p><img src="/assets/diagrams/ega-flow.svg" alt="出口网关加速 EGA 的流量路径" loading="lazy"></p>
+<ul>
+<li>典型路径：开发机 / 容器 / 训练任务访问原始域名 → DNS 解析，命中白名单的进入加速解析和导流 → VPC 路由送往 EGA 出口网关 → 网关做目标识别、出口选择和转发 → 全球加速网络 → 境外目标域名、API、数据源。</li>
+<li>机制一，白名单控制：决定哪些域名能进入加速范围，可以配单个域名，也可以配通配域名。不要一开始就无限扩大，按客户真实访问链路，结合 DNS、重定向和依赖域名逐步补齐。</li>
+<li>机制二，DNS 解析与目标识别：业务访问原始域名，命中规则的域名进入 EGA 解析和导流。排查时不能只看命令里写的域名，还要看实际解析到的地址、有没有 3xx 重定向、下载链接是否跳到 CDN / 对象存储 / 分片域名、认证和数据是不是两套域名。所以 Hugging Face、GitHub、Docker、OpenAI 这类场景，要同时梳理主站、认证、下载和 CDN 域名。</li>
+<li>机制三，VPC 路由和出口网关：要确认开发机或训练节点确实在已开通 EGA 的 VPC；目标流量没有被其他自定义路由、代理或安全策略截走；目标区域的出口能访问对应服务；同一 VPC 里不同子网、不同开发机、不同训练节点是否都在实际生效范围内。</li>
+</ul>
+<p><strong>接入流程：四步走</strong></p>
+<p>第一步，按业务类型梳理域名清单。不要只给一个主站域名，要把认证、下载、CDN、对象存储一起列出来：</p>
+<p>| 业务类型 | 需要梳理的域名类别 |</p>
+<p>| --- | --- |</p>
+<p>| 模型 / 数据集（如 Hugging Face） | 首页、认证、文件下载、CDN、对象存储、分片下载 |</p>
+<p>| GitHub | 主站、代码下载、Release 附件、Raw 文件、对象存储、镜像 |</p>
+<p>| Docker 境外镜像 | Registry、认证服务、镜像层存储、重定向地址 |</p>
+<p>| OpenAI / ChatGPT | 登录认证、API、WebSocket、文件服务、桌面端、主站 |</p>
+<p>| arXiv | 主站、导出服务、静态资源、状态页、OAI-PMH 接口 |</p>
+<p>第二步，开白核验。逐个域名核对以下六项：</p>
+<ul>
+<li>是否在 EGA 可加速范围内。</li>
+<li>客户的 VPC 和区域是否已开通 EGA。</li>
+<li>当前白名单是否已经包含该域名或对应通配域名。</li>
+<li>缺的域名是否需要补申请。</li>
+<li>是否存在合规、地域或出口方面的限制。</li>
+<li>是否依赖额外的认证、重定向或 CDN 域名。</li>
+<li>注意：「常用域名默认支持」不能当作已开白的证据，必须拿客户真实清单逐项比对。</li>
+</ul>
+<p>第三步，确认 VPC 和资源归属。客户提供开发机实例 ID（如 <code>dv-xxxx</code>），平台侧据此定位到所在的苏州区域业务 VPC。如果测试人员没有平台登录权限，按下面分工：</p>
+<ul>
+<li>平台侧：核对 VPC、区域、EGA 开通状态和白名单。</li>
+<li>客户侧：在开发机上做 DNS、建连和下载测试。</li>
+<li>双方：对齐测试时间、域名、出口方案和结果，避免各说各话。</li>
+</ul>
+<p>第四步，确认 EGA 配置真正生效：</p>
+<ul>
+<li>地域和 VPC 正确，并且就是开发机 / 训练任务实际所在的 VPC。</li>
+<li>白名单覆盖了真实访问的全部域名。</li>
+<li>检查是否涉及多个区域或多个 VPC，每个都要单独确认。</li>
+<li>状态是「已生效」，不能只看「提交成功」。</li>
+<li>路由和网关关联已经下发。</li>
+</ul>
+<p><strong>开发机和分布式训练怎么用</strong></p>
+<p>原则：正常情况下业务代码不用改，流量按域名自动导流；只有当出口方案要求显式代理时，才需要配置代理环境变量。</p>
+<p>开发机下载测试，先测解析，再测建连，最后测真实下载：</p>
+<pre><code class="language-bash"># 1. DNS 解析
+getent hosts github.com
+getent hosts huggingface.co
+
+# 2. HTTPS 建连和跳转
+curl -I -L --connect-timeout 10 https://github.com
+curl -I -L --connect-timeout 10 https://huggingface.co
+
+# 3. 记录耗时和实际连接地址
+curl -L -o /dev/null -sS -w &#39;http_code=%{http_code}\nremote_ip=%{remote_ip}\nconnect=%{time_connect}\nstarttransfer=%{time_starttransfer}\ntotal=%{time_total}\n&#39; https://huggingface.co
+
+# 4. 真实文件下载（替换为实际地址）
+wget -O /tmp/github-test.bin &#39;&lt;实际 GitHub 下载地址&gt;&#39;</code></pre>
+<ul>
+<li>第 4 步的占位符必须换成客户真实要下载的地址，首页能打开不代表大文件能下载。</li>
+</ul>
+<p>Docker 镜像拉取：</p>
+<pre><code class="language-bash">docker pull &lt;实际境外镜像地址&gt;</code></pre>
+<ul>
+<li>要分别看 Registry、认证服务、manifest 指向的真实存储地址，以及镜像层下载时的重定向地址。</li>
+<li>如果 <code>docker login</code> 成功但 <code>pull</code> 失败，优先排查镜像层存储域名有没有开白。</li>
+</ul>
+<p>分布式训练按六步推进：</p>
+<ol>
+<li>在主节点测试 DNS、HTTPS 和小文件下载。</li>
+<li>在真实参与训练的节点上重复测试。</li>
+<li>确认所有训练节点都在已开通 EGA 的同一 VPC。</li>
+<li>分别测试四类流量：数据集、模型权重、代码依赖、镜像。</li>
+<li>按节点记录成功率、耗时和下载速率。</li>
+<li>全部通过后再启动全量下载或正式训练。</li>
+</ol>
+<ul>
+<li>一台机器测通不代表整个集群都通，子网、路由、代理变量、DNS 配置或区域都可能不同。</li>
+</ul>
+<p>代理方式（出口方案要求时使用）：</p>
+<pre><code class="language-bash"># 开启
+export https_proxy=http://&lt;代理地址&gt;:&lt;端口&gt;
+
+# 取消
+unset https_proxy</code></pre>
+<ul>
+<li><code>https_proxy</code> 对当前会话全局生效，不只影响境外域名。</li>
+<li>国内网站也会经过代理，可能变慢或访问异常。</li>
+<li>开启前后都要记录测试结果，方便对比和回退。</li>
+<li>需要时用 <code>no_proxy</code> 排除国内域名和内网地址。</li>
+<li>代理地址和端口与具体环境绑定，不能直接复制给其他客户使用。</li>
+</ul>
+<p><strong>关键故障：域名已开白，ChatGPT 仍然访问不了</strong></p>
+<p>现象：客户 VPC 已开通 EGA，<code>openai.com</code>、<code><em>.openai.com</code>、<code>chatgpt.com</code>、<code></em>.chatgpt.com</code> 都已加入白名单，但开发机上仍然访问不了 ChatGPT / OpenAI 服务。客户同时在问能不能在开发机上直接使用 Codex。</p>
+<p>这类问题最容易出现五种误判：</p>
+<ul>
+<li>「已加白，就一定能访问。」</li>
+<li>「开发机在已开通 EGA 的 VPC，就能访问任何境外网站。」</li>
+<li>「Hugging Face、GitHub 能访问，OpenAI 也一定能。」</li>
+<li>「命令行工具报错，就是客户端故障。」</li>
+<li>「换一个域名测成功了，就算全部恢复。」</li>
+<li>原因：EGA 解决的是「怎么把流量送出去」，它消除不了目标服务侧的地域限制、出口封禁、账号认证、账号策略和服务可用性限制。</li>
+</ul>
+<p>根因：当时苏州 GA 方案的出口在香港，而该出口对 Codex / OpenAI 相关域名存在访问限制。也就是说，白名单、VPC、DNS、路由可能都配对了，但流量从香港出口出去后，被目标服务拒绝。「白名单正确」和「目标可达」是两层不同的问题。</p>
+<p><img src="/assets/diagrams/ega-egress-region.svg" alt="白名单正确不等于目标可达" loading="lazy"></p>
+<p>按十项证据链逐层排除：</p>
+<ol>
+<li>实例与 VPC：开发机到底在哪个 VPC。</li>
+<li>VPC 地域：该 VPC 属于哪个区域。</li>
+<li>EGA 状态：是否已生效。</li>
+<li>是否开白：目标域名和通配域名是否在白名单。</li>
+<li>DNS：是否解析成功，解析结果是否走了加速。</li>
+<li>TCP / TLS：建连和握手是否成功。</li>
+<li>HTTP 状态码和重定向：返回什么状态码，跳转到哪里。</li>
+<li>实际出口地域和线路：流量最终从哪个地域出去。</li>
+<li>同 VPC 其他境外域名：Hugging Face、GitHub 等是否正常，用来区分是整体链路问题还是单个目标问题。</li>
+<li>目标服务的地域、出口和账号限制：目标侧是否对该出口地域做了限制。</li>
+</ol>
+<p>解决：切换到北京 GA 出口方案，在开发机按方案配置 <code>https_proxy</code> 转发到北京出口，然后做端到端测试，确认 OpenAI / ChatGPT 相关域名可以访问。重点是换一个能实际承载目标流量的出口，而不是反复重新申请白名单。</p>
+<p><strong>端到端验证</strong></p>
+<p>变更前先留底，记录八项信息：测试时间、开发机、VPC 和地域、EGA 状态、白名单版本、代理变量状态、域名清单、执行的命令和结果。</p>
+<p>DNS 验证：</p>
+<pre><code class="language-bash">getent hosts api.openai.com
+getent hosts github.com
+getent hosts huggingface.co
+dig api.openai.com</code></pre>
+<ul>
+<li>对比已开白和未开白域名的解析差异。</li>
+<li>对比变更前后的解析结果。</li>
+<li>注意本地 DNS 缓存，必要时清缓存后再测。</li>
+<li>留意一个域名返回多条 A / AAAA 记录的情况。</li>
+</ul>
+<p>TCP / TLS 验证：</p>
+<pre><code class="language-bash">curl -vI --connect-timeout 10 https://api.openai.com
+curl -vI --connect-timeout 10 https://chatgpt.com</code></pre>
+<ul>
+<li>按阶段判断失败位置：DNS 解析失败 → TCP 建连失败 → TLS 握手失败 → HTTP 返回 403 / 429 / 5xx → 认证失败。</li>
+<li>只有前几个阶段（DNS、TCP、TLS）的失败，才主要是链路或出口问题；拿到 HTTP 状态码后，问题多半已经到了目标服务侧。</li>
+</ul>
+<p>重定向验证：</p>
+<pre><code class="language-bash">curl -L -I -v https://huggingface.co
+curl -L -I -v https://github.com</code></pre>
+<ul>
+<li>大文件下载经常跳转到 CDN、对象存储或分片域名，这些域名也要开白。</li>
+</ul>
+<p>按业务场景验收：</p>
+<p>| 场景 | 建议验证 | 关键指标 |</p>
+<p>| --- | --- | --- |</p>
+<p>| Hugging Face | 先下小文件，再下真实数据集 | 成功率、总耗时、平均速率、重试次数 |</p>
+<p>| GitHub | Clone、Release 下载、Raw 文件 | DNS、TLS、耗时、是否断连 |</p>
+<p>| Docker | 登录后拉取镜像 | 认证成功率、每层耗时、失败的层 |</p>
+<p>| OpenAI | API、Web、Codex 相关域名逐个测 | 建连、TLS、HTTP 状态码、认证结果 |</p>
+<p>| 分布式训练 | 多节点并行下载 | 节点成功率、慢节点、超时和重试 |</p>
+<p>非目标流量回归，确认四点：</p>
+<ul>
+<li>非目标流量没有被导入 EGA。</li>
+<li>通配域名没有配得过宽。</li>
+<li>代理变量有没有改成全局生效。</li>
+<li>原有访问路径没有被破坏。</li>
+</ul>
+<p><strong>定位矩阵</strong></p>
+<p>| 现象 | 可能原因 | 排查方法 | 处理 |</p>
+<p>| --- | --- | --- | --- |</p>
+<p>| 域名解析失败 | DNS 配置、缓存、域名拼写、resolv 配置 | <code>getent hosts</code>、<code>dig</code> | 修正 DNS，清缓存 |</p>
+<p>| 首页能打开，文件下载失败 | 下载、CDN、对象存储域名未开白 | <code>curl -L -I -v</code> 看跳转 | 补齐依赖域名 |</p>
+<p>| 配置后完全不生效 | 不在目标 VPC、未生效、路由未下发 | 查 VPC、地域、EGA 状态 | 修正关联，等待生效 |</p>
+<p>| GitHub 正常，Hugging Face 异常 | 两者依赖的域名和 CDN 不同 | 分别记录测试结果 | 按实际依赖补白 |</p>
+<p>| Docker 登录成功，拉取失败 | 镜像层下载走了另外的域名 | 看拉取日志 | 补 Registry、认证、存储域名 |</p>
+<p>| OpenAI 已开白仍失败 | 区域出口限制、目标封禁、认证问题 | 核验出口地域，分层测试 | 调整出口方案，认证问题单独处理 |</p>
+<p>| 开代理后国内网站变慢 | <code>https_proxy</code> 全局生效 | 检查代理变量和 <code>no_proxy</code> | 缩小代理范围 |</p>
+<p>| 训练部分节点失败 | 节点间 VPC、DNS、代理或策略不一致 | 逐节点取证 | 统一节点配置 |</p>
+<p>| 能连通但返回 401 / 403 / 429 | 账号、权限、配额、目标策略 | 看状态码和响应内容 | 转业务侧处理，不要误判为 EGA 问题 |</p>
+<p><strong>交付清单</strong></p>
+<p>平台侧：</p>
+<ul>
+<li>确认产品在客户区域支持 EGA。</li>
+<li>确认 VPC 和地域在开通范围内。</li>
+<li>核验白名单与客户域名清单一致。</li>
+<li>补齐认证、重定向、CDN 等依赖域名。</li>
+<li>确认出口地域和线路能访问目标服务。</li>
+<li>确认配置状态为已生效。</li>
+<li>异常时提供证据：域名、地域、失败阶段、时间。</li>
+<li>变更出口方案时，说明影响范围、验证方法和回退方式。</li>
+</ul>
+<p>客户侧：</p>
+<ul>
+<li>提供开发机 / 训练节点名称。</li>
+<li>确认节点所在 VPC 和地域。</li>
+<li>提供真实业务的域名清单。</li>
+<li>完成 DNS、TLS、HTTP 和下载验证。</li>
+<li>在训练节点上重复验证。</li>
+<li>记录开启代理前后的差异。</li>
+<li>反馈失败的域名、时间和命令输出。</li>
+<li>用真实业务做最终验收。</li>
+</ul>
+<p>验收标准：</p>
+<ul>
+<li>VPC 和节点范围明确。</li>
+<li>域名清单已逐项核验。</li>
+<li>代表域名的 DNS、TLS、HTTP 全部通过。</li>
+<li>至少一个真实下载或 API 调用成功。</li>
+<li>训练关键节点全部通过。</li>
+<li>非目标流量回归正常。</li>
+<li>代理方式、出口地域和已知限制已记录。</li>
+<li>客户知道如何开启、关闭和回退。</li>
+</ul>
+<p><strong>经验总结</strong></p>
+<ol>
+<li>EGA 解决网络链路，不等于账号权限或 API 权限。</li>
+<li>「已开白」不能证明端到端可达，必须实测。</li>
+<li>境外服务的依赖链很复杂：认证、重定向、CDN、对象存储、WebSocket 都可能是独立域名。</li>
+<li>区域出口是关键变量，同一份白名单换个出口结果可能完全不同。</li>
+<li>OpenAI 类访问失败，先分清是 EGA 配置、区域出口、目标服务策略还是账号问题。</li>
+<li>分布式训练必须多节点验证，不能用单机结果代表集群。</li>
+<li><code>https_proxy</code> 见效快，但会改变国内流量路径，要记录变更并给出取消方式。</li>
+<li>不要向客户承诺「所有境外网站都能访问」。</li>
+</ol>
+<p><strong>可复用模板</strong></p>
+<p>客户信息收集：</p>
+<pre><code class="language-text">客户：
+业务场景：（数据集下载 / 代码拉取 / 镜像拉取 / API 调用 / 分布式训练）
+开发机或训练节点：
+VPC：
+地域：
+目标域名清单：
+是否需要登录认证：
+是否涉及重定向 / CDN / 对象存储：
+期望指标：（速率 / 成功率 / 耗时）
+失败现象：
+失败时间：
+是否使用代理：</code></pre>
+<p>排查记录：</p>
+<pre><code class="language-text">VPC / 地域：
+EGA 状态：
+白名单是否包含：
+DNS 结果：
+TCP 结果：
+TLS 结果：
+HTTP 状态码：
+重定向域名：
+出口地域和线路：
+业务验证结果：
+非目标流量回归：
+根因：
+处理动作：
+验证结果：
+回退方式：</code></pre>
+<p><strong>适用边界</strong></p>
+<ul>
+<li>白名单范围、区域出口能力、访问限制和合规要求，以平台实际配置和官方文档为准：https://cloud.baidu.com/doc/GA/s/5mrepeyji</li>
+<li>文中「香港出口对 OpenAI 相关域名存在限制」描述的是案例发生时的情况，后续可能变化，处理新问题时要重新实测。</li>
+</ul></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/2077">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/2075">百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2076">百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？</a><span class="rel-n">新题</span></li></ul></div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=285&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>

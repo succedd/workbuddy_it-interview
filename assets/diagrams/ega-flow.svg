@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+  </defs>
+  <rect width="980" height="420" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">出口网关加速 EGA 的流量路径</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">业务仍访问原始域名，命中白名单的流量由网络侧导流到 EGA 出口</text>
+  <rect x="20" y="100" width="135" height="110" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="40" y="136" font-size="16" font-weight="700" fill="#9a3412">业务侧</text>
+  <text x="34" y="162" font-size="13" fill="#9a3412">开发机 / 容器</text>
+  <text x="34" y="184" font-size="13" fill="#9a3412">分布式训练</text>
+  <rect x="182" y="100" width="135" height="110" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="202" y="136" font-size="16" font-weight="700" fill="#1e40af">DNS 解析</text>
+  <text x="196" y="162" font-size="13" fill="#1e40af">命中白名单</text>
+  <text x="196" y="184" font-size="13" fill="#1e40af">进入加速解析</text>
+  <rect x="344" y="100" width="135" height="110" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="364" y="136" font-size="16" font-weight="700" fill="#1e40af">VPC 路由</text>
+  <text x="358" y="162" font-size="13" fill="#1e40af">已开通 EGA</text>
+  <text x="358" y="184" font-size="13" fill="#1e40af">的 VPC</text>
+  <rect x="506" y="100" width="135" height="110" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="526" y="136" font-size="16" font-weight="700" fill="#047857">EGA 网关</text>
+  <text x="520" y="162" font-size="13" fill="#047857">目标识别</text>
+  <text x="520" y="184" font-size="13" fill="#047857">出口选择、转发</text>
+  <rect x="668" y="100" width="135" height="110" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="682" y="136" font-size="16" font-weight="700" fill="#047857">全球加速网络</text>
+  <text x="682" y="162" font-size="13" fill="#047857">区域出口</text>
+  <text x="682" y="184" font-size="13" fill="#047857">（如香港、北京）</text>
+  <rect x="830" y="100" width="135" height="110" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="850" y="136" font-size="16" font-weight="700" fill="#991b1b">境外目标</text>
+  <text x="844" y="162" font-size="13" fill="#991b1b">HF / GitHub</text>
+  <text x="844" y="184" font-size="13" fill="#991b1b">Docker / OpenAI</text>
+  <line x1="157" y1="155" x2="180" y2="155" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="319" y1="155" x2="342" y2="155" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="481" y1="155" x2="504" y2="155" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="643" y1="155" x2="666" y2="155" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="805" y1="155" x2="828" y2="155" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <text x="30" y="252" font-size="16" font-weight="700" fill="#0f172a">每一段都可能是断点，要逐段取证</text>
+  <text x="30" y="282" font-size="14" fill="#334155">1. 白名单：主站、认证、下载、CDN、对象存储、WebSocket 域名都要覆盖，只开首页不够</text>
+  <text x="30" y="308" font-size="14" fill="#334155">2. DNS：对比命中和未命中域名、变更前后解析结果，注意缓存和多个 A/AAAA 记录</text>
+  <text x="30" y="334" font-size="14" fill="#334155">3. VPC：开发机和每个训练节点都要在已开通的 VPC，没有被自定义路由或代理截走</text>
+  <text x="30" y="360" font-size="14" fill="#334155">4. 出口：同一份白名单在不同区域出口可能结果不同，目标侧地域限制 EGA 消除不了</text>
+  <text x="30" y="386" font-size="14" fill="#334155">5. 业务：连上之后的 401/403/429 属于账号、权限、配额，不是 EGA 故障</text>
+</svg>

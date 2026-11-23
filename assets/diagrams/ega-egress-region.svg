@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 440" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/></marker>
+  </defs>
+  <rect width="980" height="440" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">白名单正确，不等于目标可达：区域出口是关键变量</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">同一台苏州开发机、同一份 OpenAI 白名单，换了出口方案后结果不同</text>
+  <rect x="20" y="120" width="190" height="200" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="40" y="156" font-size="17" font-weight="700" fill="#9a3412">苏州开发机</text>
+  <text x="40" y="184" font-size="13" fill="#9a3412">苏州区域业务 VPC</text>
+  <text x="40" y="206" font-size="13" fill="#9a3412">已开通 EGA</text>
+  <text x="40" y="228" font-size="13" fill="#9a3412">OpenAI、ChatGPT 域名</text>
+  <text x="40" y="250" font-size="13" fill="#9a3412">及通配域名已开白</text>
+  <text x="40" y="272" font-size="13" fill="#9a3412">DNS、路由正常</text>
+  <rect x="330" y="100" width="250" height="90" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="350" y="134" font-size="16" font-weight="700" fill="#991b1b">原方案：苏州 GA，香港出口</text>
+  <text x="350" y="160" font-size="13" fill="#991b1b">当时该出口对 OpenAI / Codex</text>
+  <text x="350" y="180" font-size="13" fill="#991b1b">相关域名存在访问限制</text>
+  <rect x="330" y="250" width="250" height="90" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="350" y="284" font-size="16" font-weight="700" fill="#047857">新方案：北京 GA 出口</text>
+  <text x="350" y="310" font-size="13" fill="#047857">开发机设置 https_proxy</text>
+  <text x="350" y="330" font-size="13" fill="#047857">转发到北京出口</text>
+  <rect x="720" y="120" width="240" height="200" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="740" y="156" font-size="17" font-weight="700" fill="#1e40af">OpenAI / ChatGPT</text>
+  <text x="740" y="184" font-size="13" fill="#1e40af">api.openai.com</text>
+  <text x="740" y="206" font-size="13" fill="#1e40af">chatgpt.com</text>
+  <text x="740" y="228" font-size="13" fill="#1e40af">auth.openai.com</text>
+  <text x="740" y="250" font-size="13" fill="#1e40af">ws.chatgpt.com</text>
+  <text x="740" y="272" font-size="13" fill="#1e40af">files.oaiusercontent.com</text>
+  <line x1="212" y1="190" x2="328" y2="150" stroke="#dc2626" stroke-width="3" marker-end="url(#r)"/>
+  <line x1="582" y1="145" x2="718" y2="180" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#r)"/>
+  <text x="610" y="140" font-size="14" font-weight="700" fill="#dc2626">连不通</text>
+  <line x1="212" y1="250" x2="328" y2="290" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="582" y1="295" x2="718" y2="260" stroke="#2563eb" stroke-width="3" marker-end="url(#a)"/>
+  <text x="610" y="310" font-size="14" font-weight="700" fill="#047857">测试成功</text>
+  <text x="30" y="380" font-size="14" fill="#334155">处理思路：没有反复重新申请白名单，而是换一个能实际承载目标流量的出口，再做端到端验证。</text>
+  <text x="30" y="406" font-size="14" fill="#334155">代价：https_proxy 是全局变量，国内网站也会经过代理；取消执行 unset https_proxy，或用 no_proxy 排除。</text>
+</svg>
