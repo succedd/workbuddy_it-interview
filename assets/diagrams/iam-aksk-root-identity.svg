@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="980" height="520" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">百舸任务「创建人」由签名身份决定</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">同一个子用户登录，用不同来源的 AK/SK 调用 OpenAPI，记录的创建人不同</text>
+
+  <rect x="20" y="90" width="170" height="380" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="40" y="128" font-size="16" font-weight="700" fill="#0f172a">子用户</text>
+  <text x="40" y="156" font-size="13" fill="#334155">策略：系统管理员</text>
+  <text x="40" y="180" font-size="13" fill="#334155">+ AIHC 相关策略</text>
+  <text x="40" y="216" font-size="13" fill="#334155">用 CLI 提交</text>
+  <text x="40" y="240" font-size="13" fill="#334155">百舸训练任务</text>
+
+  <rect x="230" y="100" width="300" height="160" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="250" y="132" font-size="15" font-weight="700" fill="#991b1b">路径 A：本案例</text>
+  <text x="250" y="160" font-size="13" fill="#7f1d1d">从「安全认证」页创建的 AK/SK</text>
+  <text x="250" y="184" font-size="13" fill="#7f1d1d">子用户 IAM 详情 AccessKey 列表：空</text>
+  <text x="250" y="208" font-size="13" fill="#7f1d1d">临时凭证签发：userId = domainId</text>
+  <text x="250" y="232" font-size="13" fill="#7f1d1d">实际代表主账号身份</text>
+
+  <rect x="230" y="300" width="300" height="160" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="250" y="332" font-size="15" font-weight="700" fill="#166534">路径 B：修复后</text>
+  <text x="250" y="360" font-size="13" fill="#14532d">IAM 子用户详情页创建 AccessKey</text>
+  <text x="250" y="384" font-size="13" fill="#14532d">AK 出现在该子用户的列表里</text>
+  <text x="250" y="408" font-size="13" fill="#14532d">临时凭证签发：userId ≠ domainId</text>
+  <text x="250" y="432" font-size="13" fill="#14532d">代表子用户身份</text>
+
+  <path d="M192 200 L226 180" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M192 330 L226 370" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="570" y="100" width="170" height="160" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="590" y="140" font-size="14" font-weight="700" fill="#334155">OpenAPI 网关</text>
+  <text x="590" y="168" font-size="13" fill="#334155">按 AK 换取临时凭证</text>
+  <text x="590" y="192" font-size="13" fill="#334155">调用百舸接口</text>
+  <rect x="570" y="300" width="170" height="160" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="590" y="340" font-size="14" font-weight="700" fill="#334155">OpenAPI 网关</text>
+  <text x="590" y="368" font-size="13" fill="#334155">按 AK 换取临时凭证</text>
+  <text x="590" y="392" font-size="13" fill="#334155">调用百舸接口</text>
+  <path d="M532 180 L566 180" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M532 380 L566 380" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="780" y="130" width="180" height="100" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="800" y="170" font-size="14" fill="#7f1d1d">任务创建人</text>
+  <text x="800" y="200" font-size="20" font-weight="700" fill="#991b1b">root</text>
+  <rect x="780" y="330" width="180" height="100" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="800" y="370" font-size="14" fill="#14532d">任务创建人</text>
+  <text x="800" y="400" font-size="20" font-weight="700" fill="#166534">子用户名</text>
+  <path d="M742 180 L776 180" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M742 380 L776 380" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <text x="30" y="500" font-size="13" fill="#64748b">判定口诀：看签发出来的 userId 是否等于 domainId，看 AK 是否挂在这个子用户名下。登录身份不等于签名身份。</text>
+</svg>
