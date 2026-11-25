@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -101,10 +110,7 @@
 <li>按传输内容：数据总线（双向、位数=机器字长/数据通路宽度）、地址总线（单向、位数决定寻址空间）、控制总线（传送读写/中断/握手等控制信号）。</li>
 </ul>
 <p><strong>二、总线仲裁（解决多设备争用）</strong></p>
-<p>| 方式 | 特点 | 优缺点 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 集中式仲裁 | 设中央仲裁器，常见链式查询（优先级固定、线少）、计数器定时查询（优先级灵活）、独立请求（响应快、线多） | 控制集中、实现简单，但仲裁器是单点 |</p>
-<p>| 分布式仲裁 | 各设备自判优（如以太网 CSMA/CD 思路） | 无单点、公平可扩展，但逻辑复杂 |</p>
+<div class="tw"><table><thead><tr><th>方式</th><th>特点</th><th>优缺点</th></tr></thead><tbody><tr><td>集中式仲裁</td><td>设中央仲裁器，常见链式查询（优先级固定、线少）、计数器定时查询（优先级灵活）、独立请求（响应快、线多）</td><td>控制集中、实现简单，但仲裁器是单点</td></tr><tr><td>分布式仲裁</td><td>各设备自判优（如以太网 CSMA/CD 思路）</td><td>无单点、公平可扩展，但逻辑复杂</td></tr></tbody></table></div>
 <p><strong>三、总线定时（数据传输的握手节奏）</strong></p>
 <ul>
 <li>同步定时：由统一时钟信号同步，发收双方按固定时序动作。<strong>优点</strong>简单、速度快；<strong>缺点</strong>以最慢设备为准，适应性差。</li>

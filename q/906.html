@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -106,10 +115,7 @@
 <li>缺点：文件大、恢复慢；需 AOF 重写（读取当前内存状态重新生成精简 AOF）压缩体积。</li>
 </ul>
 <h4>对比表</h4>
-<p>| 方式 | 原理 | 安全性 | 恢复速度 | 文件大小 |</p>
-<p>| --- | --- | --- | --- | --- |</p>
-<p>| RDB | 定时全量快照 | 可能丢间隔数据 | 快 | 小 |</p>
-<p>| AOF | 追加写命令 | 高(最多丢1秒) | 慢 | 大 |</p>
+<div class="tw"><table><thead><tr><th>方式</th><th>原理</th><th>安全性</th><th>恢复速度</th><th>文件大小</th></tr></thead><tbody><tr><td>RDB</td><td>定时全量快照</td><td>可能丢间隔数据</td><td>快</td><td>小</td></tr><tr><td>AOF</td><td>追加写命令</td><td>高(最多丢1秒)</td><td>慢</td><td>大</td></tr></tbody></table></div>
 <p><strong>混合持久化（Redis 4.0+，推荐）</strong>：AOF 重写时前半段用 RDB 格式（加载快），后半段用增量 AOF 命令，兼顾恢复速度和数据安全，是生产首选。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/906">练这道题</a>

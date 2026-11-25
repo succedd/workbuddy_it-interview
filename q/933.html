@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -95,13 +104,7 @@
     <h1>接口和抽象类有什么区别？如何选择？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">Java开发工程师</span><span class="chip">Java后端工程师</span><span class="chip">后端开发工程师</span><span class="chip tag">Java</span><span class="chip tag">面向对象</span><span class="chip tag">接口</span><span class="chip tag">抽象类</span></div>
     <div class="card"><h2>题目</h2><p>请从语法、设计语义（能否实例化、成员限制、多继承）等角度对比接口与抽象类。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>| 维度 | 抽象类 | 接口 |</p>
-<p>|---|---|---|</p>
-<p>| 语义 | &quot;<strong>是什么</strong>&quot;（is-a），抽取共性实现 | &quot;<strong>能做什么</strong>&quot;（can-do），定义能力契约 |</p>
-<p>| 继承 | 单继承（一个类只能 extends 一个） | 多实现（implements 多个） |</p>
-<p>| 成员变量 | 任意（可有状态） | 只能 <code>public static final</code> 常量 |</p>
-<p>| 方法 | 可含具体实现与抽象方法 | Java 8 前只能抽象方法；8+ 有 default/static 方法 |</p>
-<p>| 构造器 | 有（供子类调用） | 无 |</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><div class="tw"><table><thead><tr><th>维度</th><th>抽象类</th><th>接口</th></tr></thead><tbody><tr><td>语义</td><td>&quot;<strong>是什么</strong>&quot;（is-a），抽取共性实现</td><td>&quot;<strong>能做什么</strong>&quot;（can-do），定义能力契约</td></tr><tr><td>继承</td><td>单继承（一个类只能 extends 一个）</td><td>多实现（implements 多个）</td></tr><tr><td>成员变量</td><td>任意（可有状态）</td><td>只能 <code>public static final</code> 常量</td></tr><tr><td>方法</td><td>可含具体实现与抽象方法</td><td>Java 8 前只能抽象方法；8+ 有 default/static 方法</td></tr><tr><td>构造器</td><td>有（供子类调用）</td><td>无</td></tr></tbody></table></div>
 <p><strong>如何选择</strong>：</p>
 <ul>
 <li>需要复用<strong>公共实现</strong>、维护<strong>状态字段</strong>、模板方法模式（父类定骨架，子类填细节）→ <strong>抽象类</strong>，如 <code>AbstractList</code>；</li>

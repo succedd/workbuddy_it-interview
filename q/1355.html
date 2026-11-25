@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -108,13 +117,7 @@
 <li><strong>不保证原子性</strong>：如 <code>i++</code>（读-改-写）在多线程下用 <code>volatile</code> 修饰仍可能丢失更新，必须靠锁或 <code>AtomicInteger</code>。</li>
 </ul>
 <h4>volatile vs synchronized</h4>
-<p>| 维度 | volatile | synchronized |</p>
-<p>| :--- | :--- | :--- |</p>
-<p>| 原子性 | 不保证 | 保证 |</p>
-<p>| 可见性 | 保证 | 保证 |</p>
-<p>| 有序性 | 禁止重排 | 临界区串行化 |</p>
-<p>| 阻塞 | 不阻塞 | 可能阻塞 |</p>
-<p>| 适用 | 状态标志、双重检查锁 | 复合操作、临界区 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>volatile</th><th>synchronized</th></tr></thead><tbody><tr><td>原子性</td><td>不保证</td><td>保证</td></tr><tr><td>可见性</td><td>保证</td><td>保证</td></tr><tr><td>有序性</td><td>禁止重排</td><td>临界区串行化</td></tr><tr><td>阻塞</td><td>不阻塞</td><td>可能阻塞</td></tr><tr><td>适用</td><td>状态标志、双重检查锁</td><td>复合操作、临界区</td></tr></tbody></table></div>
 <p><strong>面试要点</strong>：<code>volatile</code> 适合“一写多读”的标志位场景，不能替代锁解决所有并发安全问题。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1355">练这道题</a>

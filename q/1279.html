@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -110,13 +119,7 @@
 <li><strong>补偿不等于技术回滚</strong>：库存预占可以回滚，已发送的短信、已成功的第三方支付流水无法撤回，补偿只能把业务带到「业务允许的后续状态」。</li>
 </ul>
 <p><strong>4. 与 TCC 的本质区别</strong></p>
-<p>| 维度 | TCC | Saga |</p>
-<p>| --- | --- | --- |</p>
-<p>| 资源处理 | Try 阶段预留/冻结资源 | 每步本地事务直接提交，没有 Try |</p>
-<p>| 隔离性 | 靠业务预留实现「伪隔离」 | 隔离性弱，中间状态对外可见 |</p>
-<p>| 性能 | 有资源预留开销 | 直接提交，性能非常高 |</p>
-<p>| 适合链路 | 短链路、资源预留明确（转账、库存冻结、优惠券锁定） | 长链路多步骤（订单履约、旅行预订、审批流） |</p>
-<p>| 典型实现 | Seata TCC、Hmily | Seata Saga、ServiceComb Pack |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>TCC</th><th>Saga</th></tr></thead><tbody><tr><td>资源处理</td><td>Try 阶段预留/冻结资源</td><td>每步本地事务直接提交，没有 Try</td></tr><tr><td>隔离性</td><td>靠业务预留实现「伪隔离」</td><td>隔离性弱，中间状态对外可见</td></tr><tr><td>性能</td><td>有资源预留开销</td><td>直接提交，性能非常高</td></tr><tr><td>适合链路</td><td>短链路、资源预留明确（转账、库存冻结、优惠券锁定）</td><td>长链路多步骤（订单履约、旅行预订、审批流）</td></tr><tr><td>典型实现</td><td>Seata TCC、Hmily</td><td>Seata Saga、ServiceComb Pack</td></tr></tbody></table></div>
 <p>一句话概括：TCC 是「先预留再确认」，用资源预留换隔离性；Saga 是「先提交再补偿」，用隔离性换性能与长链路适配能力。选型时看链路长度和业务能否接受中间状态可见。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1279">练这道题</a>

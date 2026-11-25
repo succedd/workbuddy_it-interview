@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -111,11 +120,7 @@
 <li>Tag = 32 − 4 − 4 = <strong>24 位</strong>。</li>
 </ul>
 <h3>三种映射对比</h3>
-<p>| 方式 | 冲突率 | 比较器/查找 | 硬件成本 |</p>
-<p>|---|---|---|---|</p>
-<p>| 直接映射（1 路） | 高（易抖动） | 比 1 个 Tag | 最低 |</p>
-<p>| 组相联（k 路） | 中 | 组内比 k 个 Tag | 中 |</p>
-<p>| 全相联（1 组） | 低 | 比全部 Tag | 最高、最慢 |</p>
+<div class="tw"><table><thead><tr><th>方式</th><th>冲突率</th><th>比较器/查找</th><th>硬件成本</th></tr></thead><tbody><tr><td>直接映射（1 路）</td><td>高（易抖动）</td><td>比 1 个 Tag</td><td>最低</td></tr><tr><td>组相联（k 路）</td><td>中</td><td>组内比 k 个 Tag</td><td>中</td></tr><tr><td>全相联（1 组）</td><td>低</td><td>比全部 Tag</td><td>最高、最慢</td></tr></tbody></table></div>
 <blockquote>路数↑ → 冲突失效↓，但 Tag 位↑、每组需 k 个比较器并行、命中延迟略增；实际 CPU 常用 8~16 路 L1。</blockquote></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1390">练这道题</a>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -110,13 +119,7 @@
 <li>7 = <code>0111</code>₂ = M；−3 = <code>1101</code>₂ = Q；Q−1 初值 0。</li>
 <li>初始 A=<code>0000</code>, Q=<code>0111</code>, Q−1=<code>0</code>。</li>
 </ul>
-<p>| 步 | A | Q | Q−1 | 操作 |</p>
-<p>|---|---|---|---|---|</p>
-<p>| 0 | 0000 | 0111 | 0 | 初始 |</p>
-<p>| 1 | 1101 | 0011 | 1 | A−M(10)→右移 |</p>
-<p>| 2 | 1110 | 1001 | 1 | 原样(11)→右移 |</p>
-<p>| 3 | 0010 | 0100 | 1 | A+M(01)→右移 |</p>
-<p>| 4 | 0001 | 0010 | 0 | 原样(00)→右移 |</p>
+<div class="tw"><table><thead><tr><th>步</th><th>A</th><th>Q</th><th>Q−1</th><th>操作</th></tr></thead><tbody><tr><td>0</td><td>0000</td><td>0111</td><td>0</td><td>初始</td></tr><tr><td>1</td><td>1101</td><td>0011</td><td>1</td><td>A−M(10)→右移</td></tr><tr><td>2</td><td>1110</td><td>1001</td><td>1</td><td>原样(11)→右移</td></tr><tr><td>3</td><td>0010</td><td>0100</td><td>1</td><td>A+M(01)→右移</td></tr><tr><td>4</td><td>0001</td><td>0010</td><td>0</td><td>原样(00)→右移</td></tr></tbody></table></div>
 <p>结果取 A·Q = <code>0001 0010</code>。<strong>注意 4 位补码范围仅 −8~+7，7×(−3)=−21 已溢出</strong>，需扩展到 8 位才正确（−21 = <code>1110 1011</code>₂）。</p>
 <blockquote>启示：Booth 结果位宽 = 两操作数位宽之和才能不溢出；其价值在于减少加法次数（连续 1 越多越省）。</blockquote></div>
     <div class="cta-row">

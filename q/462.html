@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -99,12 +108,7 @@
 <p>这类算法的设计目标是<strong>快</strong>，而口令哈希恰恰需要<strong>慢</strong>。攻击者拿到库后会用候选密码、撞库字典、规则化词表或暴力枚举去撞哈希，配合 GPU 和云算力，快速哈希意味着单位时间能尝试的密码数量极大，破解成本极低。它们还缺少工作因子与内存硬度，无法通过调参跟上硬件演进；不加盐时还会直接被彩虹表命中。</p>
 <h3>二、正确做法：慢哈希 + 每用户唯一 salt</h3>
 <p>OWASP 的推荐优先级：</p>
-<p>| 场景 | 算法与最低参数 |</p>
-<p>| --- | --- |</p>
-<p>| 首选 | <strong>Argon2id</strong>，m=19 MiB、t=2、p=1 |</p>
-<p>| Argon2id 不可用 | <strong>scrypt</strong>，N=2^17、r=8、p=1 |</p>
-<p>| 遗留系统 | <strong>bcrypt</strong>，工作因子 ≥ 10，注意 72 字节上限 |</p>
-<p>| 需 FIPS-140 合规 | <strong>PBKDF2-HMAC-SHA256</strong>，迭代 ≥ 600,000 |</p>
+<div class="tw"><table><thead><tr><th>场景</th><th>算法与最低参数</th></tr></thead><tbody><tr><td>首选</td><td><strong>Argon2id</strong>，m=19 MiB、t=2、p=1</td></tr><tr><td>Argon2id 不可用</td><td><strong>scrypt</strong>，N=2^17、r=8、p=1</td></tr><tr><td>遗留系统</td><td><strong>bcrypt</strong>，工作因子 ≥ 10，注意 72 字节上限</td></tr><tr><td>需 FIPS-140 合规</td><td><strong>PBKDF2-HMAC-SHA256</strong>，迭代 ≥ 600,000</td></tr></tbody></table></div>
 <p><strong>salt 的三个作用</strong>：① 每个密码唯一，逼迫攻击者逐个破解而不能一次算完比对全库；② 抵御彩虹表等预计算攻击；③ 相同密码产生不同哈希，不泄露「谁和谁用了同一个密码」。主流库通常自动管理 salt，开发者按推荐方式调用即可。</p>
 <p><strong>pepper 是可选的深度防御</strong>：所有密码共用一个密钥，必须存在 secrets vault 或 HSM 中，<strong>绝不能与哈希同库存</strong>。它防止攻击者仅拿到数据库就能开工，但单独使用不增加安全强度；一旦泄露需全员重置密码（因为不知道明文就无法重算）。</p>
 <p><strong>工作因子调优</strong>：经验法则是单次哈希耗时控制在 1 秒以内；设得过高反而会被利用发起 CPU 型 DoS。</p>

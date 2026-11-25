@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -104,12 +113,7 @@
 <li><strong>B+ 树</strong>：非叶子节点只存索引键（不存数据），一个 16KB 页可存约 1000 个键，千万数据仅 3 层，最多 3 次 IO；<strong>所有数据集中在叶子节点且用双向链表相连</strong>，范围查询/排序只需顺序遍历链表，无需回溯。</li>
 </ul>
 <h4>关键优势对比表</h4>
-<p>| 结构 | 数据位置 | 树高 | 范围查询 | 适配场景 |</p>
-<p>| --- | --- | --- | --- | --- |</p>
-<p>| 哈希表 | — | — | 不支持 | 纯等值、内存 KV |</p>
-<p>| 红黑树 | 各节点 | 高(十几层) | 不支持 | 内存平衡树 |</p>
-<p>| B 树 | 所有节点 | 较高 | 低(需回溯) | 通用多路树 |</p>
-<p>| B+ 树 | 仅叶子节点+链表 | 矮(3层) | 高 | 磁盘存储/范围查询 |</p>
+<div class="tw"><table><thead><tr><th>结构</th><th>数据位置</th><th>树高</th><th>范围查询</th><th>适配场景</th></tr></thead><tbody><tr><td>哈希表</td><td>—</td><td>—</td><td>不支持</td><td>纯等值、内存 KV</td></tr><tr><td>红黑树</td><td>各节点</td><td>高(十几层)</td><td>不支持</td><td>内存平衡树</td></tr><tr><td>B 树</td><td>所有节点</td><td>较高</td><td>低(需回溯)</td><td>通用多路树</td></tr><tr><td>B+ 树</td><td>仅叶子节点+链表</td><td>矮(3层)</td><td>高</td><td>磁盘存储/范围查询</td></tr></tbody></table></div>
 <p><strong>补充</strong>：聚簇索引（主键）叶子节点存整行数据，二级索引叶子节点存主键值，这也是回表的根源。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1342">练这道题</a>

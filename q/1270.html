@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -105,11 +114,7 @@
 <li><strong>数据源</strong>：本地文件、数据库、内部平台、第三方 API，它们不属于 MCP 的协议角色。</li>
 </ul>
 <p><strong>三类标准原语</strong></p>
-<p>| 原语类型 | 作用 | 例子 |</p>
-<p>| --- | --- | --- |</p>
-<p>| Tools | LLM 主动调用的函数，会主动执行逻辑、可能改变外部状态 | 查询数据库、发送邮件、执行代码 |</p>
-<p>| Resources | Agent 按需读取的只读上下文 | 本地文件、数据库记录、日志流、数据库 Schema |</p>
-<p>| Prompts | 可复用的提示词模板 | 代码审查模板、故障报告模板 |</p>
+<div class="tw"><table><thead><tr><th>原语类型</th><th>作用</th><th>例子</th></tr></thead><tbody><tr><td>Tools</td><td>LLM 主动调用的函数，会主动执行逻辑、可能改变外部状态</td><td>查询数据库、发送邮件、执行代码</td></tr><tr><td>Resources</td><td>Agent 按需读取的只读上下文</td><td>本地文件、数据库记录、日志流、数据库 Schema</td></tr><tr><td>Prompts</td><td>可复用的提示词模板</td><td>代码审查模板、故障报告模板</td></tr></tbody></table></div>
 <p>Tools 通常由模型选择并调用；Resources 和 Prompts 的展示与选择方式还可以由 Host、用户界面或应用逻辑决定。大多数 Server 可以先只提供 Tools，需要只读上下文或可复用任务入口时再考虑另外两类。</p>
 <p><strong>和 Function Calling、HTTP API 的区别</strong></p>
 <ul>

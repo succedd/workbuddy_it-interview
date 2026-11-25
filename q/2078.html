@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -95,123 +104,110 @@
     <h1>一台 GPU 节点为何「反复不可用」：从告警现象到多层根因定位</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">SRE站点可靠性工程师</span><span class="chip">云资源运维工程师</span><span class="chip tag">百度智能云</span><span class="chip tag">GPU</span><span class="chip tag">Xid 109</span><span class="chip tag">NVIDIA驱动</span><span class="chip tag">监控告警</span><span class="chip tag">误报</span></div>
     <div class="card"><h2>题目</h2><p>场景：某对 SLA 很敏感的 GPU 云客户反馈，名下一台 RTX 4090 节点在控制台反复显示「不可用 / 自愈中」。该节点 10/02 曾故障、10/04「维修完成」，之后 10/16、10/18、10/20 又连续报障。每次平台通告都是 P2(ERROR) EccDisabled_Xid[109]，来源 BBC-HAS，建议重启物理机。但节点上 2 台开发机的业务一直正常运行，客户基本无感，也查不到真实维修记录；同期多个客户、多种机型都在高频报 Xid 109。请说明你如何判断问题、分层定位根因、推动治理，并与客户沟通闭环。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><h4>先给结论</h4>
 <ul>
 <li>「节点反复不可用」的直接根因是平台监控（HAS 和 DP 组件）对 GPU Xid 109 的故障分级过高、自动封锁处置过激，把业务实际正常的节点误判下线。</li>
 <li>只把 HAS 里的 Xid 109 降级不够，DP 组件会独立发现 Xid 109 并屏蔽节点，必须「HAS 降级 + DP 升级」一起做。</li>
 <li>Xid 109 本身为什么频繁出现，是驱动/硬件层的另一个问题，不能因为客户暂时无感就长期忽略，要收集日志交 NVIDIA 分析并评估升级驱动。</li>
-<li>一句话记住：平台状态不等于硬件健康；机制层和驱动层两个根因要分开讲，也要分开治理，谁都不能掩盖谁。</li>
+<li><strong>一句话记住</strong>：平台状态不等于硬件健康；机制层和驱动层两个根因要分开讲，也要分开治理，谁都不能掩盖谁。</li>
 </ul>
 <p><img src="/assets/diagrams/gpu-xid109-layers.svg" alt="GPU 节点反复不可用的三层根因" loading="lazy"></p>
-<p><strong>题目背景（读给候选人）</strong></p>
+<h4>题目背景（读给候选人）</h4>
 <ul>
 <li>某 GPU 云客户对 SLA 很敏感，此前已因节点不可用提出过赔偿诉求。</li>
 <li>客户名下一台 RTX 4090 节点在控制台反复显示「不可用 / 自愈中」。</li>
 </ul>
 <p><img src="/assets/q/q2078-console-unavailable.jpg" alt="控制台节点管理页：节点状态为「不可用」并带「自愈中」标记（节点 ID、资源队列和 IP 已脱敏）" loading="lazy"></p>
 <ul>
-<li>这台节点不是第一次出事：10/02 曾故障，10/04「维修完成」；随后 10/16、10/18、10/20 又连续报障，重复性明显。</li>
-<li>每次平台推送的故障通告都是同一类：<code>P2 (ERROR)</code>，故障类型 <code>EccDisabled_Xid[109]</code>，故障来源 BBC-HAS，故障设备 vm_gpu，处置建议写着「Xid[109]：重启物理机」。</li>
+<li><strong>这台节点不是第一次出事</strong>：10/02 曾故障，10/04「维修完成」；随后 10/16、10/18、10/20 又连续报障，重复性明显。</li>
+<li><strong>每次平台推送的故障通告都是同一类</strong>：<code>P2 (ERROR)</code>，故障类型 <code>EccDisabled_Xid[109]</code>，故障来源 BBC-HAS，故障设备 vm_gpu，处置建议写着「Xid[109]：重启物理机」。</li>
 <li>节点上跑着客户 2 台开发机的负载。10/16 到 10/19 这几天客户业务其实一直正常运行，任务没有失败，客户基本无感。</li>
 <li>查这台机器的维修记录，并没有真实维修记录。</li>
 <li>同一时间，内部多个不同客户、不同机型（4090、5090、L20、H20、H800 等）都在高频报 Xid 109。</li>
-<li>第一问：到此为止，你怎么判断这台节点的问题？接下来要查什么、找谁？</li>
+<li><strong>第一问</strong>：到此为止，你怎么判断这台节点的问题？接下来要查什么、找谁？</li>
 </ul>
-<p><strong>考察目标</strong></p>
+<h4>考察目标</h4>
 <ul>
 <li>能否区分「告警现象 / 平台状态」与「硬件真实健康状态」，不被「不可用」字面误导。</li>
 <li>面对重复性故障，有没有「现象、机制、根因」分层定位的意识。</li>
 <li>对 GPU Xid 错误（尤其是 Xid 109）、ECC、驱动版本的基本理解。</li>
 <li>对监控和自愈系统的分级与自动处置逻辑（误报、过度告警、自动封锁）的理解。</li>
-<li>多方协同的推进能力：客户、TAM、资源池 OP、HAS 平台、产品研发、NVIDIA。</li>
-<li>客户沟通与业务影响判断：敏感客户、无感故障怎么定性、怎么安抚。</li>
+<li><strong>多方协同的推进能力</strong>：客户、TAM、资源池 OP、HAS 平台、产品研发、NVIDIA。</li>
+<li><strong>客户沟通与业务影响判断</strong>：敏感客户、无感故障怎么定性、怎么安抚。</li>
 </ul>
-<p><strong>第一问参考思路：先查什么、找谁</strong></p>
+<h4>第一问参考思路：先查什么、找谁</h4>
 <ul>
-<li>先查业务影响：客户任务有没有失败、中断，开发机进程是否还在跑。本例业务一直正常，是最关键的反证。</li>
-<li>再查维修记录：「维修完成」有没有对应的真实工单和换件记录。本例查无记录，说明之前的「修好」很可能只是平台状态恢复。</li>
-<li>再查 GPU 实况：<code>nvidia-smi</code> 状态、温度、功耗、ECC 计数，<code>dmesg</code> 和内核日志里 Xid 出现的时间点和频率，PCIe 链路是否掉速。</li>
-<li>再看横向范围：多机型、多客户同时高频报 Xid 109，说明更像是平台判定规则或驱动层面的共性问题，而不是这一台的个体硬件损坏。</li>
-<li>找谁：资源池 OP（告警消除、封锁解除）、HAS 平台（故障分级配置）、产品研发（DP 组件版本与灰度）、NVIDIA（Xid 109 根因分析）。</li>
+<li><strong>先查业务影响</strong>：客户任务有没有失败、中断，开发机进程是否还在跑。本例业务一直正常，是最关键的反证。</li>
+<li><strong>再查维修记录</strong>：「维修完成」有没有对应的真实工单和换件记录。本例查无记录，说明之前的「修好」很可能只是平台状态恢复。</li>
+<li><strong>再查 GPU 实况</strong>：<code>nvidia-smi</code> 状态、温度、功耗、ECC 计数，<code>dmesg</code> 和内核日志里 Xid 出现的时间点和频率，PCIe 链路是否掉速。</li>
+<li><strong>再看横向范围</strong>：多机型、多客户同时高频报 Xid 109，说明更像是平台判定规则或驱动层面的共性问题，而不是这一台的个体硬件损坏。</li>
+<li><strong>找谁</strong>：资源池 OP（告警消除、封锁解除）、HAS 平台（故障分级配置）、产品研发（DP 组件版本与灰度）、NVIDIA（Xid 109 根因分析）。</li>
 </ul>
-<p><strong>追问 1：节点显示「不可用」，就等于硬件坏了吗？怎么验证？</strong></p>
+<h4>追问 1：节点显示「不可用」，就等于硬件坏了吗？怎么验证？</h4>
 <ul>
-<li>考察点：能否把「平台判定」和「硬件实况」解耦。</li>
+<li><strong>考察点</strong>：能否把「平台判定」和「硬件实况」解耦。</li>
 <li>不能直接等同。「不可用 / 自愈中」是平台监控（HAS）判定后自动打上的状态，不是对硬件的实测结论。</li>
-<li>验证方式：看客户业务是否真的受影响（任务是否失败、中断），看有没有真实维修记录，看 GPU 实际指标（<code>nvidia-smi</code>、温度、PCIe 状态、ECC 计数、<code>dmesg</code>）。</li>
-<li>本例的反证恰好成立：10/16 到 10/19 客户任务一直在跑、基本无感，而且查无维修记录。所以「节点不可用」很可能是平台侧的误判或过度告警，而不是 GPU 物理损坏。</li>
+<li><strong>验证方式</strong>：看客户业务是否真的受影响（任务是否失败、中断），看有没有真实维修记录，看 GPU 实际指标（<code>nvidia-smi</code>、温度、PCIe 状态、ECC 计数、<code>dmesg</code>）。</li>
+<li><strong>本例的反证恰好成立</strong>：10/16 到 10/19 客户任务一直在跑、基本无感，而且查无维修记录。所以「节点不可用」很可能是平台侧的误判或过度告警，而不是 GPU 物理损坏。</li>
 </ul>
-<p><strong>追问 2：Xid 109 到底是什么？为什么会被判成 P2 高等级故障？</strong></p>
+<h4>追问 2：Xid 109 到底是什么？为什么会被判成 P2 高等级故障？</h4>
 <ul>
-<li>考察点：GPU 故障知识，以及对告警分级的理解。</li>
+<li><strong>考察点</strong>：GPU 故障知识，以及对告警分级的理解。</li>
 <li>Xid 是 NVIDIA 驱动上报的 GPU 错误码。按 NVIDIA 官方 Xid 目录，Xid 109 是 <code>ROBUST_CHANNEL_CTXSW_TIMEOUT_ERROR</code>，即上下文切换超时：GPU 在上下文切换时等待某个引擎空闲超时。</li>
 <li>官方列出的可能原因包括应用程序问题、NVIDIA 驱动或 CUDA 软件问题、硬件或系统故障，并明确说明单凭 Xid 109 无法确定根因。所以它可能由业务侧触发，不必然意味着 GPU 硬件损坏。</li>
-<li>注意区分：通告里的 <code>EccDisabled_Xid[109]</code> 是平台自己给这类故障起的标签，Xid 109 本身并不是 ECC 错误。面试中把它说成「显存 ECC 坏了」属于概念错误。</li>
+<li><strong>注意区分</strong>：通告里的 <code>EccDisabled_Xid[109]</code> 是平台自己给这类故障起的标签，Xid 109 本身并不是 ECC 错误。面试中把它说成「显存 ECC 坏了」属于概念错误。</li>
 <li>平台把 Xid 109 配成了 P2(ERROR) 的高等级（HAS 配置里 <code>&quot;109&quot;: 3</code>），一旦命中就触发自动屏蔽、报修、自愈流程，于是节点被自动封锁，控制台显示「不可用」。</li>
-<li>关键矛盾：故障等级设得过高，把「大概率无害的偶发事件」当成「必须下线维修的硬件故障」来处置。这就是「节点反复不可用」的直接机制根因。</li>
+<li><strong>关键矛盾</strong>：故障等级设得过高，把「大概率无害的偶发事件」当成「必须下线维修的硬件故障」来处置。这就是「节点反复不可用」的直接机制根因。</li>
 </ul>
-<p><strong>追问 3（核心）：只改 HAS 的故障等级（把 109 降级），能不能解决？</strong></p>
+<h4>追问 3（核心）：只改 HAS 的故障等级（把 109 降级），能不能解决？</h4>
 <ul>
-<li>考察点：能否识别出「系统里不止一个判定者」，避免单点治理。</li>
-<li>不能只改 HAS。现场验证过：即使执行降级命令，DP 组件也会独立发现 Xid 109 并屏蔽机器，节点照样被置为不可用。</li>
+<li><strong>考察点</strong>：能否识别出「系统里不止一个判定者」，避免单点治理。</li>
+<li><strong>不能只改 HAS。现场验证过</strong>：即使执行降级命令，DP 组件也会独立发现 Xid 109 并屏蔽机器，节点照样被置为不可用。</li>
 </ul>
 <pre><code class="language-bash"># 应急降级示例：把 HAS 中 Xid 109 的等级从 3 改为 1（路径已省略前缀）
 sed -i &#39;s/&quot;109&quot;: 3,/&quot;109&quot;: 1,/g&#39; .../has/hdoctor/conf/failure.json</code></pre>
 <ul>
-<li>正确结论：需要「HAS 降级 + DP 组件配套升级」两件事一起做，缺一不可。另外，低版本 DP 下 Xid 不会自恢复，这也是要升级 DP 的原因之一。</li>
-<li>加分：能指出人工 <code>sed</code> 改配置是非标、不可持续的临时手段，只适合「已确认业务无感」的应急消除，长期要靠平台化治理（配置下发、版本灰度、回滚预案）。</li>
+<li><strong>正确结论</strong>：需要「HAS 降级 + DP 组件配套升级」两件事一起做，缺一不可。另外，低版本 DP 下 Xid 不会自恢复，这也是要升级 DP 的原因之一。</li>
+<li><strong>加分</strong>：能指出人工 <code>sed</code> 改配置是非标、不可持续的临时手段，只适合「已确认业务无感」的应急消除，长期要靠平台化治理（配置下发、版本灰度、回滚预案）。</li>
 </ul>
-<p><strong>追问 4：根因只有「监控配置」这一层吗？底层硬件和驱动要不要管？</strong></p>
+<h4>追问 4：根因只有「监控配置」这一层吗？底层硬件和驱动要不要管？</h4>
 <ul>
-<li>考察点：会不会被「平台侧根因」带偏而忽略底层隐患。</li>
+<li><strong>考察点</strong>：会不会被「平台侧根因」带偏而忽略底层隐患。</li>
 <li>要分两层看。</li>
-<li>机制层根因：监控（HAS + DP）对 Xid 109 分级过高、处置过激，健康节点被误判下线。治理手段是降级加 DP 升级。</li>
-<li>驱动/硬件层根因：Xid 109 为什么频繁出现仍然要查。NVIDIA 侧反馈，旧驱动 R535 有已知的 Xid 109 问题，R550 及以上已修复；但当前 <code>580.159.04</code> 上频繁出现，不太可能是同一个问题，需要重新排查。</li>
-<li>正确态度（NVIDIA 的提醒）：不建议长期「忽略」。客户无感只是暂时没影响业务，频繁出现可能说明底层在恶化，最终可能导致 GPU 真的不可用。</li>
-<li>处置建议：Xid 109 发生后尽快收集 <code>nvidia-bug-report.sh --safe-mode</code> 的输出，并保留事发前后几分钟的 <code>dmesg</code> 和内核日志，交 NVIDIA 分析；同时评估升级驱动（如 580.167.08、580.178.04 或 595 分支）。</li>
+<li><strong>机制层根因</strong>：监控（HAS + DP）对 Xid 109 分级过高、处置过激，健康节点被误判下线。治理手段是降级加 DP 升级。</li>
+<li><strong>驱动/硬件层根因</strong>：Xid 109 为什么频繁出现仍然要查。NVIDIA 侧反馈，旧驱动 R535 有已知的 Xid 109 问题，R550 及以上已修复；但当前 <code>580.159.04</code> 上频繁出现，不太可能是同一个问题，需要重新排查。</li>
+<li><strong>正确态度（NVIDIA 的提醒）</strong>：不建议长期「忽略」。客户无感只是暂时没影响业务，频繁出现可能说明底层在恶化，最终可能导致 GPU 真的不可用。</li>
+<li><strong>处置建议</strong>：Xid 109 发生后尽快收集 <code>nvidia-bug-report.sh --safe-mode</code> 的输出，并保留事发前后几分钟的 <code>dmesg</code> 和内核日志，交 NVIDIA 分析；同时评估升级驱动（如 580.167.08、580.178.04 或 595 分支）。</li>
 </ul>
 <pre><code class="language-bash"># 事发后尽快执行，保留现场
 nvidia-bug-report.sh --safe-mode
 dmesg -T | grep -i -E &quot;xid|nvrm&quot; | tail -n 100
 journalctl -k --since &quot;-30 min&quot; &gt; kernel-around-xid.log</code></pre>
-<p><strong>追问 5：面对这个敏感客户，现在怎么定性、怎么同步、怎么闭环？</strong></p>
+<h4>追问 5：面对这个敏感客户，现在怎么定性、怎么同步、怎么闭环？</h4>
 <ul>
-<li>考察点：客户沟通、分级处置、推动排期。</li>
-<li>定性（给客户话术的核心）：本次是平台监控对 Xid 109 故障等级设置过高导致的误报或过度告警，节点和 GPU 本身健康，业务未受影响；如遇任务被中断，重投即可，节点无需下线。</li>
-<li>短期闭环：联系资源池 OP 或值班人工消除 Xid 109 告警、解除封锁，先把客户控制台状态恢复正常。</li>
-<li>中期闭环：推动把这台机器优先纳入「HAS 降级 + DP 升级」的灰度。本例从 21 号开始灰度，提供机器清单，观察一天无异常后提前上线。</li>
-<li>长期闭环：收集日志、升级驱动，解决底层偶发源头；同时对「敏感客户 + 重复故障」建立优先跟进机制和统一赔付口径。</li>
-<li>加分：主动管理客户预期，提前告知降级后控制台不再因 Xid 109 显示「不可用」，避免下次状态变化又被追问；也要说明底层排查仍在进行，不把「不报了」说成「彻底好了」。</li>
+<li><strong>考察点</strong>：客户沟通、分级处置、推动排期。</li>
+<li><strong>定性（给客户话术的核心）</strong>：本次是平台监控对 Xid 109 故障等级设置过高导致的误报或过度告警，节点和 GPU 本身健康，业务未受影响；如遇任务被中断，重投即可，节点无需下线。</li>
+<li><strong>短期闭环</strong>：联系资源池 OP 或值班人工消除 Xid 109 告警、解除封锁，先把客户控制台状态恢复正常。</li>
+<li><strong>中期闭环</strong>：推动把这台机器优先纳入「HAS 降级 + DP 升级」的灰度。本例从 21 号开始灰度，提供机器清单，观察一天无异常后提前上线。</li>
+<li><strong>长期闭环</strong>：收集日志、升级驱动，解决底层偶发源头；同时对「敏感客户 + 重复故障」建立优先跟进机制和统一赔付口径。</li>
+<li><strong>加分</strong>：主动管理客户预期，提前告知降级后控制台不再因 Xid 109 显示「不可用」，避免下次状态变化又被追问；也要说明底层排查仍在进行，不把「不报了」说成「彻底好了」。</li>
 </ul>
-<p><strong>评分参考</strong></p>
-<p>| 维度 | 不合格 | 合格 | 优秀 |</p>
-<p>|------|--------|------|------|</p>
-<p>| 现象 vs 实况 | 直接认定硬件坏、让客户关机维修 | 会去查业务影响和维修记录 | 明确提出「平台状态不等于硬件健康」并给出验证手段 |</p>
-<p>| 分层根因 | 只停在「报了 Xid 109」 | 找到「监控分级过高」这一层 | 同时讲清机制层（HAS + DP）与驱动/硬件层，且不互相掩盖 |</p>
-<p>| 系统认知 | 以为改一个配置就好 | 知道要改 HAS | 指出 DP 组件同样会屏蔽，必须配套升级 |</p>
-<p>| GPU 知识 | 不了解 Xid 和 ECC | 知道 Xid 是 GPU 错误码 | 知道 Xid 109 是上下文切换超时，可由业务触发，且与驱动版本强相关 |</p>
-<p>| 客户与协同 | 甩给研发、没有闭环 | 能推进处理 | 短、中、长期闭环清晰，会管理敏感客户预期 |</p>
-<p><strong>延伸与加分考点</strong></p>
+<h4>评分参考</h4>
+<div class="tw"><table><thead><tr><th>维度</th><th>不合格</th><th>合格</th><th>优秀</th></tr></thead><tbody><tr><td>现象 vs 实况</td><td>直接认定硬件坏、让客户关机维修</td><td>会去查业务影响和维修记录</td><td>明确提出「平台状态不等于硬件健康」并给出验证手段</td></tr><tr><td>分层根因</td><td>只停在「报了 Xid 109」</td><td>找到「监控分级过高」这一层</td><td>同时讲清机制层（HAS + DP）与驱动/硬件层，且不互相掩盖</td></tr><tr><td>系统认知</td><td>以为改一个配置就好</td><td>知道要改 HAS</td><td>指出 DP 组件同样会屏蔽，必须配套升级</td></tr><tr><td>GPU 知识</td><td>不了解 Xid 和 ECC</td><td>知道 Xid 是 GPU 错误码</td><td>知道 Xid 109 是上下文切换超时，可由业务触发，且与驱动版本强相关</td></tr><tr><td>客户与协同</td><td>甩给研发、没有闭环</td><td>能推进处理</td><td>短、中、长期闭环清晰，会管理敏感客户预期</td></tr></tbody></table></div>
+<h4>延伸与加分考点</h4>
 <ul>
-<li>监控系统设计：故障分级与自动处置如何平衡「漏报」和「误报」？为什么「宁可错封」在 GPU 场景代价很高（单卡算力贵、任务长、重排队成本大）？</li>
+<li><strong>监控系统设计</strong>：故障分级与自动处置如何平衡「漏报」和「误报」？为什么「宁可错封」在 GPU 场景代价很高（单卡算力贵、任务长、重排队成本大）？</li>
 <li>「客户无感就忽略」是否可取？如何在可用性体验与底层隐患收敛之间取舍（本例 NVIDIA 的立场是不建议长期忽略）？</li>
-<li>10/02 那次故障的隐藏问题：当时实际是宿主机内存故障，但没到 HAS 阈值、没进故障池。「阈值之下的真故障」被漏掉，与「阈值命中的假故障」被误报，两类问题同时存在，该怎么看？</li>
+<li><strong>10/02 那次故障的隐藏问题</strong>：当时实际是宿主机内存故障，但没到 HAS 阈值、没进故障池。「阈值之下的真故障」被漏掉，与「阈值命中的假故障」被误报，两类问题同时存在，该怎么看？</li>
 <li>应急手段（人工 <code>sed</code> 改配置、接口清理告警）与平台化治理（灰度升级）之间，如何做取舍和风险控制？</li>
 </ul>
-<p><strong>参考时间线（出题人备用）</strong></p>
-<p>| 时间 | 事件 |</p>
-<p>|------|------|</p>
-<p>| 10/02 | 节点首次故障，实为宿主机内存问题，未达 HAS 阈值、未进故障池；10/04「维修完成」 |</p>
-<p>| 10/16 | 再次报 Xid 109，查无真实维修记录 |</p>
-<p>| 10/18 | 客户报障，节点显示「不可用 / 自愈中」；定位为 <code>EccDisabled_Xid[109]</code>，业务实际无感 |</p>
-<p>| 10/19 | 对齐根因：监控对 Xid 109 分级过高导致误报；需要 HAS 降级 + DP 升级，争取优先灰度 |</p>
-<p>| 10/20 | 再次报障；OP 人工消除告警后节点恢复 |</p>
-<p>| 10/21 | 确认 10/16 到 10/19 业务一直正常运行；治理方案进入灰度 |</p>
-<p><strong>一句话结论</strong></p>
+<h4>参考时间线（出题人备用）</h4>
+<div class="tw"><table><thead><tr><th>时间</th><th>事件</th></tr></thead><tbody><tr><td>10/02</td><td>节点首次故障，实为宿主机内存问题，未达 HAS 阈值、未进故障池；10/04「维修完成」</td></tr><tr><td>10/16</td><td>再次报 Xid 109，查无真实维修记录</td></tr><tr><td>10/18</td><td>客户报障，节点显示「不可用 / 自愈中」；定位为 <code>EccDisabled_Xid[109]</code>，业务实际无感</td></tr><tr><td>10/19</td><td>对齐根因：监控对 Xid 109 分级过高导致误报；需要 HAS 降级 + DP 升级，争取优先灰度</td></tr><tr><td>10/20</td><td>再次报障；OP 人工消除告警后节点恢复</td></tr><tr><td>10/21</td><td>确认 10/16 到 10/19 业务一直正常运行；治理方案进入灰度</td></tr></tbody></table></div>
+<h4>一句话结论</h4>
 <ul>
 <li>「节点反复不可用」的直接根因是平台监控（HAS + DP 组件）对 GPU Xid 109 故障分级过高、自动封锁处置过激，把健康节点误判下线；底层 Xid 109 的偶发源头（驱动或硬件）仍需通过日志收集和驱动升级进一步收敛。</li>
 </ul>
-<p><strong>参考资料</strong></p>
+<h4>参考资料</h4>
 <ul>
 <li>NVIDIA Xid 错误目录（Xid 109：Context Switch Timeout Error）：https://docs.nvidia.com/deploy/xid-errors/analyzing-xid-catalog.html</li>
 </ul></div>

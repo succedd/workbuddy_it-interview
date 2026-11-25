@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -104,12 +113,7 @@
 <li><strong>优先级天花板（Priority Ceiling）</strong>：锁自带「优先级天花板」（所有可能用它的任务的最高优先级），任何任务拿到锁立即升到天花板——更保守，防止死锁链也更强，但需静态分析。</li>
 </ol>
 <h3>互斥量 vs 二值信号量（为什么不能混用）</h3>
-<p>| | 互斥量 Mutex | 二值信号量 Binary Semaphore |</p>
-<p>|---|---|---|</p>
-<p>| 语义 | <strong>锁</strong>：谁拿谁还 | <strong>事件通知</strong>：A 还 B 都行 |</p>
-<p>| 优先级继承 | 有 | 无 |</p>
-<p>| 递归获取 | 递归互斥量支持（同任务重复拿不死锁） | 会死等 |</p>
-<p>| 中断里用 | <strong>禁止</strong>（继承要操作任务上下文） | <code>FromISR</code> 版本可用 |</p>
+<div class="tw"><table><thead><tr><th></th><th>互斥量 Mutex</th><th>二值信号量 Binary Semaphore</th></tr></thead><tbody><tr><td>语义</td><td><strong>锁</strong>：谁拿谁还</td><td><strong>事件通知</strong>：A 还 B 都行</td></tr><tr><td>优先级继承</td><td>有</td><td>无</td></tr><tr><td>递归获取</td><td>递归互斥量支持（同任务重复拿不死锁）</td><td>会死等</td></tr><tr><td>中断里用</td><td><strong>禁止</strong>（继承要操作任务上下文）</td><td><code>FromISR</code> 版本可用</td></tr></tbody></table></div>
 <p><strong>结论</strong>：保护共享资源（临界区）必须用互斥量；任务间/中断间「通知发生了某事」用信号量。用二值信号量当锁 = 享受不到优先级继承，等于手动复刻探路者事故。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1451">练这道题</a>

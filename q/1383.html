@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -98,11 +107,7 @@
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、流水线原理</strong></p>
 <p>把指令执行划分为取指、译码、执行、访存、写回等多段，各段在不同指令上<strong>时间重叠并行</strong>，从而提升吞吐率（单位时间完成的指令数），但单条指令延迟未必缩短。</p>
 <p><strong>二、三类流水线冒险与解决</strong></p>
-<p>| 冒险类型 | 成因 | 典型解决手段 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 结构冒险 | 硬件资源冲突（如指令存储器与数据存储器共用，同一拍争用） | 资源重复（IM/DM 分离）、插入流水停顿 |</p>
-<p>| 数据冒险 | 后一条指令用到前一条尚未写回的结果（RAW/WAR/WAW 相关） | <strong>转发/旁路（Forwarding/Bypassing）</strong> 把结果直接送前级；LOAD-USE 需停顿一个周期（气泡）；编译器重排指令 |</p>
-<p>| 控制冒险 | 分支/跳转/RET 改变 PC，目标地址滞后才确定 | 分支预测（静态/动态）、延迟槽、暂停取指 |</p>
+<div class="tw"><table><thead><tr><th>冒险类型</th><th>成因</th><th>典型解决手段</th></tr></thead><tbody><tr><td>结构冒险</td><td>硬件资源冲突（如指令存储器与数据存储器共用，同一拍争用）</td><td>资源重复（IM/DM 分离）、插入流水停顿</td></tr><tr><td>数据冒险</td><td>后一条指令用到前一条尚未写回的结果（RAW/WAR/WAW 相关）</td><td><strong>转发/旁路（Forwarding/Bypassing）</strong> 把结果直接送前级；LOAD-USE 需停顿一个周期（气泡）；编译器重排指令</td></tr><tr><td>控制冒险</td><td>分支/跳转/RET 改变 PC，目标地址滞后才确定</td><td>分支预测（静态/动态）、延迟槽、暂停取指</td></tr></tbody></table></div>
 <p><strong>三、性能计算（k 段流水线，执行 n 条指令，每段耗时 Δt）</strong></p>
 <ul>
 <li>流水线总耗时：<code>T = (k + n - 1) × Δt</code>（前 k-1 个周期是填满流水线的开销）。</li>

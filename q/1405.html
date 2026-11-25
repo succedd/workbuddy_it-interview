@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -98,12 +107,7 @@
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 57 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>结论</h3>
 <p>BERT 是<strong>双向 Transformer 编码器</strong> + 掩码语言模型（MLM）预训练，每个 token 同时看左右上下文，擅长<strong>理解类</strong>任务；GPT 是<strong>单向（从左到右）Transformer 解码器</strong> + 下一词预测预训练，带因果掩码，擅长<strong>生成类</strong>任务。</p>
 <h3>结构与预训练对照</h3>
-<p>| | BERT | GPT |</p>
-<p>|---|---|---|</p>
-<p>| 结构 | Transformer Encoder（双向自注意力） | Transformer Decoder（因果掩码） |</p>
-<p>| 预训练 | 随机 mask 约 15% 的 token 再预测 + NSP/SOP | 自回归预测下一个 token |</p>
-<p>| 使用方式 | 微调 + 任务头 | prompt + 上下文学习 / 指令微调 |</p>
-<p>| 擅长 | 分类、NER、句子匹配、语义检索 | 文本生成、对话、few-shot |</p>
+<div class="tw"><table><thead><tr><th></th><th>BERT</th><th>GPT</th></tr></thead><tbody><tr><td>结构</td><td>Transformer Encoder（双向自注意力）</td><td>Transformer Decoder（因果掩码）</td></tr><tr><td>预训练</td><td>随机 mask 约 15% 的 token 再预测 + NSP/SOP</td><td>自回归预测下一个 token</td></tr><tr><td>使用方式</td><td>微调 + 任务头</td><td>prompt + 上下文学习 / 指令微调</td></tr><tr><td>擅长</td><td>分类、NER、句子匹配、语义检索</td><td>文本生成、对话、few-shot</td></tr></tbody></table></div>
 <h3>为什么不能互换</h3>
 <ul>
 <li><strong>生成必须单向</strong>：逐词产出时「未来」的词还不存在，双向注意力对未生成位置无意义，必须用因果掩码保证位置 i 只看 ≤ i；</li>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -113,12 +122,7 @@
 <li>队列满且达到最大线程数，触发<strong>拒绝策略</strong>。</li>
 </ol>
 <h4>四种拒绝策略</h4>
-<p>| 策略 | 行为 | 适用场景 |</p>
-<p>| :--- | :--- | :--- |</p>
-<p>| AbortPolicy（默认） | 抛 RejectedExecutionException | 需感知失败 |</p>
-<p>| CallerRunsPolicy | 由提交任务的线程自己执行 | 不丢弃、可降级流速 |</p>
-<p>| DiscardPolicy | 静默丢弃 | 允许丢任务 |</p>
-<p>| DiscardOldestPolicy | 丢弃队列最老任务后重试 | 重时效场景 |</p>
+<div class="tw"><table><thead><tr><th>策略</th><th>行为</th><th>适用场景</th></tr></thead><tbody><tr><td>AbortPolicy（默认）</td><td>抛 RejectedExecutionException</td><td>需感知失败</td></tr><tr><td>CallerRunsPolicy</td><td>由提交任务的线程自己执行</td><td>不丢弃、可降级流速</td></tr><tr><td>DiscardPolicy</td><td>静默丢弃</td><td>允许丢任务</td></tr><tr><td>DiscardOldestPolicy</td><td>丢弃队列最老任务后重试</td><td>重时效场景</td></tr></tbody></table></div>
 <p><strong>注意</strong>：Executors 的 <code>FixedThreadPool</code>/<code>SingleThread</code> 用无界队列易 OOM，<code>CachedThreadPool</code> 最大线程为 Integer.MAX_VALUE 也易 OOM，生产建议手动 <code>new ThreadPoolExecutor</code>。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1354">练这道题</a>

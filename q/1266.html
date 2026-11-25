@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -100,13 +109,7 @@
 <p><strong>Top-p / Top-k 砍候选池</strong>：<code>Top-k = 3</code> 固定保留概率最高的 3 个候选；<code>Top-p = 0.9</code> 从高到低累加概率，候选数量随分布变化（示例中“好 + 不错”已达 94.63%，候选集只保留这两个；如果第一名自身超过 90%，就只留一个）。</p>
 <p><strong>Penalty 系列</strong>用来缓解复读：Repetition Penalty 降低所有已出现 Token 的概率，Presence Penalty 只要出现过就扣分，Frequency Penalty 出现次数越多扣分越重。注意 JSON 对象里 <code>&quot;name&quot;</code>、<code>&quot;score&quot;</code> 等必要重复字段会被误伤；RAG 问答开 Presence Penalty 会让模型倾向引入检索内容之外的新词，削弱对证据的忠实度。没有明确调参依据时保留默认值。</p>
 <p><strong>推荐配置（经验值，非硬规则）</strong></p>
-<p>| 场景 | Temperature | Top-p | 其他建议 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| JSON / 结构化输出 | 0 ~ 0.3 | 1.0 | 配合 Strict Mode + 重试策略 |</p>
-<p>| 代码评审 / 技术分析 | 0.4 ~ 0.7 | 0.9 | 结合 CoT Prompt |</p>
-<p>| 多轮对话 | 0.6 ~ 0.8 | 0.9 | 控制历史消息长度 |</p>
-<p>| 创意写作 / 头脑风暴 | 0.8 ~ 1.2 | 0.95 | 接受多样性，做好后处理 |</p>
-<p>| 推理模型 | 查模型文档 | 查模型文档 | 过滤不支持的参数 |</p>
+<div class="tw"><table><thead><tr><th>场景</th><th>Temperature</th><th>Top-p</th><th>其他建议</th></tr></thead><tbody><tr><td>JSON / 结构化输出</td><td>0 ~ 0.3</td><td>1.0</td><td>配合 Strict Mode + 重试策略</td></tr><tr><td>代码评审 / 技术分析</td><td>0.4 ~ 0.7</td><td>0.9</td><td>结合 CoT Prompt</td></tr><tr><td>多轮对话</td><td>0.6 ~ 0.8</td><td>0.9</td><td>控制历史消息长度</td></tr><tr><td>创意写作 / 头脑风暴</td><td>0.8 ~ 1.2</td><td>0.95</td><td>接受多样性，做好后处理</td></tr><tr><td>推理模型</td><td>查模型文档</td><td>查模型文档</td><td>过滤不支持的参数</td></tr></tbody></table></div>
 <p><strong>为什么 T=0 仍不一致</strong>：T=0 通常按贪婪解码处理，即每步选最高分，但结果仍受模型版本和服务端实现影响。常见原因包括：模型版本更新导致底层权重变化；跨区域调用时不同集群可能部署不同版本；服务端解码实现、并行计算和后端配置发生变化。如果 API 支持 <code>seed</code>，可以和固定模型版本、固定 Prompt、固定采样参数一起保存，但 <code>seed</code> 通常只提供尽力而为的可复现性，不保证逐字一致（部分供应商也没有公开 <code>seed</code>）。</p>
 <p><strong>工程补充</strong>：贪婪解码虽然最稳定，但可能更容易陷入重复循环。另外达到 Max Tokens 会直接停止，即使 JSON 还缺右括号，收到 <code>finish_reason=length</code> 应把结果标记为截断、不能交给下游执行；Stop Sequences 与业务文本重合也会截断关键字段。CI/CD 里把真实 LLM 调用留给冒烟测试，需要稳定复现的逻辑测试用 Mock。</p></div>
     <div class="cta-row">

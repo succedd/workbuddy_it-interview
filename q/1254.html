@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -97,12 +106,7 @@
     <div class="card"><h2>题目</h2><p>考察点：cleanup.policy=delete 与 compact 的语义差异及选型。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>两种完全不同的「清理」语义</strong></p>
 <p>Kafka 日志不会永久保存，清理策略由 Topic 的 <code>cleanup.policy</code> 决定：<code>delete</code>（默认）按时间或大小丢弃旧数据，<code>compact</code> 按 key 做细粒度压缩。</p>
-<p>| 维度 | 按时间/大小保留（delete） | 日志压缩（compact） |</p>
-<p>| --- | --- | --- |</p>
-<p>| 粒度 | 粗粒度：整段旧日志按时间或大小丢弃 | 细粒度：按记录删除同 key 的旧版本 |</p>
-<p>| 关键配置 | <code>retention.ms</code> / <code>retention.bytes</code> | <code>cleanup.policy=compact</code> |</p>
-<p>| 结果 | 日志开头旧数据被整段删除，无法重建当前状态 | 保证每个 key 至少保留最后一次已知值 |</p>
-<p>| 适用 | 时间型事件流（日志、埋点、行为流） | 键值型可变数据的变更日志（changelog） |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>按时间/大小保留（delete）</th><th>日志压缩（compact）</th></tr></thead><tbody><tr><td>粒度</td><td>粗粒度：整段旧日志按时间或大小丢弃</td><td>细粒度：按记录删除同 key 的旧版本</td></tr><tr><td>关键配置</td><td><code>retention.ms</code> / <code>retention.bytes</code></td><td><code>cleanup.policy=compact</code></td></tr><tr><td>结果</td><td>日志开头旧数据被整段删除，无法重建当前状态</td><td>保证每个 key 至少保留最后一次已知值</td></tr><tr><td>适用</td><td>时间型事件流（日志、埋点、行为流）</td><td>键值型可变数据的变更日志（changelog）</td></tr></tbody></table></div>
 <p><strong>compact 提供的关键保证</strong></p>
 <ul>
 <li>每个 key <strong>至少保留最后已知值</strong>，下游可据此重建自身状态。</li>

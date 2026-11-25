@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -100,25 +109,10 @@
 <p>所以重点是：<strong>故障现象、怎么发现、怎么处理</strong>。</p>
 <h3>1. 常见硬件故障分类</h3>
 <p>按服务器的主要部件来划分：</p>
-<p>| 硬件部件 | 常见故障 | 典型现象（症状） | 如何发现（排查） | 售后支持怎么处理？ |</p>
-<p>|---|---|---|---|---|</p>
-<p>| <strong>CPU</strong> | 过热、CPU内部错误（MCE） | 系统突然宕机、重启、<code>dmesg</code> 出现 <code>Machine Check Exception</code> 报错 | <code>dmesg</code>、BMC 的 SEL 日志（带外日志） | 带外有 CPU 相关报警就直接报修（记录 SN、槽位等信息） |</p>
-<p>| <strong>内存（内存条）</strong> | ECC 错误、接触不良、内存条损坏 | 随机重启、应用崩溃、系统卡顿。<code>dmesg</code> 有 <code>EDAC</code>、<code>Uncorrected ECC</code> 报错 | <code>dmesg</code>、BMC 日志、带外硬件监控报警 | 非常常见。看到内存 ECC 报警 → 记录故障信息 → 提交硬件报修 |</p>
-<p>| <strong>硬盘（HDD/SSD/NVMe）</strong> | 掉盘、坏道、寿命预警（SMART 预警） | RAID 降级（Degraded）、I/O 超时、读写报错、磁盘无法识别 | <code>smartctl -a</code>、RAID 管理工具（如 <code>storcli</code>、<code>megacli</code>）、<code>dmesg</code>（<code>I/O error</code>） | <strong>预测性故障（Pre-fail）</strong>：提前报修；<strong>掉盘（Failed）</strong>：优先报修，且要关注 RAID 状态 |</p>
-<p>| <strong>RAID 控制器</strong> | RAID 卡故障、缓存故障、BBU（电池）失效 | RAID 组异常、写入变慢、带外报警（缓存写保护） | RAID 管理工具日志、BMC SEL 日志 | 这类报警一般不靠重启能解决，直接报修 |</p>
-<p>| <strong>主板</strong> | PCIe 总线错误、VRM（供电）异常、南桥故障 | 无法开机（亮灯但不自检）、带外（BMC/IPMI）突然失联、频繁莫名重启 | BMC 无法登录、BMC SEL 有大量总线类报错 | 主板类故障判断难，但如果<strong>带外都连不上</strong>、且重启无效，很大概率是主板或供电问题 → 优先报修 |</p>
-<p>| <strong>电源（PSU）</strong> | 电源模块故障、供电异常 | BMC 报警（PSU 故障/冗余丢失）、机器突然断电再重启 | BMC 传感器、带外硬件报警 | 服务器一般是双电源冗余的。如果报 <strong>PSU Failed</strong> 或 <strong>Redundancy Lost</strong>，机器可能还在跑，但必须报修 |</p>
-<p>| <strong>风扇/散热</strong> | 风扇停转、转速过低 | 温度报警（CPU/主板温度过高）、过热保护自动关机 | BMC 传感器（<code>ipmitool sensor</code>）、带外温度报警 | 风扇坏 → 散热出问题 → 可能触发<strong>过热关机</strong>保护。这种是高优先级报修 |</p>
-<p>| <strong>网卡（NIC）</strong> | 网卡掉线、PCIe 错误、端口故障 | 网络突然中断、丢包严重、<code>dmesg</code> 出现 <code>NIC link down</code>、<code>PCIe AER</code> 报错 | <code>dmesg</code>、<code>ethtool</code>、BMC 日志 | 先排查网线（光模块/网线接触），如果排除线缆还是报错 → 报修网卡 |</p>
-<p>| <strong>GPU（GPU 服务器）</strong> | 过热、显存 ECC 错误、掉卡 | AI 训练/推理任务中断、<code>nvidia-smi</code> 报错、驱动报错、BMC 有 GPU 温度报警 | <code>nvidia-smi</code>、<code>dmesg</code>、BMC 硬件报警 | GPU 服务器很常见（尤其是跑大模型）。看到<strong>显存错误、温度过高、设备掉卡</strong>这类，一般直接走硬件报修 |</p>
-<p>| <strong>背板/线缆（SAS/背板）</strong> | 背板接触不良、SAS 线缆松动 | 硬盘突然全部消失、RAID 卡识别不到盘、间歇性掉盘 | <code>dmesg</code>（<code>SAS link error</code>、<code>phy error</code> 等） | 比较容易误判成硬盘坏。排查时会先怀疑线缆，再报修背板 |</p>
+<div class="tw"><table><thead><tr><th>硬件部件</th><th>常见故障</th><th>典型现象（症状）</th><th>如何发现（排查）</th><th>售后支持怎么处理？</th></tr></thead><tbody><tr><td><strong>CPU</strong></td><td>过热、CPU内部错误（MCE）</td><td>系统突然宕机、重启、<code>dmesg</code> 出现 <code>Machine Check Exception</code> 报错</td><td><code>dmesg</code>、BMC 的 SEL 日志（带外日志）</td><td>带外有 CPU 相关报警就直接报修（记录 SN、槽位等信息）</td></tr><tr><td><strong>内存（内存条）</strong></td><td>ECC 错误、接触不良、内存条损坏</td><td>随机重启、应用崩溃、系统卡顿。<code>dmesg</code> 有 <code>EDAC</code>、<code>Uncorrected ECC</code> 报错</td><td><code>dmesg</code>、BMC 日志、带外硬件监控报警</td><td>非常常见。看到内存 ECC 报警 → 记录故障信息 → 提交硬件报修</td></tr><tr><td><strong>硬盘（HDD/SSD/NVMe）</strong></td><td>掉盘、坏道、寿命预警（SMART 预警）</td><td>RAID 降级（Degraded）、I/O 超时、读写报错、磁盘无法识别</td><td><code>smartctl -a</code>、RAID 管理工具（如 <code>storcli</code>、<code>megacli</code>）、<code>dmesg</code>（<code>I/O error</code>）</td><td><strong>预测性故障（Pre-fail）</strong>：提前报修；<strong>掉盘（Failed）</strong>：优先报修，且要关注 RAID 状态</td></tr><tr><td><strong>RAID 控制器</strong></td><td>RAID 卡故障、缓存故障、BBU（电池）失效</td><td>RAID 组异常、写入变慢、带外报警（缓存写保护）</td><td>RAID 管理工具日志、BMC SEL 日志</td><td>这类报警一般不靠重启能解决，直接报修</td></tr><tr><td><strong>主板</strong></td><td>PCIe 总线错误、VRM（供电）异常、南桥故障</td><td>无法开机（亮灯但不自检）、带外（BMC/IPMI）突然失联、频繁莫名重启</td><td>BMC 无法登录、BMC SEL 有大量总线类报错</td><td>主板类故障判断难，但如果<strong>带外都连不上</strong>、且重启无效，很大概率是主板或供电问题 → 优先报修</td></tr><tr><td><strong>电源（PSU）</strong></td><td>电源模块故障、供电异常</td><td>BMC 报警（PSU 故障/冗余丢失）、机器突然断电再重启</td><td>BMC 传感器、带外硬件报警</td><td>服务器一般是双电源冗余的。如果报 <strong>PSU Failed</strong> 或 <strong>Redundancy Lost</strong>，机器可能还在跑，但必须报修</td></tr><tr><td><strong>风扇/散热</strong></td><td>风扇停转、转速过低</td><td>温度报警（CPU/主板温度过高）、过热保护自动关机</td><td>BMC 传感器（<code>ipmitool sensor</code>）、带外温度报警</td><td>风扇坏 → 散热出问题 → 可能触发<strong>过热关机</strong>保护。这种是高优先级报修</td></tr><tr><td><strong>网卡（NIC）</strong></td><td>网卡掉线、PCIe 错误、端口故障</td><td>网络突然中断、丢包严重、<code>dmesg</code> 出现 <code>NIC link down</code>、<code>PCIe AER</code> 报错</td><td><code>dmesg</code>、<code>ethtool</code>、BMC 日志</td><td>先排查网线（光模块/网线接触），如果排除线缆还是报错 → 报修网卡</td></tr><tr><td><strong>GPU（GPU 服务器）</strong></td><td>过热、显存 ECC 错误、掉卡</td><td>AI 训练/推理任务中断、<code>nvidia-smi</code> 报错、驱动报错、BMC 有 GPU 温度报警</td><td><code>nvidia-smi</code>、<code>dmesg</code>、BMC 硬件报警</td><td>GPU 服务器很常见（尤其是跑大模型）。看到<strong>显存错误、温度过高、设备掉卡</strong>这类，一般直接走硬件报修</td></tr><tr><td><strong>背板/线缆（SAS/背板）</strong></td><td>背板接触不良、SAS 线缆松动</td><td>硬盘突然全部消失、RAID 卡识别不到盘、间歇性掉盘</td><td><code>dmesg</code>（<code>SAS link error</code>、<code>phy error</code> 等）</td><td>比较容易误判成硬盘坏。排查时会先怀疑线缆，再报修背板</td></tr></tbody></table></div>
 <h3>2. 按严重程度划分（工作中很实用）</h3>
 <p>在售后支持值班时，优先级特别重要：</p>
-<p>| 优先级 | 故障类型 | 处理建议 |</p>
-<p>|---|---|---|</p>
-<p>| <strong>P0（最高）</strong> | 机器宕机、无法开机、带外失联、过热自动关机 | 立即排查（EVA/VNC 登录尝试）、第一时间报修、同步客户进展 |</p>
-<p>| <strong>P1</strong> | RAID 降级（掉盘）、双电源冗余丢失（Redundancy Lost）、网卡全部中断 | 业务可能没立刻中断，但有<strong>单点风险</strong>，优先报修 |</p>
-<p>| <strong>P2</strong> | 单个风扇转速低、SMART 预测性预警（Pre-fail）、ECC 少量报错 | 还在跑，但有风险。记录、报修、观察监控是否继续恶化 |</p>
+<div class="tw"><table><thead><tr><th>优先级</th><th>故障类型</th><th>处理建议</th></tr></thead><tbody><tr><td><strong>P0（最高）</strong></td><td>机器宕机、无法开机、带外失联、过热自动关机</td><td>立即排查（EVA/VNC 登录尝试）、第一时间报修、同步客户进展</td></tr><tr><td><strong>P1</strong></td><td>RAID 降级（掉盘）、双电源冗余丢失（Redundancy Lost）、网卡全部中断</td><td>业务可能没立刻中断，但有<strong>单点风险</strong>，优先报修</td></tr><tr><td><strong>P2</strong></td><td>单个风扇转速低、SMART 预测性预警（Pre-fail）、ECC 少量报错</td><td>还在跑，但有风险。记录、报修、观察监控是否继续恶化</td></tr></tbody></table></div>
 <h3>3. 售后支持最关心的“信号”</h3>
 <p>你平时做这个岗位时，最能直接判断是硬件故障的<strong>报警信号</strong>：</p>
 <ul>

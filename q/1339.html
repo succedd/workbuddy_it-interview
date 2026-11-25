@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -107,11 +116,7 @@
 <li><strong>Socket</strong>：可跨主机，最通用，但开销最大。</li>
 </ul>
 <p><strong>对比</strong>：</p>
-<p>| 方式 | 速度 | 跨主机 | 备注 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| 共享内存 | 最快 | 否 | 需自行同步 |</p>
-<p>| 管道/消息队列 | 中 | 否 | 内核中转 |</p>
-<p>| Socket | 慢 | 是 | 通用 |</p></div>
+<div class="tw"><table><thead><tr><th>方式</th><th>速度</th><th>跨主机</th><th>备注</th></tr></thead><tbody><tr><td>共享内存</td><td>最快</td><td>否</td><td>需自行同步</td></tr><tr><td>管道/消息队列</td><td>中</td><td>否</td><td>内核中转</td></tr><tr><td>Socket</td><td>慢</td><td>是</td><td>通用</td></tr></tbody></table></div></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1339">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

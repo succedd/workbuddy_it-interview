@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -108,11 +117,7 @@
 <li><strong>ET 边缘触发</strong>：仅在状态从不就绪变为就绪时通知一次，必须一次读/写到 EAGAIN，效率更高但易漏处理。</li>
 </ul>
 <p><strong>对比</strong>：</p>
-<p>| 模型 | FD 上限 | 时间复杂度 | 触发方式 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| select | 1024 | O(n) 轮询 | 水平 |</p>
-<p>| poll | 无硬限 | O(n) 轮询 | 水平 |</p>
-<p>| epoll | 很大 | O(1) | LT/ET |</p></div>
+<div class="tw"><table><thead><tr><th>模型</th><th>FD 上限</th><th>时间复杂度</th><th>触发方式</th></tr></thead><tbody><tr><td>select</td><td>1024</td><td>O(n) 轮询</td><td>水平</td></tr><tr><td>poll</td><td>无硬限</td><td>O(n) 轮询</td><td>水平</td></tr><tr><td>epoll</td><td>很大</td><td>O(1)</td><td>LT/ET</td></tr></tbody></table></div></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1341">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -105,11 +114,7 @@
 <p><strong>怎么监控</strong></p>
 <p><img src="/assets/q/fig-redis-frag.svg" alt="图：碎片化内存页与 activedefrag 整理后对比，以及 mem_fragmentation_ratio 健康区间" loading="lazy"></p>
 <p>用 <code>INFO memory</code> 查看：<code>mem_fragmentation_ratio = used_memory_rss / used_memory</code>，即物理内存除以分配器申请内存。</p>
-<p>| 区间 | 含义 |</p>
-<p>| --- | --- |</p>
-<p>| 约 1.0 ~ 1.5 | 健康区间，正常 |</p>
-<p>| 大于 1.5 | 碎片偏高，存 2G 数据可能占 3G+，需整理 |</p>
-<p>| 小于 1 | 部分内存被换出到 Swap，比碎片更危险 |</p>
+<div class="tw"><table><thead><tr><th>区间</th><th>含义</th></tr></thead><tbody><tr><td>约 1.0 ~ 1.5</td><td>健康区间，正常</td></tr><tr><td>大于 1.5</td><td>碎片偏高，存 2G 数据可能占 3G+，需整理</td></tr><tr><td>小于 1</td><td>部分内存被换出到 Swap，比碎片更危险</td></tr></tbody></table></div>
 <p>注意 rss 与 used_memory 之差还含进程开销、共享库等，不能直接当碎片大小。</p>
 <p><strong>activedefrag 主动整理</strong></p>
 <p>Redis 4.0 起内置主动整理（依赖 jemalloc）：开启 <code>config set activedefrag yes</code> 后，Redis 会把分散的数据<strong>拷贝到新位置、释放出连续的空闲空间归还操作系统</strong>，在不阻塞服务的前提下让内存重新紧凑。触发与限流由四个参数控制：<code>active-defrag-ignore-bytes 500mb</code>（碎片量达 500MB 才启动）、<code>active-defrag-threshold-lower 50</code>（碎片率超 1.5 才启动）、<code>active-defrag-cycle-min 20</code> 与 <code>active-defrag-cycle-max 50</code>（占用 CPU 时间比例上下限，避免影响主线程）。另外，安全重启节点（如集群中先切主从）也能彻底重整内存。</p></div>

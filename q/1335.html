@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -104,12 +113,7 @@
 <li><strong>端口与开销</strong>：HTTP 用 80，HTTPS 用 443，且握手有额外计算与 RTT 开销。</li>
 </ul>
 <p><strong>对比表</strong>：</p>
-<p>| 维度 | HTTP | HTTPS |</p>
-<p>| --- | --- | --- |</p>
-<p>| 端口 | 80 | 443 |</p>
-<p>| 加密 | 无 | 有（TLS） |</p>
-<p>| 身份认证 | 无 | 有（CA 证书） |</p>
-<p>| 性能 | 低延迟 | 握手略慢 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>HTTP</th><th>HTTPS</th></tr></thead><tbody><tr><td>端口</td><td>80</td><td>443</td></tr><tr><td>加密</td><td>无</td><td>有（TLS）</td></tr><tr><td>身份认证</td><td>无</td><td>有（CA 证书）</td></tr><tr><td>性能</td><td>低延迟</td><td>握手略慢</td></tr></tbody></table></div>
 <p><strong>HTTPS 不是绝对安全</strong>：它只保护传输过程；若证书被伪造/私钥泄露、或客户端信任了恶意 CA、或业务层有 XSS/逻辑漏洞，仍会出问题。此外不解决服务端本身被攻破的风险。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1335">练这道题</a>

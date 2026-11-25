@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -101,11 +110,7 @@
 <p><strong>2. 快速重传</strong>：解决「只能干等超时、恢复太慢」的问题。TCP 使用累积确认，接收方收到乱序数据时不会推进 ACK 号，而是重复回复同一个旧 ACK（duplicate ACK）。发送方连续收到 3 个 duplicate ACK，就认为该段大概率丢失，不等 RTO 直接重传。之所以要 3 个而不是 1 个，是因为短暂乱序也可能造成重复 ACK，3 个是「尽快恢复」与「避免误判乱序」之间的折中。</p>
 <p><strong>3. SACK（选择性确认）</strong>：解决多段丢包时的信息盲区。普通 ACK 只能表达「某序号之前都收到了」，无法表达「后面的某些区间虽然乱序但已收到」。SACK 在 TCP 选项里携带已收到的非连续字节区间，发送方只重传真正缺失的部分。例如发送 100、200、300、400 四段，100 丢失，接收方回 ACK=100 且 SACK 报告已收 200-400，发送方就只需重传 100。SACK 需要三次握手时通过 SACK-Permitted 选项协商，每个 block 占 8 字节，最多携带 4 个。</p>
 <p><strong>对比总结</strong>：</p>
-<p>| 机制 | 触发条件 | 解决的问题 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 超时重传 | 超过 RTO 未收到 ACK | 兜底处理丢包 |</p>
-<p>| 快速重传 | 3 个重复 ACK | 不等超时，尽快恢复 |</p>
-<p>| SACK | ACK 携带已收区间 | 只重传真正缺失的部分 |</p>
+<div class="tw"><table><thead><tr><th>机制</th><th>触发条件</th><th>解决的问题</th></tr></thead><tbody><tr><td>超时重传</td><td>超过 RTO 未收到 ACK</td><td>兜底处理丢包</td></tr><tr><td>快速重传</td><td>3 个重复 ACK</td><td>不等超时，尽快恢复</td></tr><tr><td>SACK</td><td>ACK 携带已收区间</td><td>只重传真正缺失的部分</td></tr></tbody></table></div>
 <p>此外还有 D-SACK（重复 SACK），它报告「哪些数据被重复收到了」，帮助发送方识别误重传：比如原始包其实已到达、只是 ACK 丢失或网络乱序。D-SACK 不引入新选项，只是复用 SACK block。回答时先讲三者的定位（兜底 → 提速 → 精确），再展开机制细节，最后带一句 D-SACK 是加分项。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1309">练这道题</a>

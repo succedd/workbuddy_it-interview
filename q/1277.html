@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -96,11 +105,7 @@
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip tag">LoRA</span><span class="chip tag">参数记忆</span><span class="chip tag">Machine Unlearning</span><span class="chip tag">RAG与微调</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对微调本质与参数记忆风险的理解，以及记忆存储形式的选型判断。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Agent 记忆按存储位置和表征形式可以分成三类，这个视角能帮我们看清微调在记忆体系里的位置。</p>
-<p>| 存储形式 | 说明 | 典型实现 |</p>
-<p>| --- | --- | --- |</p>
-<p>| Token 级记忆 | 以自然语言或离散符号存储在外部数据库 | 向量库中的文本块、结构化 JSON |</p>
-<p>| 参数化记忆 | 把信息编码进模型参数中 | 预训练知识、LoRA 适配器、SFT 微调 |</p>
-<p>| 潜在记忆 | 以隐式形式承载在模型内部表示中 | KV Cache、激活值、Hidden States |</p>
+<div class="tw"><table><thead><tr><th>存储形式</th><th>说明</th><th>典型实现</th></tr></thead><tbody><tr><td>Token 级记忆</td><td>以自然语言或离散符号存储在外部数据库</td><td>向量库中的文本块、结构化 JSON</td></tr><tr><td>参数化记忆</td><td>把信息编码进模型参数中</td><td>预训练知识、LoRA 适配器、SFT 微调</td></tr><tr><td>潜在记忆</td><td>以隐式形式承载在模型内部表示中</td><td>KV Cache、激活值、Hidden States</td></tr></tbody></table></div>
 <p>这三种形式并不完全割裂。MemOS 的“记忆立方体”支持从纯文本记忆、激活记忆（KV Cache）到参数记忆的动态流转：热记忆放到更近的位置，冷记忆用更重的方式固化。典型梯度是：</p>
 <pre><code class="language-text">纯文本记忆 --(高频使用)--&gt; 激活记忆(KV Cache) --(长期固化)--&gt; 参数记忆(LoRA)
      ↑                                                          │

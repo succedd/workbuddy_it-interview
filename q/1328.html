@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -99,12 +108,7 @@
 <p><img src="/assets/q/fig-ws-sse.svg" alt="图：WebSocket 握手升级报文流程与 SSE 对比" loading="lazy"></p>
 <p><strong>SSE（Server-Sent Events）</strong>：基于普通 HTTP 长连接，<code>EventSource</code> 只能<strong>服务器→客户端单向</strong>推送文本事件流。优点：零协议改造、普通网关/代理直接可用、<strong>浏览器自动重连</strong>并携带 Last-Event-ID 续传。</p>
 <p><strong>对比选型</strong>：</p>
-<p>| 维度 | WebSocket | SSE |</p>
-<p>|---|---|---|</p>
-<p>| 通信方向 | 双向全双工 | 单向推送 |</p>
-<p>| 数据格式 | 文本 + 二进制 | 仅文本 |</p>
-<p>| 断线重连 | 需自行实现心跳/重连 | 浏览器内置 |</p>
-<p>| 基础设施 | 网关需支持 Upgrade | 普通 HTTP 即可 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>WebSocket</th><th>SSE</th></tr></thead><tbody><tr><td>通信方向</td><td>双向全双工</td><td>单向推送</td></tr><tr><td>数据格式</td><td>文本 + 二进制</td><td>仅文本</td></tr><tr><td>断线重连</td><td>需自行实现心跳/重连</td><td>浏览器内置</td></tr><tr><td>基础设施</td><td>网关需支持 Upgrade</td><td>普通 HTTP 即可</td></tr></tbody></table></div>
 <p><strong>怎么选</strong>：只需服务器推送（站内通知、行情、日志流、AI 流式输出）→ <strong>SSE 更轻</strong>；需要双向实时（聊天、协同编辑、联机游戏）→ <strong>WebSocket</strong>；更复杂的需求（不可靠传输、乱序、多条流）可关注 WebTransport——MDN 将其定位为 WebSocket 的演进方向。两个实践细节：WebSocket 不支持背压，消费不过来会堆内存；页面有未关闭的 WebSocket 连接时可能不进入 bfcache，用完应 <code>close()</code>。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1328">练这道题</a>

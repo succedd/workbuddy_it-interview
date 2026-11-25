@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -97,14 +106,7 @@
     <div class="card"><h2>题目</h2><p>考察点：RAG 召回侧的优化手段，以及候选池、重排和上下文三层配额的分工。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：用户输入往往缺少检索需要的对象、时间和范围。例如“这个报错咋整”没说明报错码和服务，“钱能退吗”没说明订单状态。Query Rewrite 要补出可检索的表达，但<strong>不能替用户改变问题的含义</strong>。</p>
 <p><strong>六种常见策略</strong></p>
-<p>| 策略 | 适用场景 | 例子 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 规范化改写 | 口语化、缩写、上下文缺失 | “钱能退吗”改成“退款政策、退款条件、退款流程” |</p>
-<p>| Multi-Query | 表达可能有多种说法 | 同时检索“取消订阅”“关闭自动续费”“停止会员计划” |</p>
-<p>| Query Decomposition | 问题包含多个子问题 | 把“对比 Stripe 和 Square 的手续费和争议处理”拆成 4 个子问题 |</p>
-<p>| Step-back Query | 问题太细、缺背景 | 先检索“订阅计费规则”，再回答具体取消问题 |</p>
-<p>| HyDE | 查询太短、和文档形态差异大 | 先生成假设答案，再用假设答案的向量检索真实文档 |</p>
-<p>| Self-Query | 问题里包含过滤条件 | 从“查 2025 年 Java 相关政策”中提取年份和类别过滤 |</p>
+<div class="tw"><table><thead><tr><th>策略</th><th>适用场景</th><th>例子</th></tr></thead><tbody><tr><td>规范化改写</td><td>口语化、缩写、上下文缺失</td><td>“钱能退吗”改成“退款政策、退款条件、退款流程”</td></tr><tr><td>Multi-Query</td><td>表达可能有多种说法</td><td>同时检索“取消订阅”“关闭自动续费”“停止会员计划”</td></tr><tr><td>Query Decomposition</td><td>问题包含多个子问题</td><td>把“对比 Stripe 和 Square 的手续费和争议处理”拆成 4 个子问题</td></tr><tr><td>Step-back Query</td><td>问题太细、缺背景</td><td>先检索“订阅计费规则”，再回答具体取消问题</td></tr><tr><td>HyDE</td><td>查询太短、和文档形态差异大</td><td>先生成假设答案，再用假设答案的向量检索真实文档</td></tr><tr><td>Self-Query</td><td>问题里包含过滤条件</td><td>从“查 2025 年 Java 相关政策”中提取年份和类别过滤</td></tr></tbody></table></div>
 <p><strong>一条关键工程约束</strong>：无论是否使用 LangChain 的 MultiQueryRetriever、SelfQueryRetriever 等组件，<strong>原始 Query 都应和改写结果一起参与召回并融合</strong>。改写模型把“退款”错误理解为“取消订阅”时，原始 Query 仍能保留正确的召回入口，相当于给改写加了一层保险。</p>
 <p><strong>Top-K 不是越大越好</strong></p>
 <p>扩大 Top-K 会提高正确证据进入候选池的机会，同时也会拉高 Rerank 的输入量、Prompt Token 和噪声比例。正确做法是把三层上限分开设：</p>

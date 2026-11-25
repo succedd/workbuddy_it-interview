@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -103,17 +112,7 @@
 <li><strong>输出非确定</strong>：即使 Prompt 一样，第二次返回也可能和第一次不同。</li>
 </ul>
 <p><strong>错误分类与处理</strong></p>
-<p>| 错误类型 | 示例 | 是否重试 | 处理方式 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| 网络瞬断 | 连接重置、DNS 抖动、读超时 | 可以 | 指数退避 + 抖动，限制最大次数 |</p>
-<p>| 供应商 5xx | 500、502、503、504 | 可以 | 短暂重试，超阈值切换模型或降级 |</p>
-<p>| 供应商过载 | Anthropic 529、overloaded | 可以 | 慢重试，必要时熔断该供应商 |</p>
-<p>| 429 限流 | RPM、TPM、RPD、并发超限 | 谨慎 | 优先看 <code>Retry-After</code> 和限流头，排队或降级 |</p>
-<p>| 流式中断 | 未收到正常结束事件 | 视场景 | 用户可见任务不自动重试，后台任务可幂等重试 |</p>
-<p>| 400 参数错误 | Schema 不合法、上下文超限 | 不建议 | 修请求，不要重试同一 payload |</p>
-<p>| 401/403 | API Key 无效、权限不足 | 不建议 | 告警并停用对应 Key |</p>
-<p>| 安全拒答 | 内容策略拒绝 | 不建议 | 进入业务拒答流程 |</p>
-<p>| 解析失败 | JSON 不完整、字段类型错误 | 有限重试 | 带失败原因二次修复，最多 1~2 次 |</p>
+<div class="tw"><table><thead><tr><th>错误类型</th><th>示例</th><th>是否重试</th><th>处理方式</th></tr></thead><tbody><tr><td>网络瞬断</td><td>连接重置、DNS 抖动、读超时</td><td>可以</td><td>指数退避 + 抖动，限制最大次数</td></tr><tr><td>供应商 5xx</td><td>500、502、503、504</td><td>可以</td><td>短暂重试，超阈值切换模型或降级</td></tr><tr><td>供应商过载</td><td>Anthropic 529、overloaded</td><td>可以</td><td>慢重试，必要时熔断该供应商</td></tr><tr><td>429 限流</td><td>RPM、TPM、RPD、并发超限</td><td>谨慎</td><td>优先看 <code>Retry-After</code> 和限流头，排队或降级</td></tr><tr><td>流式中断</td><td>未收到正常结束事件</td><td>视场景</td><td>用户可见任务不自动重试，后台任务可幂等重试</td></tr><tr><td>400 参数错误</td><td>Schema 不合法、上下文超限</td><td>不建议</td><td>修请求，不要重试同一 payload</td></tr><tr><td>401/403</td><td>API Key 无效、权限不足</td><td>不建议</td><td>告警并停用对应 Key</td></tr><tr><td>安全拒答</td><td>内容策略拒绝</td><td>不建议</td><td>进入业务拒答流程</td></tr><tr><td>解析失败</td><td>JSON 不完整、字段类型错误</td><td>有限重试</td><td>带失败原因二次修复，最多 1~2 次</td></tr></tbody></table></div>
 <p><strong>退避公式与两条硬约束</strong></p>
 <pre><code class="language-text">sleep = min(maxDelay, baseDelay * 2^retryCount) + random(0, jitter)</code></pre>
 <p>抖动用来避免所有请求同时重试、把刚恢复的系统再次打进限流。生产里还必须加最大重试次数（通常 2~3 次足够）和总体截止时间（例如用户请求 15 秒 SLA，到点就失败，不要因为重试拖成 1 分钟）。</p>

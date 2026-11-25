@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -106,12 +115,7 @@
 <li>适用：单元测试、底层逻辑验证。</li>
 </ul>
 <p><strong>核心区别</strong>：</p>
-<p>| 维度 | 黑盒 | 白盒 |</p>
-<p>|---|---|---|</p>
-<p>| 依据 | 需求/规格 | 源代码 |</p>
-<p>| 视角 | 用户/功能 | 实现/逻辑 |</p>
-<p>| 擅长发现 | 需求遗漏、接口错误 | 逻辑错误、死代码、分支遗漏 |</p>
-<p>| 成本 | 高覆盖易冗余 | 贴近代码、易写单测 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>黑盒</th><th>白盒</th></tr></thead><tbody><tr><td>依据</td><td>需求/规格</td><td>源代码</td></tr><tr><td>视角</td><td>用户/功能</td><td>实现/逻辑</td></tr><tr><td>擅长发现</td><td>需求遗漏、接口错误</td><td>逻辑错误、死代码、分支遗漏</td></tr><tr><td>成本</td><td>高覆盖易冗余</td><td>贴近代码、易写单测</td></tr></tbody></table></div>
 <p><strong>灰度区</strong>：集成测试可较白盒（mock 外部依赖校验交互），验收测试天然黑盒。实践中二者互补：白盒保逻辑、黑盒保行为。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/573">练这道题</a>

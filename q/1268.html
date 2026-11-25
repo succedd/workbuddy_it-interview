@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -109,14 +118,7 @@
 <p><strong>第三件事：同步链路与变更检测</strong></p>
 <p>链路为：源系统 → 变更检测 → 消息队列 → 解析/切分/哈希 → 去重 → Embedding → 元数据库 + 向量库 + 全文索引 → 监控告警。变更检测有事件驱动、CDC（监听 binlog）和定时轮询三种。<strong>生产里更稳的是事件驱动 + 轮询兜底</strong>，再用幂等 Key、乱序处理和死信队列保证可靠。</p>
 <p><strong>第四件事：增量更新 vs 全量重建</strong></p>
-<p>| 维度 | 增量更新 | 全量重建 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 触发条件 | 文档变更事件 | 定时任务或手动触发 |</p>
-<p>| 覆盖范围 | 仅变化的文档 | 整个知识库 |</p>
-<p>| 计算成本 | 低 | 高 |</p>
-<p>| 更新延迟 | 低，可近实时 | 高，可能需要数小时 |</p>
-<p>| 适用场景 | 日常变更、高频更新 | 模型升级、策略调整、故障恢复 |</p>
-<p>| 主要风险 | 变更漏检导致数据陈旧 | 占用额外算力；切换不完整时影响服务 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>增量更新</th><th>全量重建</th></tr></thead><tbody><tr><td>触发条件</td><td>文档变更事件</td><td>定时任务或手动触发</td></tr><tr><td>覆盖范围</td><td>仅变化的文档</td><td>整个知识库</td></tr><tr><td>计算成本</td><td>低</td><td>高</td></tr><tr><td>更新延迟</td><td>低，可近实时</td><td>高，可能需要数小时</td></tr><tr><td>适用场景</td><td>日常变更、高频更新</td><td>模型升级、策略调整、故障恢复</td></tr><tr><td>主要风险</td><td>变更漏检导致数据陈旧</td><td>占用额外算力；切换不完整时影响服务</td></tr></tbody></table></div>
 <p>全量重建通常用于：Embedding 模型升级（硬需求）、Chunk 策略调整、数据结构变更、严重故障恢复、定期健康维护（部分向量库高频删除后会留下 tombstone 和碎片）。</p>
 <p><strong>第五件事：灰度切换与回滚</strong></p>
 <p>用索引别名避免中断：查询服务只访问别名 <code>prod_index</code>（指向 <code>index_v1</code>）→ 后台构建并验证 <code>index_v2</code> → 别名切到 <code>index_v2</code> → 保留旧索引约 7 天用于回滚 → 确认后删除。Embedding 升级按“新索引重建 → 新旧并行对比召回率与答案质量 → 切流 → 保留旧索引 → 删除”执行，不要原地改。</p>

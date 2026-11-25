@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -100,17 +109,7 @@
 <p><strong>二、扩展操作码</strong></p>
 <p>为在指令字长固定下兼顾「指令条数」与「地址码位数」，常采用扩展操作码：用短操作码表示常用指令，把剩余编码空间让给地址码；用长操作码表示不常用指令。例如 4 位操作码可设计为 15 条三地址 + 15 条二地址 + 15 条一地址 + 16 条零地址（即 1111 作为扩展标志）。</p>
 <p><strong>三、常见寻址方式对比</strong>（EA 表示有效地址）：</p>
-<p>| 寻址方式 | 有效地址 EA | 特点 | 典型用途 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| 立即寻址 | 操作数在指令中（无 EA） | 取指即得，速度快；但操作数位数受指令长度限制 | 赋常数 |</p>
-<p>| 直接寻址 | EA = A | 简单；寻址范围受 A 的位数限制 | 访问固定变量 |</p>
-<p>| 间接寻址 | EA = (A) | 可扩大寻址范围；但需多次访存，较慢 | 指针、动态地址 |</p>
-<p>| 寄存器寻址 | 操作数在 Ri 中 | 不访存、速度快、指令字短 | 高频操作数 |</p>
-<p>| 寄存器间接寻址 | EA = (Ri) | 既快又能扩大寻址范围 | 数组遍历 |</p>
-<p>| 基址寻址 | EA = (BR) + A | 面向系统，BR 不变、A 变，便于程序浮动/重定位 | 多道程序 |</p>
-<p>| 变址寻址 | EA = (IX) + A | 面向用户，IX 可变、A 为基址，便于数组/循环 | 循环、数组 |</p>
-<p>| 相对寻址 | EA = (PC) + A | 转移地址相对 PC，生成与位置无关代码 | 转移指令 |</p>
-<p>| 堆栈寻址 | EA = 栈顶 (SP) | 操作数隐含在栈顶，指令短 | 表达式求值 |</p>
+<div class="tw"><table><thead><tr><th>寻址方式</th><th>有效地址 EA</th><th>特点</th><th>典型用途</th></tr></thead><tbody><tr><td>立即寻址</td><td>操作数在指令中（无 EA）</td><td>取指即得，速度快；但操作数位数受指令长度限制</td><td>赋常数</td></tr><tr><td>直接寻址</td><td>EA = A</td><td>简单；寻址范围受 A 的位数限制</td><td>访问固定变量</td></tr><tr><td>间接寻址</td><td>EA = (A)</td><td>可扩大寻址范围；但需多次访存，较慢</td><td>指针、动态地址</td></tr><tr><td>寄存器寻址</td><td>操作数在 Ri 中</td><td>不访存、速度快、指令字短</td><td>高频操作数</td></tr><tr><td>寄存器间接寻址</td><td>EA = (Ri)</td><td>既快又能扩大寻址范围</td><td>数组遍历</td></tr><tr><td>基址寻址</td><td>EA = (BR) + A</td><td>面向系统，BR 不变、A 变，便于程序浮动/重定位</td><td>多道程序</td></tr><tr><td>变址寻址</td><td>EA = (IX) + A</td><td>面向用户，IX 可变、A 为基址，便于数组/循环</td><td>循环、数组</td></tr><tr><td>相对寻址</td><td>EA = (PC) + A</td><td>转移地址相对 PC，生成与位置无关代码</td><td>转移指令</td></tr><tr><td>堆栈寻址</td><td>EA = 栈顶 (SP)</td><td>操作数隐含在栈顶，指令短</td><td>表达式求值</td></tr></tbody></table></div>
 <p><strong>四、结论</strong>：寻址方式的选择本质是「寻址范围、速度、灵活性」的权衡；现代 CISC/RISC 通常组合使用寄存器寻址、基址/变址、相对寻址等以满足高效访存需求。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1380">练这道题</a>

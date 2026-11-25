@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -103,11 +112,7 @@
 <li><strong>binlog（归档日志，Server 层）</strong>：记录所有「逻辑修改（SQL 或行事件）」，用于主从复制（从库重放）和时间点恢复（PITR）。</li>
 </ul>
 <h4>核心区别对比表</h4>
-<p>| 日志 | 所属层 | 类型 | 主要用途 | 是否循环写 |</p>
-<p>| --- | --- | --- | --- | --- |</p>
-<p>| redo log | InnoDB | 物理日志(页修改) | 崩溃恢复、保证持久性 | 循环写、固定大小 |</p>
-<p>| undo log | InnoDB | 逻辑回滚信息 | 回滚、MVCC | 事务结束可清理 |</p>
-<p>| binlog | Server | 逻辑日志(SQL/行) | 主从复制、备份恢复 | 追加写、不循环 |</p>
+<div class="tw"><table><thead><tr><th>日志</th><th>所属层</th><th>类型</th><th>主要用途</th><th>是否循环写</th></tr></thead><tbody><tr><td>redo log</td><td>InnoDB</td><td>物理日志(页修改)</td><td>崩溃恢复、保证持久性</td><td>循环写、固定大小</td></tr><tr><td>undo log</td><td>InnoDB</td><td>逻辑回滚信息</td><td>回滚、MVCC</td><td>事务结束可清理</td></tr><tr><td>binlog</td><td>Server</td><td>逻辑日志(SQL/行)</td><td>主从复制、备份恢复</td><td>追加写、不循环</td></tr></tbody></table></div>
 <p><strong>两阶段提交</strong>：为保证 redo log 与 binlog 一致性，事务提交采用 prepare → 写 binlog → commit 的两阶段提交，避免主从数据不一致。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1346">练这道题</a>

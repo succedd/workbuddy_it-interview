@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -95,19 +104,19 @@
     <h1>百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">MLOps工程师</span><span class="chip">SRE站点可靠性工程师</span><span class="chip tag">百度百舸</span><span class="chip tag">开发机</span><span class="chip tag">ImagePullBackOff</span><span class="chip tag">镜像拉取</span><span class="chip tag">nvcr.io</span><span class="chip tag">CCR</span></div>
     <div class="card"><h2>题目</h2><p>场景：在百舸控制台创建开发机，自定义镜像地址填写 NVIDIA NGC 公共镜像 nvcr.io/nvidia/isaac-lab:3.0.0。进度依次为创建中、排队中、部署中（等待存储挂载中），随后提示「发生过拉取镜像失败，网络异常」，近 2 小时仍未启动。用户反馈「开发机启动很慢」。请说明排查思路、根因判断和处理方案。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><h4>先给结论</h4>
 <ul>
 <li>这不是普通的启动慢。调度和存储都已完成，卡点在 main 容器拉取镜像：Pod 一直 Pending，main 容器处于 ImagePullBackOff，反复「拉取、失败、退避、再拉取」。</li>
 <li>镜像来自海外的 nvcr.io，北京地域节点访问国际网络慢或不稳定；Isaac Lab 这类仿真镜像体积通常较大，进一步放大了超时概率。</li>
 </ul>
-<p><strong>按链路逐段排除</strong></p>
+<h4>按链路逐段排除</h4>
 <ul>
-<li>调度：Pod 条件 <code>PodScheduled=True</code>，排除资源不足或排队。</li>
-<li>初始化：sidecar init 容器已 Completed，说明节点和 Pod 基础环境正常。</li>
-<li>存储：存储诊断无异常，CSI 日志出现 <code>NodePublishVolume ... volume mounted</code>，排除 PFS 挂载问题。界面上「等待存储挂载中」只是更早阶段的状态。</li>
-<li>镜像：main 容器 <code>waiting.reason=ImagePullBackOff</code>，消息为 <code>Back-off pulling image &quot;nvcr.io/nvidia/isaac-lab:3.0.0&quot;</code>；事件持续交替出现 <code>Pulling</code> 和 <code>BackOff</code>。</li>
+<li><strong>调度</strong>：Pod 条件 <code>PodScheduled=True</code>，排除资源不足或排队。</li>
+<li><strong>初始化</strong>：sidecar init 容器已 Completed，说明节点和 Pod 基础环境正常。</li>
+<li><strong>存储</strong>：存储诊断无异常，CSI 日志出现 <code>NodePublishVolume ... volume mounted</code>，排除 PFS 挂载问题。界面上「等待存储挂载中」只是更早阶段的状态。</li>
+<li><strong>镜像</strong>：main 容器 <code>waiting.reason=ImagePullBackOff</code>，消息为 <code>Back-off pulling image &quot;nvcr.io/nvidia/isaac-lab:3.0.0&quot;</code>；事件持续交替出现 <code>Pulling</code> 和 <code>BackOff</code>。</li>
 </ul>
-<p><strong>区分具体失败原因</strong></p>
+<h4>区分具体失败原因</h4>
 <ul>
 <li>通用的 Pulling/BackOff 事件不够，要找底层报错：控制台事件页、<code>kubectl describe pod</code> 的 Events，或在节点上用 <code>crictl pull &lt;镜像&gt;</code> 复现。</li>
 <li><code>manifest unknown</code> / <code>not found</code>：镜像名或 tag 不存在，改成 NGC 上实际存在的 tag。</li>
@@ -115,13 +124,13 @@
 <li><code>i/o timeout</code> / <code>TLS handshake timeout</code> / <code>context deadline exceeded</code>：网络到海外仓库不可用或太慢。</li>
 <li>本例只看到通用事件，网络问题是结合海外仓库、大镜像和长时间退避得出的高概率判断，仍应用底层报错坐实。</li>
 </ul>
-<p><strong>解决方案</strong></p>
+<h4>解决方案</h4>
 <ul>
-<li>推荐：把镜像转存到国内可达的仓库，例如百度智能云 CCR。可在有外网的机器上 <code>docker pull</code>、<code>docker tag</code>、<code>docker push</code> 到 CCR，或使用仓库的镜像同步能力。</li>
-<li>回到百舸控制台：开发机 → 实例列表 → 选择实例 → 修改镜像，填写 CCR 地址后重新部署。私有仓库要同时配置访问凭据。</li>
-<li>不建议一直等待退避重试：链路偶尔恢复时可能成功，但耗时不可预期，也会继续占用实例资源。</li>
+<li><strong>推荐</strong>：把镜像转存到国内可达的仓库，例如百度智能云 CCR。可在有外网的机器上 <code>docker pull</code>、<code>docker tag</code>、<code>docker push</code> 到 CCR，或使用仓库的镜像同步能力。</li>
+<li><strong>回到百舸控制台</strong>：开发机 → 实例列表 → 选择实例 → 修改镜像，填写 CCR 地址后重新部署。私有仓库要同时配置访问凭据。</li>
+<li><strong>不建议一直等待退避重试</strong>：链路偶尔恢复时可能成功，但耗时不可预期，也会继续占用实例资源。</li>
 </ul>
-<p><strong>预防</strong></p>
+<h4>预防</h4>
 <ul>
 <li>nvcr.io、docker.io 等海外大镜像先同步到国内仓库，再给开发机或训练任务使用。</li>
 <li>固定 tag 和镜像版本，避免使用不存在的 tag 或 latest 漂移。</li>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -95,14 +104,7 @@
     <h1>TCP 和 UDP 有什么区别？分别适用什么场景？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">网络工程师</span><span class="chip">游戏服务端工程师</span><span class="chip tag">TCP</span><span class="chip tag">UDP</span><span class="chip tag">计算机网络</span></div>
     <div class="card"><h2>题目</h2><p>请从连接、可靠性、有序性、速度、头部开销等方面对比 TCP 与 UDP，并举例典型应用。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p>| 维度 | TCP | UDP |</p>
-<p>|---|---|---|</p>
-<p>| 连接 | 面向连接（三次握手） | 无连接，直接发 |</p>
-<p>| 可靠性 | 确认重传、不丢不重 | 尽力而为，可能丢包乱序 |</p>
-<p>| 有序性 | 按序交付 | 不保证 |</p>
-<p>| 速度/时延 | 较慢（握手+确认开销） | 快、时延低 |</p>
-<p>| 头部 | 20 字节起 | 固定 8 字节 |</p>
-<p>| 模式 | 一对一 | 支持一对一、一对多（广播/组播） |</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><div class="tw"><table><thead><tr><th>维度</th><th>TCP</th><th>UDP</th></tr></thead><tbody><tr><td>连接</td><td>面向连接（三次握手）</td><td>无连接，直接发</td></tr><tr><td>可靠性</td><td>确认重传、不丢不重</td><td>尽力而为，可能丢包乱序</td></tr><tr><td>有序性</td><td>按序交付</td><td>不保证</td></tr><tr><td>速度/时延</td><td>较慢（握手+确认开销）</td><td>快、时延低</td></tr><tr><td>头部</td><td>20 字节起</td><td>固定 8 字节</td></tr><tr><td>模式</td><td>一对一</td><td>支持一对一、一对多（广播/组播）</td></tr></tbody></table></div>
 <p><strong>TCP 适用</strong>：要求完整正确的场景——网页（HTTP）、文件传输（FTP）、邮件（SMTP）、数据库连接、SSH。</p>
 <p><strong>UDP 适用</strong>：要求实时、可容忍少量丢失的场景——音视频通话（WebRTC/RTP）、直播、DNS 查询（一问一答快速）、DHCP、游戏同步（即时回包，丢了用最新状态补偿）、QUIC（HTTP/3 底层，基于 UDP 自研可靠传输）。</p>
 <p><strong>一句话</strong>：TCP 拿时延换可靠，UDP 拿可靠换时延与灵活——很多&quot;基于 UDP 的可靠传输&quot;（QUIC、KCP）正是绕开内核 TCP 的局限做的应用层取舍。</p></div>

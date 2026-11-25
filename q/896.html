@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -102,12 +111,7 @@
 <li><strong>幻读</strong>：同一事务内两次<strong>范围查询</strong>返回的行数不同（别人插入/删除了符合条件的行），针对 INSERT/DELETE。</li>
 </ul>
 <p><strong>四种隔离级别</strong>（由低到高）：</p>
-<p>| 隔离级别 | 脏读 | 不可重复读 | 幻读 |</p>
-<p>|---|---|---|---|</p>
-<p>| 读未提交 READ UNCOMMITTED | ✗ | ✗ | ✗ |</p>
-<p>| 读已提交 READ COMMITTED | ✓ | ✗ | ✗ |</p>
-<p>| 可重复读 REPEATABLE READ | ✓ | ✓ | ✗* |</p>
-<p>| 串行化 SERIALIZABLE | ✓ | ✓ | ✓ |</p>
+<div class="tw"><table><thead><tr><th>隔离级别</th><th>脏读</th><th>不可重复读</th><th>幻读</th></tr></thead><tbody><tr><td>读未提交 READ UNCOMMITTED</td><td>✗</td><td>✗</td><td>✗</td></tr><tr><td>读已提交 READ COMMITTED</td><td>✓</td><td>✗</td><td>✗</td></tr><tr><td>可重复读 REPEATABLE READ</td><td>✓</td><td>✓</td><td>✗*</td></tr><tr><td>串行化 SERIALIZABLE</td><td>✓</td><td>✓</td><td>✓</td></tr></tbody></table></div>
 <p><strong>MySQL 默认是可重复读（RR）</strong>。InnoDB 在 RR 下通过 <strong>MVCC 快照读</strong> + <strong>临键锁（Next-Key Lock）锁定当前读的范围</strong>，在很大程度上防止了幻读（InnoDB 的 RR 已满足大多数场景，故不选 RC；说&quot;完全杜绝&quot;则不准确）。</p>
 <blockquote>注：SQL 标准里 RR 不防幻读，是 InnoDB 通过 MVCC+间隙锁额外做到了，这是常见追问点。</blockquote></div>
     <div class="cta-row">

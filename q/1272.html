@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -105,14 +114,7 @@
 <p><strong>Multi-Agent</strong></p>
 <p>任务能拆成规划、执行、验收等相对独立职责时使用。Orchestrator-Subagent 模式由编排 Agent 制定全局计划、分发任务，子 Agent 并行或串行执行，再由编排层汇总；需要辩论、评审或相互验证时用 Peer-to-Peer 模式。<strong>收益</strong>是并行执行、单个子任务失败未必阻断整体；<strong>代价</strong>是通信、协调和调试成本都会上升，Token 消耗增加，落地还要处理任务契约、共享状态、并行写冲突、Worker 接管和检查点恢复。生产里不能盲目上多 Agent。</p>
 <p><strong>选型参考</strong></p>
-<p>| 场景特征 | 推荐方向 | 代价 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 执行路径可提前确定，节点需要 LLM | AI 工作流（Graph） | 稳定可观测，前期设计成本高 |</p>
-<p>| 执行路径不确定，需要动态规划 | ReAct | 灵活，Token 消耗高，调试难 |</p>
-<p>| 任务很长，步骤多但结构清晰 | Plan-and-Execute | 不易迷路，动态调整弱 |</p>
-<p>| 输出质量要求高，允许多轮迭代 | 叠加 Reflection | 与 ReAct/P&amp;E 配合用，不单独用 |</p>
-<p>| 任务天然可拆成多个专业角色 | Multi-Agent | 通信和调试成本翻倍 |</p>
-<p>| 长任务 + 部分子任务不可预测 | Agentic Workflows | 全局 Workflow + 局部 ReAct 嵌套 |</p>
+<div class="tw"><table><thead><tr><th>场景特征</th><th>推荐方向</th><th>代价</th></tr></thead><tbody><tr><td>执行路径可提前确定，节点需要 LLM</td><td>AI 工作流（Graph）</td><td>稳定可观测，前期设计成本高</td></tr><tr><td>执行路径不确定，需要动态规划</td><td>ReAct</td><td>灵活，Token 消耗高，调试难</td></tr><tr><td>任务很长，步骤多但结构清晰</td><td>Plan-and-Execute</td><td>不易迷路，动态调整弱</td></tr><tr><td>输出质量要求高，允许多轮迭代</td><td>叠加 Reflection</td><td>与 ReAct/P&amp;E 配合用，不单独用</td></tr><tr><td>任务天然可拆成多个专业角色</td><td>Multi-Agent</td><td>通信和调试成本翻倍</td></tr><tr><td>长任务 + 部分子任务不可预测</td><td>Agentic Workflows</td><td>全局 Workflow + 局部 ReAct 嵌套</td></tr></tbody></table></div>
 <p><strong>判断标准</strong>：能提前写清楚执行路径就用 Workflow，写不出来再上 Agent。很多人觉得任务“路径不确定”，其实是需求没拆清楚——认真拆一遍后往往会发现大部分场景是“LLM 在固定节点里做生成或判断”，这种用 Workflow 更稳也更容易排查。先用最简单的方式跑通，再根据实际失败模式决定升级哪一层。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1272">练这道题</a>

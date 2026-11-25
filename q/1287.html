@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -99,12 +108,7 @@
 <p><strong>1. 先明确分库分表不是第一步</strong></p>
 <p>读写分离解决的是<strong>读并发</strong>，不解决存储问题；分库分表主要解决<strong>存储与容量</strong>问题。决定前要先确认：慢 SQL、索引、分页、缓存、读写分离是否已优化；单表数据量、单库容量、连接数、写入 QPS 是否真的接近瓶颈；核心查询能否被一个稳定的分片键覆盖。常见触发条件是单表数据量到千万级、备份时间越来越长。</p>
 <p><strong>2. 四个概念</strong></p>
-<p>| 维度 | 含义 | 例子 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 垂直分库 | 按业务把单一库拆到不同数据库 | 用户表/订单表/商品表 → 用户库/订单库/商品库 |</p>
-<p>| 水平分库 | 同一张表按规则拆到不同库 | 订单表按买家 ID 拆到 2 个库 |</p>
-<p>| 垂直分表 | 按列拆分，把宽表拆成多张表 | 用户信息表拆出扩展信息表 |</p>
-<p>| 水平分表 | 按行拆分，解决单表行数过大 | 用户表拆成 user_0、user_1… |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>含义</th><th>例子</th></tr></thead><tbody><tr><td>垂直分库</td><td>按业务把单一库拆到不同数据库</td><td>用户表/订单表/商品表 → 用户库/订单库/商品库</td></tr><tr><td>水平分库</td><td>同一张表按规则拆到不同库</td><td>订单表按买家 ID 拆到 2 个库</td></tr><tr><td>垂直分表</td><td>按列拆分，把宽表拆成多张表</td><td>用户信息表拆出扩展信息表</td></tr><tr><td>水平分表</td><td>按行拆分，解决单表行数过大</td><td>用户表拆成 user_0、user_1…</td></tr></tbody></table></div>
 <p><strong>3. 常见分片算法</strong></p>
 <ul>
 <li><strong>哈希分片</strong>：适合随机读写、分布均匀，但对动态伸缩不友好（<code>hash(key) % 32</code> 扩到 <code>% 64</code> 会导致大量数据重新映射），也不适合范围查询。</li>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -105,12 +114,7 @@
 <li><strong>可重试事务</strong>：位于枢轴之后，具有幂等性，用于保证发生临时故障时也能到达最终状态。</li>
 </ul>
 <p><strong>3. 两种实现方式对比</strong></p>
-<p>| 维度 | 编排（Orchestration） | 协同（Choreography） |</p>
-<p>| --- | --- | --- |</p>
-<p>| 协调方式 | 集中式编排器掌管所有事务，按事件指挥参与者 | 无中心控制器，各服务通过发布/订阅领域事件互相触发 |</p>
-<p>| 优点 | 适合复杂工作流或需要频繁加新服务的场景；职责分离清晰，服务逻辑简单；不易产生循环依赖 | 适合服务少、流程简单且无需协调逻辑的场景；不需要额外协调服务；无单点故障，责任分散 |</p>
-<p>| 缺点 | 编排器成为单点故障，并引入额外的设计复杂度 | 加新步骤时流程易混乱；难以追踪各参与者响应哪些命令；参与者互相依赖易形成循环依赖；集成测试困难 |</p>
-<p>| 可观测性 | 编排器可集中记录流程状态，便于追踪与补偿 | 需依赖链路追踪/事件溯源还原流程 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>编排（Orchestration）</th><th>协同（Choreography）</th></tr></thead><tbody><tr><td>协调方式</td><td>集中式编排器掌管所有事务，按事件指挥参与者</td><td>无中心控制器，各服务通过发布/订阅领域事件互相触发</td></tr><tr><td>优点</td><td>适合复杂工作流或需要频繁加新服务的场景；职责分离清晰，服务逻辑简单；不易产生循环依赖</td><td>适合服务少、流程简单且无需协调逻辑的场景；不需要额外协调服务；无单点故障，责任分散</td></tr><tr><td>缺点</td><td>编排器成为单点故障，并引入额外的设计复杂度</td><td>加新步骤时流程易混乱；难以追踪各参与者响应哪些命令；参与者互相依赖易形成循环依赖；集成测试困难</td></tr><tr><td>可观测性</td><td>编排器可集中记录流程状态，便于追踪与补偿</td><td>需依赖链路追踪/事件溯源还原流程</td></tr></tbody></table></div>
 <p><strong>4. 落地要点</strong></p>
 <p>补偿事务本身也可能失败，需要「重试 + 上限 + 告警 + 人工干预」；参与者已提交本地事务，<strong>数据无法真正回滚</strong>，只能把业务拉回允许的状态，因此必须保证<strong>幂等</strong>。缺少隔离性会带来更新丢失、脏读、不可重复读等异常，缓解手段包括语义锁、可交换更新、悲观视图、重读校验、版本文件等，并按业务风险动态选择并发机制。</p>
 <p><strong>5. 结论</strong></p>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -102,14 +111,7 @@
 <li>DRAM：用 1 个晶体管 + 1 个电容（1T1C）保存 1 位，电容会因漏电流衰减，必须<strong>定期刷新</strong>（通常 64ms 内按行刷新全部数据）才能保持。</li>
 </ul>
 <p><strong>二、关键对比</strong></p>
-<p>| 维度 | SRAM | DRAM |</p>
-<p>| --- | --- | --- |</p>
-<p>| 单元结构 | 6 晶体管/位 | 1T1C/位 |</p>
-<p>| 刷新 | 不需要 | 必须定时刷新 |</p>
-<p>| 访问速度 | 极快（1~10ns） | 较慢（~50ns 量级） |</p>
-<p>| 集成度 | 低（占面积大） | 高（密度大） |</p>
-<p>| 成本/功耗 | 高成本、高功耗 | 低成本、相对低功耗 |</p>
-<p>| 典型用途 | Cache（L1/L2/L3） | 主存（DDR 内存条） |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>SRAM</th><th>DRAM</th></tr></thead><tbody><tr><td>单元结构</td><td>6 晶体管/位</td><td>1T1C/位</td></tr><tr><td>刷新</td><td>不需要</td><td>必须定时刷新</td></tr><tr><td>访问速度</td><td>极快（1~10ns）</td><td>较慢（~50ns 量级）</td></tr><tr><td>集成度</td><td>低（占面积大）</td><td>高（密度大）</td></tr><tr><td>成本/功耗</td><td>高成本、高功耗</td><td>低成本、相对低功耗</td></tr><tr><td>典型用途</td><td>Cache（L1/L2/L3）</td><td>主存（DDR 内存条）</td></tr></tbody></table></div>
 <p><strong>三、选型原因</strong>：Cache 追求极致速度、时序确定、无需刷新开销，故用 SRAM；主存追求大容量、低成本，故用高集成度的 DRAM。口诀：「SRAM 快、密低、耗大、不刷；DRAM 慢、密高、耗小、刷」。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1376">练这道题</a>

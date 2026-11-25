@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -97,11 +106,7 @@
     <div class="card"><h2>题目</h2><p>考察高并发下三类典型缓存异常现象及应对手段。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 30 天前更新</div><p>三者都表现为「请求绕过缓存打向数据库」，但成因与解法不同。</p>
 <h4>区别与方案对比表</h4>
-<p>| 现象 | 成因 | 典型解法 |</p>
-<p>| --- | --- | --- |</p>
-<p>| <strong>缓存穿透</strong> | 查询<strong>根本不存在</strong>的数据，缓存和 DB 都没有，每次都打到 DB（可被恶意利用） | ① 布隆过滤器拦截无效 Key；② 缓存空对象（设短 TTL）；③ 接口参数校验/限流 |</p>
-<p>| <strong>缓存击穿</strong> | 某个<strong>热点 Key 突然过期</strong>，瞬间大量并发请求同时穿透到 DB | ① 互斥锁（SETNX）重建缓存；② 逻辑过期（不设物理 TTL，异步更新）；③ 热点 Key 预热/永不过期 |</p>
-<p>| <strong>缓存雪崩</strong> | <strong>大量 Key 同时过期</strong>或 Redis 宕机，请求潮水般压垮 DB | ① 过期时间加随机值，打散；② 多级缓存；③ 哨兵/Cluster 高可用；④ 限流降级兜底 |</p>
+<div class="tw"><table><thead><tr><th>现象</th><th>成因</th><th>典型解法</th></tr></thead><tbody><tr><td><strong>缓存穿透</strong></td><td>查询<strong>根本不存在</strong>的数据，缓存和 DB 都没有，每次都打到 DB（可被恶意利用）</td><td>① 布隆过滤器拦截无效 Key；② 缓存空对象（设短 TTL）；③ 接口参数校验/限流</td></tr><tr><td><strong>缓存击穿</strong></td><td>某个<strong>热点 Key 突然过期</strong>，瞬间大量并发请求同时穿透到 DB</td><td>① 互斥锁（SETNX）重建缓存；② 逻辑过期（不设物理 TTL，异步更新）；③ 热点 Key 预热/永不过期</td></tr><tr><td><strong>缓存雪崩</strong></td><td><strong>大量 Key 同时过期</strong>或 Redis 宕机，请求潮水般压垮 DB</td><td>① 过期时间加随机值，打散；② 多级缓存；③ 哨兵/Cluster 高可用；④ 限流降级兜底</td></tr></tbody></table></div>
 <p><strong>要点</strong>：穿透针对「数据不存在」、击穿针对「单点热点过期」、雪崩针对「大面积失效/集群故障」。互斥锁与逻辑过期是解决击穿的两种主流思路；限流降级是三者通用的保底手段。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/907">练这道题</a>

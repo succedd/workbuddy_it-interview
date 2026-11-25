@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -103,10 +112,7 @@
 <li><strong>无差异/反向需求</strong>：做了也没用甚至反感，应避免。</li>
 </ul>
 <p><strong>二、价值-紧急（影响-紧迫）矩阵</strong></p>
-<p>| | 高价值 | 低价值 |</p>
-<p>|---|---|---|</p>
-<p>| 紧急 | 立刻做（P0） | 授权/快速处理 |</p>
-<p>| 不紧急 | 排期规划（P1） | 砍掉/暂放 |</p>
+<div class="tw"><table><thead><tr><th></th><th>高价值</th><th>低价值</th></tr></thead><tbody><tr><td>紧急</td><td>立刻做（P0）</td><td>授权/快速处理</td></tr><tr><td>不紧急</td><td>排期规划（P1）</td><td>砍掉/暂放</td></tr></tbody></table></div>
 <p><strong>实践建议</strong></p>
 <ul>
 <li>基本型需求是「及格线」，先保底；期望型决定竞争力；兴奋型做亮点。</li>

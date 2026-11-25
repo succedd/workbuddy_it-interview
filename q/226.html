@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -98,25 +107,11 @@
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：官方整理 · 未复核 · 30 天前更新</div><p><strong>Pending</strong> 是 K8s Pod 的一种状态，表示 Pod <strong>已经被 K8s 接收了，但还没能正常运行起来</strong>——相当于&quot;排队等候中&quot;。</p>
 <p>---</p>
 <h4>Pod 的几种常见状态</h4>
-<p>| 状态 | 含义 | 类比 |</p>
-<p>|------|------|------|</p>
-<p>| <strong>Pending</strong> | 已提交，但还没启动 | 你取了号，但还在等叫号 |</p>
-<p>| <strong>Running</strong> | 正常运行中 | 正在吃饭 |</p>
-<p>| <strong>Succeeded</strong> | 任务完成（一次性任务） | 吃完了走人 |</p>
-<p>| <strong>Failed</strong> | 出错了 | 饭没做好 |</p>
-<p>| <strong>CrashLoopBackOff</strong> | 启动→崩溃→重启→崩溃循环 | 吃了吐、吐了吃 |</p>
-<p>| <strong>Unknown</strong> | 联系不上 Pod 了 | 人不见了 |</p>
+<div class="tw"><table><thead><tr><th>状态</th><th>含义</th><th>类比</th></tr></thead><tbody><tr><td><strong>Pending</strong></td><td>已提交，但还没启动</td><td>你取了号，但还在等叫号</td></tr><tr><td><strong>Running</strong></td><td>正常运行中</td><td>正在吃饭</td></tr><tr><td><strong>Succeeded</strong></td><td>任务完成（一次性任务）</td><td>吃完了走人</td></tr><tr><td><strong>Failed</strong></td><td>出错了</td><td>饭没做好</td></tr><tr><td><strong>CrashLoopBackOff</strong></td><td>启动→崩溃→重启→崩溃循环</td><td>吃了吐、吐了吃</td></tr><tr><td><strong>Unknown</strong></td><td>联系不上 Pod 了</td><td>人不见了</td></tr></tbody></table></div>
 <p>---</p>
 <h4>Pod 为什么会在 Pending 状态卡住？</h4>
 <p>Pending 说白了就是<strong>资源不够或者条件不满足</strong>，常见原因：</p>
-<p>| 原因 | 具体说明 |</p>
-<p>|------|---------|</p>
-<p>| <strong>CPU/内存不足</strong> | 集群没有足够的资源来运行这个 Pod |</p>
-<p>| <strong>GPU 资源不够</strong> | 你要用 GPU 卡，但集群里没空余的 |</p>
-<p>| <strong>镜像拉不下来</strong> | 镜像不存在、仓库认证失败、网络不通 |</p>
-<p>| <strong>PVC 未就绪</strong> | 申请的持久化存储还没准备好 |</p>
-<p>| <strong>节点选择器不匹配</strong> | 你指定了要在某类节点上跑，但没有符合条件的节点 |</p>
-<p>| <strong>污点/容忍度</strong> | 节点有污点（Taints），Pod 没有对应的容忍度（Tolerations） |</p>
+<div class="tw"><table><thead><tr><th>原因</th><th>具体说明</th></tr></thead><tbody><tr><td><strong>CPU/内存不足</strong></td><td>集群没有足够的资源来运行这个 Pod</td></tr><tr><td><strong>GPU 资源不够</strong></td><td>你要用 GPU 卡，但集群里没空余的</td></tr><tr><td><strong>镜像拉不下来</strong></td><td>镜像不存在、仓库认证失败、网络不通</td></tr><tr><td><strong>PVC 未就绪</strong></td><td>申请的持久化存储还没准备好</td></tr><tr><td><strong>节点选择器不匹配</strong></td><td>你指定了要在某类节点上跑，但没有符合条件的节点</td></tr><tr><td><strong>污点/容忍度</strong></td><td>节点有污点（Taints），Pod 没有对应的容忍度（Tolerations）</td></tr></tbody></table></div>
 <p>---</p>
 <h4>面试中可以怎么讲？</h4>
 <p>结合你的简历，可以这样说：</p>

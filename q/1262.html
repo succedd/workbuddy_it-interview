@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -98,11 +107,7 @@
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先纠正一个常见误区：集群 ≠ 有副本</strong></p>
 <p>RabbitMQ 的「集群」只让多个节点共同管理元数据和连接。<strong>普通集群模式下队列只存在于一个节点</strong>，其他节点只有队列元数据用于定位队列所在实例；客户端连到别的节点时，该节点要从队列所在节点拉取数据。所以普通集群只提升吞吐与连接处理能力，<strong>不提供队列级的数据冗余</strong>。</p>
 <p><strong>三种队列类型的定位</strong></p>
-<p>| 类型 | 是否复制 | 特点 | 适用场景 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| <strong>Classic Queue</strong> | 非复制 | 单节点存储，延迟低、吞吐高 | 临时队列、极低延迟、高频创建删除队列、大规模 fanout |</p>
-<p>| <strong>Quorum Queue</strong>（3.8+） | 复制型 | 基于 <strong>Raft</strong>，需多数节点确认（N/2+1）才算写入成功，主节点故障与网络分区语义更清晰 | 订单、支付、库存扣减等<strong>不能轻易丢消息</strong>的链路 |</p>
-<p>| <strong>Streams</strong>（3.9+） | 复制型 | append-only 日志，消费后不删除，可按 offset 回放历史 | 事件溯源、日志分发、大量消息堆积与历史回放 |</p>
+<div class="tw"><table><thead><tr><th>类型</th><th>是否复制</th><th>特点</th><th>适用场景</th></tr></thead><tbody><tr><td><strong>Classic Queue</strong></td><td>非复制</td><td>单节点存储，延迟低、吞吐高</td><td>临时队列、极低延迟、高频创建删除队列、大规模 fanout</td></tr><tr><td><strong>Quorum Queue</strong>（3.8+）</td><td>复制型</td><td>基于 <strong>Raft</strong>，需多数节点确认（N/2+1）才算写入成功，主节点故障与网络分区语义更清晰</td><td>订单、支付、库存扣减等<strong>不能轻易丢消息</strong>的链路</td></tr><tr><td><strong>Streams</strong>（3.9+）</td><td>复制型</td><td>append-only 日志，消费后不删除，可按 offset 回放历史</td><td>事件溯源、日志分发、大量消息堆积与历史回放</td></tr></tbody></table></div>
 <p><strong>结论：订单/支付选 Quorum Queue</strong></p>
 <ul>
 <li>需要「队列里的消息本身有多个副本、写入要有仲裁确认」，这是 Classic Queue 给不了的；Quorum Queue 通过日志复制和选举实现一致性，适合长期存在、对数据安全要求高的队列。</li>

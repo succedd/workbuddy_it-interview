@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -109,10 +118,7 @@
 <li><strong>迭代查询</strong>：被问方若不知道答案，只返回「下一步该问谁」的线索，由请求方继续追问（本地 DNS 向上游多用迭代，减轻根/TLD 压力）。</li>
 </ul>
 <p><strong>对比</strong>：</p>
-<p>| 查询方式 | 由谁负责追到底 | 典型使用方 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 递归 | 被查询的 DNS 服务器 | 客户端 → 本地 DNS |</p>
-<p>| 迭代 | 查询发起方自己 | 本地 DNS → 根/TLD/权威 |</p></div>
+<div class="tw"><table><thead><tr><th>查询方式</th><th>由谁负责追到底</th><th>典型使用方</th></tr></thead><tbody><tr><td>递归</td><td>被查询的 DNS 服务器</td><td>客户端 → 本地 DNS</td></tr><tr><td>迭代</td><td>查询发起方自己</td><td>本地 DNS → 根/TLD/权威</td></tr></tbody></table></div></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1337">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

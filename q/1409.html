@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -111,11 +120,7 @@
 <li>学习率比全参微调大一个量级（1e-4 级），数据量小时早停防过拟合。</li>
 </ul>
 <h3>选型</h3>
-<p>| 方案 | 显存 | 效果上限 | 适用 |</p>
-<p>|---|---|---|---|</p>
-<p>| 全参微调 | 最高 | 最高 | 领域大改、数据充足、卡管够 |</p>
-<p>| LoRA/QLoRA | 低 | 多数场景接近全参 | 快速适配、多 adapter 热插拔 |</p>
-<p>| P-Tuning/前缀 | 最低 | 简单任务够用 | 分类/抽取类轻任务 |</p>
+<div class="tw"><table><thead><tr><th>方案</th><th>显存</th><th>效果上限</th><th>适用</th></tr></thead><tbody><tr><td>全参微调</td><td>最高</td><td>最高</td><td>领域大改、数据充足、卡管够</td></tr><tr><td>LoRA/QLoRA</td><td>低</td><td>多数场景接近全参</td><td>快速适配、多 adapter 热插拔</td></tr><tr><td>P-Tuning/前缀</td><td>最低</td><td>简单任务够用</td><td>分类/抽取类轻任务</td></tr></tbody></table></div>
 <blockquote>追问点：LoRA 改变的是「权重」而 Prompt 类方法改的是「激活」，前者能力上限更高；CPT（继续预训练）场景 LoRA 相对弱，通常加大 r 或混合全参。</blockquote></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1409">练这道题</a>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -116,10 +125,7 @@
 <li><strong>机器零</strong>：尾数为 0 即数值为 0（与阶码无关），避免了阶码下溢导致的“伪零”问题。</li>
 </ul>
 <p><strong>五、对比小结</strong></p>
-<p>| 格式 | 总位 | S | E | M | bias | 实际精度 |</p>
-<p>|------|------|---|---|---|------|----------|</p>
-<p>| 单精度 | 32 | 1 | 8 | 23 | 127 | 24 |</p>
-<p>| 双精度 | 64 | 1 | 11 | 52 | 1023 | 53 |</p></div>
+<div class="tw"><table><thead><tr><th>格式</th><th>总位</th><th>S</th><th>E</th><th>M</th><th>bias</th><th>实际精度</th></tr></thead><tbody><tr><td>单精度</td><td>32</td><td>1</td><td>8</td><td>23</td><td>127</td><td>24</td></tr><tr><td>双精度</td><td>64</td><td>1</td><td>11</td><td>52</td><td>1023</td><td>53</td></tr></tbody></table></div></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1371">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -101,13 +110,7 @@
 <p>以下位置即使做了输出编码也不安全，应直接避免：<code>&lt;script&gt;</code> 标签内部、HTML 注释、<code>&lt;style&gt;</code> 内部、自定义标签与自定义属性、所有 <code>on*</code> 事件处理器（<code>onclick</code>、<code>onerror</code>、<code>onmouseover</code>），以及 <code>eval()</code>、<code>setTimeout()</code>、<code>setInterval()</code>。</p>
 <h3>三、按上下文做输出编码（Rule #1 - #5）</h3>
 <p>关键点是<strong>上下文决定编码方式</strong>，用错编码等于没防：</p>
-<p>| 上下文 | 规则 | 编码方式 |</p>
-<p>| --- | --- | --- |</p>
-<p>| HTML 正文 | Rule #1 | HTML 实体编码，<code>&lt;</code> → <code>&amp;lt;</code>、<code>&amp;</code> → <code>&amp;amp;</code> |</p>
-<p>| HTML 属性 | Rule #2 | <code>&amp;#xHH;</code> 形式编码，且属性值<strong>必须用引号包起来</strong> |</p>
-<p>| JavaScript | Rule #3 | <code>\uXXXX</code> 编码，且只能放进带引号的数据值里 |</p>
-<p>| CSS | Rule #4 | <code>\XX</code> / <code>\XXXXXX</code> 十六进制编码，且只能放进属性值 |</p>
-<p>| URL 参数 | Rule #5 | 百分号编码 <code>%HH</code>，<strong>只编码参数值</strong>，不编码整个 URL |</p>
+<div class="tw"><table><thead><tr><th>上下文</th><th>规则</th><th>编码方式</th></tr></thead><tbody><tr><td>HTML 正文</td><td>Rule #1</td><td>HTML 实体编码，<code>&lt;</code> → <code>&amp;lt;</code>、<code>&amp;</code> → <code>&amp;amp;</code></td></tr><tr><td>HTML 属性</td><td>Rule #2</td><td><code>&amp;#xHH;</code> 形式编码，且属性值<strong>必须用引号包起来</strong></td></tr><tr><td>JavaScript</td><td>Rule #3</td><td><code>\uXXXX</code> 编码，且只能放进带引号的数据值里</td></tr><tr><td>CSS</td><td>Rule #4</td><td><code>\XX</code> / <code>\XXXXXX</code> 十六进制编码，且只能放进属性值</td></tr><tr><td>URL 参数</td><td>Rule #5</td><td>百分号编码 <code>%HH</code>，<strong>只编码参数值</strong>，不编码整个 URL</td></tr></tbody></table></div>
 <p>一个高频错误：URL 要放进 <code>href</code> / <code>src</code> 时，需<strong>先做 URL 编码，再做 HTML 属性编码</strong>，顺序不能反。</p>
 <h3>四、需要渲染用户 HTML 时用净化（Rule #6）</h3>
 <p>输出编码会把富文本样式一并破坏，此时应改用 HTML Sanitization，OWASP 推荐使用 DOMPurify。注意三点：先净化再改动、确认下游库不会二次修改字符串、以及<strong>必须定期升级</strong>——浏览器新特性会不断带来新的绕过方式。</p>

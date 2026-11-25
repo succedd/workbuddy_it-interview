@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -97,14 +106,7 @@
     <div class="card"><h2>题目</h2><p>考察点：把同源策略与 CORS 机制转化为可落地的工程方案选型能力。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先厘清一个常见误解</strong>：CORS 是<strong>基于 HTTP 头</strong>的机制，浏览器用它决定是否允许别的<strong>源</strong>读取本源的资源。被拦截的通常不是「请求没发出去」，而是<strong>响应读取被浏览器阻断</strong>——请求往往已到达服务器并执行。且出于安全，JS 层面<strong>看不到具体失败原因</strong>，只能查控制台。</p>
 <p><strong>方案对比</strong>：</p>
-<p>| 方案 | 原理 | 适用场景 | 代价 |</p>
-<p>|---|---|---|---|</p>
-<p>| 服务端加 CORS 响应头 | 返回 <code>Access-Control-Allow-Origin</code> 等 | <strong>自己有服务端，或对方愿意配合</strong> | 需改服务端；带凭证时不能用 <code>*</code> |</p>
-<p>| 开发代理 / 网关反向代理 | 由同源 dev-server 或 Nginx 转发到目标，浏览器看到的是同源 | 本地开发；生产用同域网关 | 生产需部署转发层、维护路由 |</p>
-<p>| BFF / 后端中转 | 前端只调自家后端，后端再调第三方 | 第三方不放行 CORS、要隐藏密钥、统一鉴权 | 多一跳，依赖后端支持 |</p>
-<p>| JSONP | 动态 <code>&lt;script&gt;</code> 加载，靠回调函数收数据 | 仅历史遗留、且只需 GET | <strong>只支持 GET、有 XSS 风险、拿不到状态码</strong>，已不推荐 |</p>
-<p>| <code>postMessage</code> | 跨窗口 / iframe 结构化通信 | 嵌入第三方页面、跨窗口通信 | 必须校验 <code>event.origin</code>，且它不解决「读接口」 |</p>
-<p>| 关闭浏览器安全策略 | <code>--disable-web-security</code> 等 | <strong>仅本地临时调试</strong> | 绝不能用于生产 |</p>
+<div class="tw"><table><thead><tr><th>方案</th><th>原理</th><th>适用场景</th><th>代价</th></tr></thead><tbody><tr><td>服务端加 CORS 响应头</td><td>返回 <code>Access-Control-Allow-Origin</code> 等</td><td><strong>自己有服务端，或对方愿意配合</strong></td><td>需改服务端；带凭证时不能用 <code>*</code></td></tr><tr><td>开发代理 / 网关反向代理</td><td>由同源 dev-server 或 Nginx 转发到目标，浏览器看到的是同源</td><td>本地开发；生产用同域网关</td><td>生产需部署转发层、维护路由</td></tr><tr><td>BFF / 后端中转</td><td>前端只调自家后端，后端再调第三方</td><td>第三方不放行 CORS、要隐藏密钥、统一鉴权</td><td>多一跳，依赖后端支持</td></tr><tr><td>JSONP</td><td>动态 <code>&lt;script&gt;</code> 加载，靠回调函数收数据</td><td>仅历史遗留、且只需 GET</td><td><strong>只支持 GET、有 XSS 风险、拿不到状态码</strong>，已不推荐</td></tr><tr><td><code>postMessage</code></td><td>跨窗口 / iframe 结构化通信</td><td>嵌入第三方页面、跨窗口通信</td><td>必须校验 <code>event.origin</code>，且它不解决「读接口」</td></tr><tr><td>关闭浏览器安全策略</td><td><code>--disable-web-security</code> 等</td><td><strong>仅本地临时调试</strong></td><td>绝不能用于生产</td></tr></tbody></table></div>
 <p><strong>两个必须掌握的细节</strong>：</p>
 <ul>
 <li><strong>预检（preflight）</strong>：非简单请求（<code>PUT</code>/<code>DELETE</code>、自定义头、<code>Content-Type</code> 非 <code>text/plain</code>/<code>multipart/form-data</code>/<code>application/x-www-form-urlencoded</code>）浏览器会先发 <code>OPTIONS</code>，带上 <code>Access-Control-Request-Method</code> / <code>-Headers</code>；服务端需回 <code>Access-Control-Allow-Methods</code> / <code>-Headers</code>，并用 <code>Access-Control-Max-Age</code> 缓存预检结果（MDN 示例为 86400 秒，默认仅 5 秒）。</li>

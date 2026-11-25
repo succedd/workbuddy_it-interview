@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -96,12 +105,7 @@
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">后端开发工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">消息队列</span><span class="chip tag">推拉模式</span><span class="chip tag">长轮询</span><span class="chip tag">RocketMQ</span></div>
     <div class="card"><h2>题目</h2><p>考察点：消费端消息获取模型与背压设计，长轮询的动机。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>两种模式的本质区别</strong></p>
-<p>| 维度 | 推模式 Push | 拉模式 Pull |</p>
-<p>| --- | --- | --- |</p>
-<p>| 触发方 | Broker 主动投递 | 消费者主动拉取 |</p>
-<p>| 实时性 | 好，消息到达即可投递 | 取决于拉取间隔，间隔长则延迟高 |</p>
-<p>| 流量控制 | 由 Broker 控制，容易压垮慢消费者 | 消费端自行决定拉多少，天然有背压 |</p>
-<p>| 空拉开销 | 无 | 无消息时产生大量空轮询，浪费 CPU 与网络 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>推模式 Push</th><th>拉模式 Pull</th></tr></thead><tbody><tr><td>触发方</td><td>Broker 主动投递</td><td>消费者主动拉取</td></tr><tr><td>实时性</td><td>好，消息到达即可投递</td><td>取决于拉取间隔，间隔长则延迟高</td></tr><tr><td>流量控制</td><td>由 Broker 控制，容易压垮慢消费者</td><td>消费端自行决定拉多少，天然有背压</td></tr><tr><td>空拉开销</td><td>无</td><td>无消息时产生大量空轮询，浪费 CPU 与网络</td></tr></tbody></table></div>
 <p><strong>为什么需要长轮询</strong></p>
 <p>纯 Pull 的痛点是「拉早了没消息、拉晚了有延迟」，纯 Push 的痛点是 Broker 不知道消费者处理能力。长轮询（long polling）是折中方案：</p>
 <ol>

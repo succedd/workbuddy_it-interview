@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -99,13 +108,7 @@
 <p><strong>1. 拆开之后，进程内调用变成网络通信</strong></p>
 <p>微服务把原来的本地方法调用变成一次 RPC、一次 HTTP 请求、一次消息投递或一次副本同步。<strong>同步调用</strong>要处理超时和「结果不确定」；<strong>异步消息</strong>要处理重复、顺序和最终一致性。两者不是二选一，同一系统里可以并存。</p>
 <p><strong>2. 三类方式对比</strong></p>
-<p>| 维度 | REST（HTTP/JSON） | RPC（Dubbo/gRPC） | 消息队列 |</p>
-<p>| --- | --- | --- | --- |</p>
-<p>| 通信模型 | 同步请求-响应 | 同步请求-响应 | 异步生产者-消费者 |</p>
-<p>| 耦合度 | 松，跨语言友好 | 接口/IDL 强约定，耦合更紧 | 时间与空间解耦，依赖 Broker |</p>
-<p>| 性能 | 一般（文本、HTTP 头开销） | 高（二进制序列化、长连接复用） | 高吞吐，可削峰 |</p>
-<p>| 失败语义 | 超时结果不确定，需幂等 | 同左 | 至少一次投递，需幂等消费 |</p>
-<p>| 典型场景 | 对外 API、跨语言、调试方便 | 内部高频调用、强接口契约 | 通知、积分、日志、数据同步、削峰 |</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>REST（HTTP/JSON）</th><th>RPC（Dubbo/gRPC）</th><th>消息队列</th></tr></thead><tbody><tr><td>通信模型</td><td>同步请求-响应</td><td>同步请求-响应</td><td>异步生产者-消费者</td></tr><tr><td>耦合度</td><td>松，跨语言友好</td><td>接口/IDL 强约定，耦合更紧</td><td>时间与空间解耦，依赖 Broker</td></tr><tr><td>性能</td><td>一般（文本、HTTP 头开销）</td><td>高（二进制序列化、长连接复用）</td><td>高吞吐，可削峰</td></tr><tr><td>失败语义</td><td>超时结果不确定，需幂等</td><td>同左</td><td>至少一次投递，需幂等消费</td></tr><tr><td>典型场景</td><td>对外 API、跨语言、调试方便</td><td>内部高频调用、强接口契约</td><td>通知、积分、日志、数据同步、削峰</td></tr></tbody></table></div>
 <p><strong>3. 选型从业务时效出发</strong></p>
 <ul>
 <li><strong>需要同步返回结果的用户查询</strong>：用同步调用（REST 或 RPC）。</li>

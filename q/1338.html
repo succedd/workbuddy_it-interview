@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -106,12 +115,7 @@
 <li>数据链路/网络接口层：以太网、Wi-Fi、MAC 帧。</li>
 </ul>
 <p><strong>对比</strong>：</p>
-<p>| OSI 层 | TCP/IP 对应层 | 代表协议 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 应用/表示/会话 | 应用层 | HTTP/DNS |</p>
-<p>| 传输层 | 传输层 | TCP/UDP |</p>
-<p>| 网络层 | 网络层 | IP/ICMP |</p>
-<p>| 链路/物理 | 网络接口层 | Ethernet |</p></div>
+<div class="tw"><table><thead><tr><th>OSI 层</th><th>TCP/IP 对应层</th><th>代表协议</th></tr></thead><tbody><tr><td>应用/表示/会话</td><td>应用层</td><td>HTTP/DNS</td></tr><tr><td>传输层</td><td>传输层</td><td>TCP/UDP</td></tr><tr><td>网络层</td><td>网络层</td><td>IP/ICMP</td></tr><tr><td>链路/物理</td><td>网络接口层</td><td>Ethernet</td></tr></tbody></table></div></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/1338">练这道题</a>
       <button class="cta alt" id="copy-link" type="button">复制链接</button>

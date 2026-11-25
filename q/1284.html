@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -99,10 +108,7 @@
 <p><strong>1. 网关是什么</strong></p>
 <p>API 网关是位于客户端与后端服务之间的<strong>统一入口</strong>：所有客户端请求先经过网关，再由网关路由到目标服务。它的核心价值在于把<strong>安全认证、流量控制、日志、监控</strong>等每个服务都需要的横切能力收敛到一处，避免每个服务重复实现，导致代码重复、管理分散、维护成本高。</p>
 <p><strong>2. 两类核心职责</strong></p>
-<p>| 职责 | 说明 | 典型功能 |</p>
-<p>| --- | --- | --- |</p>
-<p>| 请求转发 | 把请求路由到正确的目标服务 | 动态路由、负载均衡、协议转换 |</p>
-<p>| 请求过滤 | 在请求到达服务前/后拦截处理 | 身份认证、权限校验、限流熔断、日志记录 |</p>
+<div class="tw"><table><thead><tr><th>职责</th><th>说明</th><th>典型功能</th></tr></thead><tbody><tr><td>请求转发</td><td>把请求路由到正确的目标服务</td><td>动态路由、负载均衡、协议转换</td></tr><tr><td>请求过滤</td><td>在请求到达服务前/后拦截处理</td><td>身份认证、权限校验、限流熔断、日志记录</td></tr></tbody></table></div>
 <p>具体能力通常包括：请求转发、负载均衡、安全认证、参数校验、日志与监控告警、流量控制、熔断降级、响应缓存、响应聚合、灰度发布、异常处理、API 文档、协议转换与证书管理。</p>
 <p><strong>3. 边界：网关不该做什么</strong></p>
 <p>网关适合做<strong>协议级、通用型、跨服务</strong>的能力。强业务规则校验、复杂字段映射、长事务、长连接业务逻辑、细粒度业务授权，应回到业务服务；复杂响应聚合更推荐放在 <strong>BFF（Backend For Frontend）</strong> 或 GraphQL 层，避免把业务编排逻辑沉淀到基础设施层，否则会演化成难以维护的「<strong>巨石网关</strong>」。</p>

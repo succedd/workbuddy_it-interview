@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -104,12 +113,7 @@
 <li><strong>Schema 演进</strong>：Iceberg 的元数据记录<strong>列级唯一 ID</strong> 而非位置，加列/改名/删列都不重写数据文件，读端按 ID 映射——解决了 Hive 表「改列名=数据错位」的老大难。</li>
 </ol>
 <h3>三格式对比与选型</h3>
-<p>| | Iceberg | Delta Lake | Hudi |</p>
-<p>|---|---|---|---|</p>
-<p>| 出身 | Netflix → Apache | Databricks（开放协议） | Uber → Apache |</p>
-<p>| 强项 | 中立开放、引擎兼容广、隐藏分区/列级演进 | 与 Spark/Databricks 集成最深 | <strong>upsert/增量拉取最强</strong>（CDC 场景） |</p>
-<p>| 更新模型 | Copy-on-Write / Merge-on-Read | CoW 为主（MoR 后补） | CoW/MoR 成熟，记录级索引 |</p>
-<p>| 典型场景 | 数仓上湖、多引擎共存 | Databricks 生态 | 准实时 CDC 入湖、分钟级 upsert |</p>
+<div class="tw"><table><thead><tr><th></th><th>Iceberg</th><th>Delta Lake</th><th>Hudi</th></tr></thead><tbody><tr><td>出身</td><td>Netflix → Apache</td><td>Databricks（开放协议）</td><td>Uber → Apache</td></tr><tr><td>强项</td><td>中立开放、引擎兼容广、隐藏分区/列级演进</td><td>与 Spark/Databricks 集成最深</td><td><strong>upsert/增量拉取最强</strong>（CDC 场景）</td></tr><tr><td>更新模型</td><td>Copy-on-Write / Merge-on-Read</td><td>CoW 为主（MoR 后补）</td><td>CoW/MoR 成熟，记录级索引</td></tr><tr><td>典型场景</td><td>数仓上湖、多引擎共存</td><td>Databricks 生态</td><td>准实时 CDC 入湖、分钟级 upsert</td></tr></tbody></table></div>
 <p><strong>选型口诀</strong>：多引擎中立与规范演进 → Iceberg；已押注 Databricks → Delta；高频 CDC/upsert（订单、用户表分钟级更新）→ Hudi。</p>
 <blockquote>加分点：三格式已互相借鉴趋同（Delta 加了 MoR、Iceberg v3 规范在吸收 Hudi 特性），选型更多看生态与运维能力而非功能清单。</blockquote></div>
     <div class="cta-row">

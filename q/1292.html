@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -103,13 +112,7 @@
 <p><strong>第二步：确认是不是「必需跨分片」的查询形态。</strong> 即使带了分片键，<code>group by</code>、<code>order by</code>、跨分片分页仍需要多分片汇总排序；查第 1000 页时每个分片都要返回前 N 页候选再合并截取，分片越多放大倍数越高。这不是配置错误，而是查询形态与分片模型不匹配。</p>
 <p><strong>第三步：排查分片热点与数据倾斜。</strong> 若某些分片明显更忙，说明分片键离散性不足：取用户 ID 低位取模、连续自增键、时间递增键、大租户都会形成热点。先看分片级监控的 QPS 与数据量分布是否均匀。</p>
 <p><strong>3. 对应解决手段</strong></p>
-<p>| 场景 | 方案 |</p>
-<p>| --- | --- |</p>
-<p>| 非分片键高频点查 | 维护 <code>order_id → buyer_route</code> <strong>路由表</strong>，或把路由信息写进业务 ID 的固定位置 |</p>
-<p>| 后台按条件检索 | 冗余<strong>索引表 / 读模型</strong>，或交给 Elasticsearch、宽表，避免打核心链路 |</p>
-<p>| 跨分片聚合与深分页 | 大结果集外置到搜索引擎/离线报表；核心链路限制分页深度或改用游标分页 |</p>
-<p>| 数据倾斜/热点 | 换离散性更好的分片键，或对大租户单独拆分；避免用低位不均匀的 ID 直接取模 |</p>
-<p>| 分片规则 | 固定逻辑分片（bucket）+ 映射，扩容只迁 bucket 而非改业务取模规则 |</p>
+<div class="tw"><table><thead><tr><th>场景</th><th>方案</th></tr></thead><tbody><tr><td>非分片键高频点查</td><td>维护 <code>order_id → buyer_route</code> <strong>路由表</strong>，或把路由信息写进业务 ID 的固定位置</td></tr><tr><td>后台按条件检索</td><td>冗余<strong>索引表 / 读模型</strong>，或交给 Elasticsearch、宽表，避免打核心链路</td></tr><tr><td>跨分片聚合与深分页</td><td>大结果集外置到搜索引擎/离线报表；核心链路限制分页深度或改用游标分页</td></tr><tr><td>数据倾斜/热点</td><td>换离散性更好的分片键，或对大租户单独拆分；避免用低位不均匀的 ID 直接取模</td></tr><tr><td>分片规则</td><td>固定逻辑分片（bucket）+ 映射，扩容只迁 bucket 而非改业务取模规则</td></tr></tbody></table></div>
 <p><strong>4. 长期治理</strong></p>
 <p>上线前按主要查询路径设计分片键（共性、离散性、稳定性、扩展性需权衡）；业务天然有多条高频查询路径时，应通过冗余读模型或搜索系统分流；并建立分片级监控，保留能快速确认「某条 SQL 路由到几个分片」的手段。</p></div>
     <div class="cta-row">

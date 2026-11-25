@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -95,24 +104,24 @@
     <h1>百舸 CLI 提交训练任务，创建人为何显示 root 而不是子用户</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云资源运维工程师</span><span class="chip">安全运营工程师SOC</span><span class="chip tag">百度智能云</span><span class="chip tag">百舸</span><span class="chip tag">IAM</span><span class="chip tag">AK/SK</span><span class="chip tag">子用户</span><span class="chip tag">主账号</span></div>
     <div class="card"><h2>题目</h2><p>场景：客户用百舸 CLI 提交训练任务，任务列表「创建人」显示为 root。客户说 AK/SK 是用自己的子账号创建的，应该显示自己的用户名。该子用户有「系统管理员」策略，IAM 子用户详情页的 AccessKey 列表为空；内部日志显示这组 AK 换出的临时凭证 userId 等于 domainId。请说明你如何定位原因、给出解决方案，并说明长期的密钥治理建议。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><p><strong>先给结论</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><h4>先给结论</h4>
 <ul>
 <li>任务「创建人」记录的是<strong>调用 OpenAPI 时签名所用 AK/SK 代表的身份</strong>，不是谁登录控制台、谁敲的 CLI。</li>
 <li>本案例中，客户用的那组 AK/SK 换出来的临时凭证 <code>userId</code> 等于 <code>domainId</code>，说明它代表的是<strong>主账号（root）身份</strong>，所以创建人显示 root 是「如实记录」，不是百舸显示错了。</li>
 <li>这组 AK/SK 是拥有「系统管理员」权限的子用户从「安全认证」页面创建的，而该子用户在 IAM 详情页的 AccessKey 列表是空的。内部排查结论是：这种方式创建出来的密钥等同于主账号密钥。</li>
-<li>解决：在 <strong>IAM 子用户详情页的 AccessKey 区域</strong>，为该子用户单独创建一组 AK/SK，用它重新配置百舸 CLI 再提交，创建人即可显示为子用户名。</li>
-<li>一句话记住：<strong>登录身份不等于签名身份</strong>，看创建人先看 AK 挂在谁名下。</li>
+<li><strong>解决</strong>：在 <strong>IAM 子用户详情页的 AccessKey 区域</strong>，为该子用户单独创建一组 AK/SK，用它重新配置百舸 CLI 再提交，创建人即可显示为子用户名。</li>
+<li><strong>一句话记住</strong>：<strong>登录身份不等于签名身份</strong>，看创建人先看 AK 挂在谁名下。</li>
 </ul>
 <p><img src="/assets/diagrams/iam-aksk-root-identity.svg" alt="百舸任务创建人由签名身份决定" loading="lazy"></p>
-<p><strong>题目背景（读给候选人）</strong></p>
+<h4>题目背景（读给候选人）</h4>
 <ul>
 <li>客户通过百舸 CLI 提交分布式训练任务，任务列表「创建人」一列显示的是 <code>root</code>。</li>
-<li>客户反馈：AK/SK 是用自己的子账号创建的，按理应该显示自己的用户名。</li>
+<li><strong>客户反馈</strong>：AK/SK 是用自己的子账号创建的，按理应该显示自己的用户名。</li>
 <li>该子用户被授予了「系统管理员」策略，另外还有 AccessKey 管理、AIHC（百舸）和订单相关策略，部分来自所属用户组。</li>
 <li>在 IAM 用户管理里打开这个子用户的详情页，AccessKey 列表显示「暂无数据」。</li>
-<li>第一问：你会怎么判断「创建人显示 root」到底是展示 Bug，还是身份本身就是 root？要查哪些证据？</li>
+<li><strong>第一问</strong>：你会怎么判断「创建人显示 root」到底是展示 Bug，还是身份本身就是 root？要查哪些证据？</li>
 </ul>
-<p><strong>考察目标</strong></p>
+<h4>考察目标</h4>
 <ul>
 <li>是否理解云上「主账号 / 子用户 / AK/SK / 临时凭证」的身份模型。</li>
 <li>能否区分「谁在操作」和「请求以谁的身份签名」。</li>
@@ -120,23 +129,23 @@
 <li>能否给出最小权限、密钥治理方面的建议。</li>
 <li>能否把技术结论翻译成客户听得懂的话术。</li>
 </ul>
-<p><strong>排查思路：先拿身份证据</strong></p>
+<h4>排查思路：先拿身份证据</h4>
 <ul>
-<li>第一步，看任务记录：创建人字段来自 OpenAPI 请求的鉴权结果。控制台提交和 CLI / SDK 提交走的是同一套鉴权逻辑，差别只在用的凭证。</li>
-<li>第二步，查这组 AK 的归属：在 IAM 子用户详情页看 AccessKey 列表里有没有这个 AK。本例列表为空，说明这组 AK <strong>不在子用户名下</strong>。</li>
-<li>第三步，查凭证签发日志（需内部协助）：OpenAPI 网关会用 AK 换取临时凭证，日志里能看到签发结果的 <code>userId</code> 与 <code>domainId</code>。</li>
-<li>判定规则：<code>userId == domainId</code> 代表主账号身份；<code>userId != domainId</code> 代表某个子用户。本例是前者。</li>
-<li>第四步，确认 AK 创建入口：问清客户是从哪个页面创建的。本例是子用户登录后在「头像 → 安全认证」页面创建。</li>
-<li>到这里证据链闭合：创建人显示 root 是因为签名身份就是 root，展示没有错。</li>
+<li><strong>第一步，看任务记录</strong>：创建人字段来自 OpenAPI 请求的鉴权结果。控制台提交和 CLI / SDK 提交走的是同一套鉴权逻辑，差别只在用的凭证。</li>
+<li><strong>第二步，查这组 AK 的归属</strong>：在 IAM 子用户详情页看 AccessKey 列表里有没有这个 AK。本例列表为空，说明这组 AK <strong>不在子用户名下</strong>。</li>
+<li><strong>第三步，查凭证签发日志（需内部协助）</strong>：OpenAPI 网关会用 AK 换取临时凭证，日志里能看到签发结果的 <code>userId</code> 与 <code>domainId</code>。</li>
+<li><strong>判定规则</strong>：<code>userId == domainId</code> 代表主账号身份；<code>userId != domainId</code> 代表某个子用户。本例是前者。</li>
+<li><strong>第四步，确认 AK 创建入口</strong>：问清客户是从哪个页面创建的。本例是子用户登录后在「头像 → 安全认证」页面创建。</li>
+<li><strong>到这里证据链闭合</strong>：创建人显示 root 是因为签名身份就是 root，展示没有错。</li>
 </ul>
-<p><strong>根因分析</strong></p>
+<h4>根因分析</h4>
 <ul>
-<li>直接原因：CLI 配置的 AK/SK 代表主账号身份，请求以 root 签名，百舸据此记录创建人为 root。</li>
-<li>为什么子用户能拿到「主账号身份」的密钥：该子用户拥有「系统管理员」这类高权限策略，从「安全认证」页面创建的 AccessKey，在本案例里实际签发出来的身份是主账号，与在 IAM 子用户详情页为该子用户创建的 AccessKey 不是一回事。</li>
-<li>注意口径：官方文档写的是子用户和主账号都可以在「安全认证」页面创建 AccessKey，且子用户需要具备系统管理员、IAMFullControlAccessPolicy、IAMManageAccessKeyPolicy 或包含 CreateAccessKey 的自定义策略之一。「安全认证页创建的密钥等同主账号」是本案例的<strong>内部排查结论</strong>，回答时要以签发日志和 AK 归属为证据，不要当成文档规则背诵。</li>
-<li>已验证的正确组合：<strong>子用户 + 系统管理员权限 + 子用户自己的 AK/SK + OpenAPI 提交</strong>，创建人能正确显示子用户名。也就是说，问题不在权限，而在密钥归属。</li>
+<li><strong>直接原因</strong>：CLI 配置的 AK/SK 代表主账号身份，请求以 root 签名，百舸据此记录创建人为 root。</li>
+<li><strong>为什么子用户能拿到「主账号身份」的密钥</strong>：该子用户拥有「系统管理员」这类高权限策略，从「安全认证」页面创建的 AccessKey，在本案例里实际签发出来的身份是主账号，与在 IAM 子用户详情页为该子用户创建的 AccessKey 不是一回事。</li>
+<li><strong>注意口径</strong>：官方文档写的是子用户和主账号都可以在「安全认证」页面创建 AccessKey，且子用户需要具备系统管理员、IAMFullControlAccessPolicy、IAMManageAccessKeyPolicy 或包含 CreateAccessKey 的自定义策略之一。「安全认证页创建的密钥等同主账号」是本案例的<strong>内部排查结论</strong>，回答时要以签发日志和 AK 归属为证据，不要当成文档规则背诵。</li>
+<li><strong>已验证的正确组合</strong>：<strong>子用户 + 系统管理员权限 + 子用户自己的 AK/SK + OpenAPI 提交</strong>，创建人能正确显示子用户名。也就是说，问题不在权限，而在密钥归属。</li>
 </ul>
-<p><strong>解决方案</strong></p>
+<h4>解决方案</h4>
 <ol>
 <li>主账号或有 IAM 管理权限的人进入 IAM 控制台，打开「用户管理」，点进对应子用户详情页。</li>
 <li>在 AccessKey 区域为该子用户创建一组新的 AK/SK，立即保存 SK（只显示一次）。</li>
@@ -148,45 +157,39 @@
 # 1. 写入新的 AK/SK 与地域
 # 2. 提交一个最小测试任务
 # 3. 在控制台任务列表核对「创建人」</code></pre>
-<p><strong>给客户的回复口径</strong></p>
+<h4>给客户的回复口径</h4>
 <ul>
 <li>您好！关于「百舸 CLI 提交训练任务、创建人显示为 root 而非子账号」的问题，排查结论如下。</li>
-<li>原因：您当前用于提交任务的 AK/SK 实际代表的是主账号（root）身份。这组密钥虽然是在子用户下操作创建的，但该子用户拥有「系统管理员」权限，并且是从「安全认证」页面创建的 AccessKey，这种情况下签发的身份指向主账号，因此通过 OpenAPI / CLI 提交任务时创建人显示为 root。</li>
-<li>解决：请在 IAM 子用户的 AccessKey 管理页面为对应子用户单独创建一组 AK/SK（参考官方文档「子用户创建 AccessKey」），用这组子用户专属的 AK/SK 重新配置百舸 CLI 并提交任务，创建人即可正确显示为对应子账号。</li>
+<li><strong>原因</strong>：您当前用于提交任务的 AK/SK 实际代表的是主账号（root）身份。这组密钥虽然是在子用户下操作创建的，但该子用户拥有「系统管理员」权限，并且是从「安全认证」页面创建的 AccessKey，这种情况下签发的身份指向主账号，因此通过 OpenAPI / CLI 提交任务时创建人显示为 root。</li>
+<li><strong>解决</strong>：请在 IAM 子用户的 AccessKey 管理页面为对应子用户单独创建一组 AK/SK（参考官方文档「子用户创建 AccessKey」），用这组子用户专属的 AK/SK 重新配置百舸 CLI 并提交任务，创建人即可正确显示为对应子账号。</li>
 </ul>
-<p><strong>追问 1：控制台提交显示子用户名，CLI 提交显示 root，是不是 CLI 有 Bug？</strong></p>
+<h4>追问 1：控制台提交显示子用户名，CLI 提交显示 root，是不是 CLI 有 Bug？</h4>
 <ul>
 <li>不是。控制台用的是登录会话的身份，CLI 用的是配置文件里的 AK/SK。两边凭证不同，签名身份自然不同。</li>
 <li>正确做法是比对两次请求的签名身份，而不是比对「是不是同一个人操作的」。</li>
 </ul>
-<p><strong>追问 2：既然子用户有系统管理员权限，用 root 身份的密钥又能跑，为什么要换？</strong></p>
+<h4>追问 2：既然子用户有系统管理员权限，用 root 身份的密钥又能跑，为什么要换？</h4>
 <ul>
-<li>审计失真：所有操作都记在 root 名下，出了问题无法追溯到具体人。</li>
-<li>权限过大：主账号身份不受子用户策略约束，密钥一旦泄露，影响的是整个账号。</li>
-<li>管理困难：员工离职或权限调整时，禁用子用户无法让这组密钥失效。</li>
+<li><strong>审计失真</strong>：所有操作都记在 root 名下，出了问题无法追溯到具体人。</li>
+<li><strong>权限过大</strong>：主账号身份不受子用户策略约束，密钥一旦泄露，影响的是整个账号。</li>
+<li><strong>管理困难</strong>：员工离职或权限调整时，禁用子用户无法让这组密钥失效。</li>
 <li>官方文档也明确不建议使用主账号 AccessKey，建议按最小权限给子用户授权。</li>
 </ul>
-<p><strong>追问 3：怎么快速自查一组 AK 代表谁？</strong></p>
+<h4>追问 3：怎么快速自查一组 AK 代表谁？</h4>
 <ul>
-<li>看归属：在 IAM 各子用户详情页的 AccessKey 列表里找这个 AK，找得到就是该子用户的，哪里都找不到要警惕是主账号级密钥。</li>
-<li>看效果：用这组 AK 调一个会记录操作人的接口（如提交测试任务），看记录的创建人或操作人。</li>
-<li>看日志：需要内部确认时，查临时凭证签发记录里的 <code>userId</code> 是否等于 <code>domainId</code>。</li>
+<li><strong>看归属</strong>：在 IAM 各子用户详情页的 AccessKey 列表里找这个 AK，找得到就是该子用户的，哪里都找不到要警惕是主账号级密钥。</li>
+<li><strong>看效果</strong>：用这组 AK 调一个会记录操作人的接口（如提交测试任务），看记录的创建人或操作人。</li>
+<li><strong>看日志</strong>：需要内部确认时，查临时凭证签发记录里的 <code>userId</code> 是否等于 <code>domainId</code>。</li>
 </ul>
-<p><strong>追问 4：有没有比「换一组 AK」更好的长期做法？</strong></p>
+<h4>追问 4：有没有比「换一组 AK」更好的长期做法？</h4>
 <ul>
 <li>按人或按用途拆子用户，每个子用户只授予 AIHC 所需策略，不默认给「系统管理员」。</li>
 <li>自动化流水线使用专用子用户或角色，密钥定期轮转，旧密钥先禁用观察再删除。</li>
 <li>统一规定 AK 的创建入口和登记方式，避免同一账号下出现来源不明的高权限密钥。</li>
 </ul>
-<p><strong>评分参考</strong></p>
-<p>| 维度 | 不合格 | 合格 | 优秀 |</p>
-<p>|------|--------|------|------|</p>
-<p>| 身份模型 | 认为谁登录就记谁 | 知道创建人取决于 AK/SK | 能讲清 AK、临时凭证、userId 与 domainId 的关系 |</p>
-<p>| 排查方法 | 直接让客户换密钥或报产品 Bug | 会查 AK 归属 | 先用签发日志和 AK 归属闭合证据链，再给方案 |</p>
-<p>| 口径把握 | 把内部结论当文档规则 | 能给出解决步骤 | 区分官方文档与本案例结论，表述有边界 |</p>
-<p>| 安全意识 | 认为能跑就行 | 提到不建议用主账号密钥 | 给出最小权限、密钥轮转、停用旧密钥的完整建议 |</p>
-<p>| 客户沟通 | 只说「换个 AK」 | 能说明原因 | 原因、方案、文档链接一次讲清 |</p>
-<p><strong>常见误区</strong></p>
+<h4>评分参考</h4>
+<div class="tw"><table><thead><tr><th>维度</th><th>不合格</th><th>合格</th><th>优秀</th></tr></thead><tbody><tr><td>身份模型</td><td>认为谁登录就记谁</td><td>知道创建人取决于 AK/SK</td><td>能讲清 AK、临时凭证、userId 与 domainId 的关系</td></tr><tr><td>排查方法</td><td>直接让客户换密钥或报产品 Bug</td><td>会查 AK 归属</td><td>先用签发日志和 AK 归属闭合证据链，再给方案</td></tr><tr><td>口径把握</td><td>把内部结论当文档规则</td><td>能给出解决步骤</td><td>区分官方文档与本案例结论，表述有边界</td></tr><tr><td>安全意识</td><td>认为能跑就行</td><td>提到不建议用主账号密钥</td><td>给出最小权限、密钥轮转、停用旧密钥的完整建议</td></tr><tr><td>客户沟通</td><td>只说「换个 AK」</td><td>能说明原因</td><td>原因、方案、文档链接一次讲清</td></tr></tbody></table></div>
+<h4>常见误区</h4>
 <ul>
 <li>把「子用户在页面上点了创建」等同于「密钥属于子用户」。</li>
 <li>一看到 root 就判定为产品展示 Bug。</li>

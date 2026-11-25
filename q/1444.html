@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -103,11 +112,7 @@
 <li><strong>安全与媒体</strong>：DTLS 握手交换密钥 → SRTP 加密传输音视频（WebRTC 强制加密，无明文模式）。</li>
 </ol>
 <h3>三个角色分工</h3>
-<p>| 组件 | 作用 | 类比 |</p>
-<p>|---|---|---|</p>
-<p>| 信令服务器 | 交换 SDP/候选（只在建连期用） | 「介绍人」 |</p>
-<p>| STUN | 告诉你「你在公网眼中的地址」（NAT 映射） | 「镜子」 |</p>
-<p>| TURN | 打洞失败时的中继转发（媒体流经它） | 「传话筒」 |</p>
+<div class="tw"><table><thead><tr><th>组件</th><th>作用</th><th>类比</th></tr></thead><tbody><tr><td>信令服务器</td><td>交换 SDP/候选（只在建连期用）</td><td>「介绍人」</td></tr><tr><td>STUN</td><td>告诉你「你在公网眼中的地址」（NAT 映射）</td><td>「镜子」</td></tr><tr><td>TURN</td><td>打洞失败时的中继转发（媒体流经它）</td><td>「传话筒」</td></tr></tbody></table></div>
 <ul>
 <li><strong>打洞原理</strong>：双方同时向对方公网映射地址发包，在 NAT 上「凿」出会话孔洞（UDP 打洞成功率约 80%+，对称型 NAT 失败）；</li>
 <li><strong>失败兜底</strong>：对称 NAT / 严格防火墙场景走 TURN，成本是带宽+延迟，因此生产部署要按地区布 TURN 节点并统计 relay 率（relay 率过高说明 NAT 环境差或候选收集有问题）。</li>

@@ -39,6 +39,12 @@
     .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
     .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
     .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
     pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
     code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
     p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
@@ -78,6 +84,9 @@
       h1 { color:#f1f5f9; }
       .card { background:#111a2c;border-color:#1e293b; }
       .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
       .chip { background:#1e293b;color:#94a3b8; }
       .chip.diff { background:#1e3a8a;color:#bfdbfe; }
       .chip.tag { background:#064e3b;color:#a7f3d0; }
@@ -97,12 +106,7 @@
     <div class="card"><h2>题目</h2><p>请说明 OSI 七层与 TCP/IP 四层的分层、对应关系，以及每层的典型协议。</p></div>
     <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>OSI 七层</strong>（理论模型）：物理层 → 数据链路层 → 网络层 → 传输层 → 会话层 → 表示层 → 应用层。</p>
 <p><strong>TCP/IP 四层</strong>（实际使用）：网络接口层 → 网络层 → 传输层 → 应用层。</p>
-<p>| TCP/IP 层 | 职责 | 典型协议 |</p>
-<p>|---|---|---|</p>
-<p>| 应用层 | 面向用户的具体功能 | HTTP、HTTPS、DNS、FTP、SMTP、SSH |</p>
-<p>| 传输层 | 端到端可靠/不可靠传输，端口寻址 | TCP、UDP |</p>
-<p>| 网络层 | 主机到主机的路由与寻址 | IP、ICMP、ARP* |</p>
-<p>| 网络接口层 | 物理传输与帧封装 | Ethernet、Wi-Fi、PPP |</p>
+<div class="tw"><table><thead><tr><th>TCP/IP 层</th><th>职责</th><th>典型协议</th></tr></thead><tbody><tr><td>应用层</td><td>面向用户的具体功能</td><td>HTTP、HTTPS、DNS、FTP、SMTP、SSH</td></tr><tr><td>传输层</td><td>端到端可靠/不可靠传输，端口寻址</td><td>TCP、UDP</td></tr><tr><td>网络层</td><td>主机到主机的路由与寻址</td><td>IP、ICMP、ARP*</td></tr><tr><td>网络接口层</td><td>物理传输与帧封装</td><td>Ethernet、Wi-Fi、PPP</td></tr></tbody></table></div>
 <p><strong>区别要点</strong>：OSI 是 ISO 的理论参考模型，分层清晰但复杂，用于教学与排查思路；TCP/IP 是互联网实际采用的协议族，四层更贴近工程实现。日常排障自下而上：网线/网卡 → IP 可达（ping）→ 端口连通（telnet）→ 应用协议。</p></div>
     <div class="cta-row">
       <a class="cta" href="https://itinterview.com.cn/question/912">练这道题</a>
