@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 480" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="980" height="480" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">GPU 节点「反复不可用」的三层根因</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">先把平台状态和硬件实况分开，再分别治理机制层和驱动/硬件层</text>
+
+  <text x="30" y="100" font-size="14" font-weight="700" fill="#475569">层级</text>
+  <text x="250" y="100" font-size="14" font-weight="700" fill="#475569">看到的事实</text>
+  <text x="660" y="100" font-size="14" font-weight="700" fill="#475569">处置</text>
+
+  <rect x="20" y="114" width="200" height="100" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="40" y="152" font-size="17" font-weight="700" fill="#991b1b">现象层</text>
+  <text x="40" y="180" font-size="13" fill="#991b1b">控制台：不可用 / 自愈中</text>
+  <rect x="240" y="114" width="400" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="258" y="146" font-size="13" fill="#334155">P2(ERROR) EccDisabled_Xid[109] 反复推送</text>
+  <text x="258" y="170" font-size="13" fill="#334155">客户任务一直在跑，业务基本无感</text>
+  <text x="258" y="194" font-size="13" fill="#334155">查无真实维修记录</text>
+  <rect x="660" y="114" width="300" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="678" y="146" font-size="13" fill="#334155">短期：人工消除告警、解除封锁</text>
+  <text x="678" y="170" font-size="13" fill="#334155">告知客户：重投任务即可</text>
+  <text x="678" y="194" font-size="13" fill="#334155">节点无需下线维修</text>
+
+  <path d="M120 216 L120 240" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="20" y="244" width="200" height="100" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="40" y="282" font-size="17" font-weight="700" fill="#9a3412">机制层</text>
+  <text x="40" y="310" font-size="13" fill="#9a3412">监控分级过高、处置过激</text>
+  <rect x="240" y="244" width="400" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="258" y="276" font-size="13" fill="#334155">HAS 把 Xid 109 配成高等级，命中即屏蔽 + 报修</text>
+  <text x="258" y="300" font-size="13" fill="#334155">DP 组件也会独立发现 Xid 109 并屏蔽节点</text>
+  <text x="258" y="324" font-size="13" fill="#334155">低版本 DP 下 Xid 不会自恢复</text>
+  <rect x="660" y="244" width="300" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="678" y="276" font-size="13" fill="#334155">中期：HAS 降级 + DP 升级</text>
+  <text x="678" y="300" font-size="13" fill="#334155">两件事缺一不可</text>
+  <text x="678" y="324" font-size="13" fill="#334155">按机器清单灰度，观察后上线</text>
+
+  <path d="M120 346 L120 370" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="20" y="374" width="200" height="90" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="40" y="410" font-size="17" font-weight="700" fill="#1e40af">驱动/硬件层</text>
+  <text x="40" y="436" font-size="13" fill="#1e40af">Xid 109 为何频繁出现</text>
+  <rect x="240" y="374" width="400" height="90" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="258" y="404" font-size="13" fill="#334155">Xid 109 = 上下文切换超时，单凭它定不了根因</text>
+  <text x="258" y="428" font-size="13" fill="#334155">R535 有已知问题，R550+ 已修复</text>
+  <text x="258" y="452" font-size="13" fill="#334155">580.159.04 上频发，需要重新排查</text>
+  <rect x="660" y="374" width="300" height="90" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="678" y="404" font-size="13" fill="#334155">长期：事发后尽快收集日志</text>
+  <text x="678" y="428" font-size="13" fill="#334155">bug-report + 前后 dmesg 交 NVIDIA</text>
+  <text x="678" y="452" font-size="13" fill="#334155">评估升级驱动，不长期忽略</text>
+</svg>
