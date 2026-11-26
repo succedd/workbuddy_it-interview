@@ -104,7 +104,7 @@
     <h1>Unity 的协程（Coroutine）是怎么执行的？yield 不同返回值的时机有何差别？协程与 Invoke / async-await 如何取舍？</h1>
     <div class="chips"><span class="chip diff">中级</span><span class="chip">简答题</span><span class="chip">Unity游戏开发工程师</span><span class="chip">游戏客户端工程师</span><span class="chip">游戏开发工程师</span><span class="chip tag">Unity</span><span class="chip tag">协程</span><span class="chip tag">yield</span><span class="chip tag">MonoBehaviour</span></div>
     <div class="card"><h2>题目</h2><p>考察 Unity 协程的执行模型：yield return 各类型的恢复时机、协程与主循环的关系、适用边界。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>执行模型</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>执行模型</h3>
 <p>Unity 协程<strong>不是多线程</strong>：它跑在主线程，本质是 C# 迭代器（<code>IEnumerator</code>）。<code>StartCoroutine</code> 后协程体执行到第一个 <code>yield</code> 就<strong>挂起并把控制权还给 Unity</strong>，之后由引擎在主循环的固定阶段逐帧调用 <code>MoveNext()</code> 恢复执行——所以协程是「引擎代管的分帧状态机」。</p>
 <h3>yield 各类型恢复时机（高频考点）</h3>
 <div class="tw"><table><thead><tr><th>yield 返回</th><th>恢复时机</th></tr></thead><tbody><tr><td><code>null</code></td><td>下一帧 Update 之后（当帧剩余逻辑不中断）</td></tr><tr><td><code>WaitForSeconds(t)</code></td><td>渲染后计时 t 秒的<strong>下一帧渲染后</strong>（受 Time.timeScale 影响）</td></tr><tr><td><code>WaitForSecondsRealtime(t)</code></td><td>同上但用真实时间（不受暂停影响）</td></tr><tr><td><code>WaitForEndOfFrame</code></td><td>当帧<strong>所有相机与 UI 渲染完成后</strong>（截图常用）</td></tr><tr><td><code>WaitForFixedUpdate</code></td><td>物理步骤之后</td></tr><tr><td><code>StartCoroutine(other)</code></td><td>等待子协程跑完（协程编排）</td></tr></tbody></table></div>

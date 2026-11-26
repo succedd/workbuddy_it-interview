@@ -104,7 +104,7 @@
     <h1>把用户偏好或领域知识固化成 LoRA 参数（参数化记忆）可行吗？为什么说参数记忆「写进去容易、删不掉」，它和向量记忆、RAG 的边界在哪里？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">开放讨论题</span><span class="chip">算法工程师</span><span class="chip">LLM应用开发工程师</span><span class="chip tag">LoRA</span><span class="chip tag">参数记忆</span><span class="chip tag">Machine Unlearning</span><span class="chip tag">RAG与微调</span></div>
     <div class="card"><h2>题目</h2><p>考察点：对微调本质与参数记忆风险的理解，以及记忆存储形式的选型判断。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 60 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Agent 记忆按存储位置和表征形式可以分成三类，这个视角能帮我们看清微调在记忆体系里的位置。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>要点</strong>：Agent 记忆按存储位置和表征形式可以分成三类，这个视角能帮我们看清微调在记忆体系里的位置。</p>
 <div class="tw"><table><thead><tr><th>存储形式</th><th>说明</th><th>典型实现</th></tr></thead><tbody><tr><td>Token 级记忆</td><td>以自然语言或离散符号存储在外部数据库</td><td>向量库中的文本块、结构化 JSON</td></tr><tr><td>参数化记忆</td><td>把信息编码进模型参数中</td><td>预训练知识、LoRA 适配器、SFT 微调</td></tr><tr><td>潜在记忆</td><td>以隐式形式承载在模型内部表示中</td><td>KV Cache、激活值、Hidden States</td></tr></tbody></table></div>
 <p>这三种形式并不完全割裂。MemOS 的“记忆立方体”支持从纯文本记忆、激活记忆（KV Cache）到参数记忆的动态流转：热记忆放到更近的位置，冷记忆用更重的方式固化。典型梯度是：</p>
 <pre><code class="language-text">纯文本记忆 --(高频使用)--&gt; 激活记忆(KV Cache) --(长期固化)--&gt; 参数记忆(LoRA)

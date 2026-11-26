@@ -104,7 +104,7 @@
     <h1>OSI 七层模型与 TCP/IP 四层模型有什么区别？每层的职责和协议是？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">网络工程师</span><span class="chip">后端开发工程师</span><span class="chip">全栈开发工程师</span><span class="chip tag">计算机网络</span><span class="chip tag">OSI</span><span class="chip tag">TCP/IP</span></div>
     <div class="card"><h2>题目</h2><p>请说明 OSI 七层与 TCP/IP 四层的分层、对应关系，以及每层的典型协议。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 77 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>OSI 七层</strong>（理论模型）：物理层 → 数据链路层 → 网络层 → 传输层 → 会话层 → 表示层 → 应用层。</p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：网络整理 · 未复核 · 78 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>OSI 七层</strong>（理论模型）：物理层 → 数据链路层 → 网络层 → 传输层 → 会话层 → 表示层 → 应用层。</p>
 <p><strong>TCP/IP 四层</strong>（实际使用）：网络接口层 → 网络层 → 传输层 → 应用层。</p>
 <div class="tw"><table><thead><tr><th>TCP/IP 层</th><th>职责</th><th>典型协议</th></tr></thead><tbody><tr><td>应用层</td><td>面向用户的具体功能</td><td>HTTP、HTTPS、DNS、FTP、SMTP、SSH</td></tr><tr><td>传输层</td><td>端到端可靠/不可靠传输，端口寻址</td><td>TCP、UDP</td></tr><tr><td>网络层</td><td>主机到主机的路由与寻址</td><td>IP、ICMP、ARP*</td></tr><tr><td>网络接口层</td><td>物理传输与帧封装</td><td>Ethernet、Wi-Fi、PPP</td></tr></tbody></table></div>
 <p><strong>区别要点</strong>：OSI 是 ISO 的理论参考模型，分层清晰但复杂，用于教学与排查思路；TCP/IP 是互联网实际采用的协议族，四层更贴近工程实现。日常排障自下而上：网线/网卡 → IP 可达（ping）→ 端口连通（telnet）→ 应用协议。</p></div>

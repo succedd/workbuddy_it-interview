@@ -104,7 +104,7 @@
     <h1>Selenium 里隐式等待和显式等待有什么区别？为什么「Thread.sleep + 隐式等待」的组合是反模式？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">自动化测试工程师</span><span class="chip">测试开发工程师</span><span class="chip">功能测试工程师</span><span class="chip tag">Selenium</span><span class="chip tag">显式等待</span><span class="chip tag">隐式等待</span><span class="chip tag">自动化测试</span></div>
     <div class="card"><h2>题目</h2><p>考察 Selenium 自动化测试的等待策略：implicit wait 与 explicit wait 的机制差异、轮询原理与常见反模式。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 55 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>两种等待的区别</h3>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 56 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><h3>两种等待的区别</h3>
 <div class="tw"><table><thead><tr><th></th><th>隐式等待（Implicit Wait）</th><th>显式等待（WebDriverWait + expected_conditions）</th></tr></thead><tbody><tr><td>作用域</td><td><strong>全局</strong>，对每次 findElement 生效</td><td><strong>局部</strong>，只作用于指定元素/条件</td></tr><tr><td>轮询逻辑</td><td>找不到元素就按固定间隔轮询到超时</td><td>按条件（可见/可点/存在…）轮询，条件满足立即返回</td></tr><tr><td>粒度</td><td>只有「元素存在」，不管可点可</td><td>可组合几十种条件（visibility_of_element_located、element_to_be_clickable…）</td></tr><tr><td>超时行为</td><td>抛 NoSuchElementException</td><td>抛 TimeoutException（条件更明确）</td></tr></tbody></table></div>
 <h3>为什么 sleep + 隐式等待是反模式</h3>
 <ol>

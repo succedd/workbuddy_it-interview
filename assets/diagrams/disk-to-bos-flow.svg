@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 580" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="980" height="580" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">物理硬盘数据上云全流程（7 步）</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">百 T 级数据走公网太慢：寄盘到机房，直连服务器只读挂载，再上传到客户 BOS 桶</text>
+
+  <rect x="20" y="96" width="215" height="124" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="38" y="126" font-size="16" font-weight="700" fill="#1e40af">1 确定机房</text>
+  <text x="38" y="152" font-size="13" fill="#1e3a8a">按盘量和占用时长选</text>
+  <text x="38" y="174" font-size="13" fill="#1e3a8a">大批量、长期：bjdd</text>
+  <text x="38" y="196" font-size="13" fill="#1e3a8a">少量临时：bjlsh</text>
+
+  <rect x="260" y="96" width="215" height="124" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="278" y="126" font-size="16" font-weight="700" fill="#1e40af">2 拿收件信息</text>
+  <text x="278" y="152" font-size="13" fill="#1e3a8a">收件人：机房值班</text>
+  <text x="278" y="174" font-size="13" fill="#1e3a8a">客户寄出后回传单号</text>
+  <text x="278" y="196" font-size="13" fill="#1e3a8a">建议加固包装</text>
+
+  <rect x="500" y="96" width="215" height="124" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="518" y="126" font-size="16" font-weight="700" fill="#991b1b">3 不格式化特批</text>
+  <text x="518" y="152" font-size="13" fill="#7f1d1d">机房默认出盘即格式化</text>
+  <text x="518" y="174" font-size="13" fill="#7f1d1d">AM 发邮件走报备链路</text>
+  <text x="518" y="196" font-size="13" fill="#7f1d1d">卡点一：审批周期</text>
+
+  <rect x="740" y="96" width="215" height="124" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="758" y="126" font-size="16" font-weight="700" fill="#991b1b">4 规格与传输方式</text>
+  <text x="758" y="152" font-size="13" fill="#7f1d1d">8T x 18 块 USB 移动盘</text>
+  <text x="758" y="174" font-size="13" fill="#7f1d1d">机房 USB 口仅 2.0</text>
+  <text x="758" y="196" font-size="13" fill="#7f1d1d">卡点二：拆盘走 SATA</text>
+
+  <path d="M237 158 L256 158" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M477 158 L496 158" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M717 158 L736 158" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M847 222 L847 246 L127 246 L127 266" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="20" y="270" width="215" height="124" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="38" y="300" font-size="16" font-weight="700" fill="#1e40af">5 前置准备</text>
+  <text x="38" y="326" font-size="13" fill="#1e3a8a">注册硬盘上云平台</text>
+  <text x="38" y="348" font-size="13" fill="#1e3a8a">客户建 BOS 桶、给 AK/SK</text>
+  <text x="38" y="370" font-size="13" fill="#1e3a8a">和值班对齐插盘方式</text>
+
+  <rect x="260" y="270" width="215" height="124" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="278" y="300" font-size="16" font-weight="700" fill="#1e40af">6 插盘与上传</text>
+  <text x="278" y="326" font-size="13" fill="#1e3a8a">选空闲机器，OMC 提单</text>
+  <text x="278" y="348" font-size="13" fill="#1e3a8a">边插盘边登记 SN</text>
+  <text x="278" y="370" font-size="13" fill="#1e3a8a">只读挂载后上传</text>
+
+  <rect x="500" y="270" width="215" height="124" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="518" y="300" font-size="16" font-weight="700" fill="#166534">7 收尾闭环</text>
+  <text x="518" y="326" font-size="13" fill="#14532d">核对数据量和文件数</text>
+  <text x="518" y="348" font-size="13" fill="#14532d">TS 确认最后写入时间</text>
+  <text x="518" y="370" font-size="13" fill="#14532d">客户验收后寄回硬盘</text>
+
+  <path d="M237 332 L256 332" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M477 332 L496 332" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="740" y="270" width="215" height="124" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="758" y="300" font-size="16" font-weight="700" fill="#9a3412">全程记录</text>
+  <text x="758" y="326" font-size="13" fill="#9a3412">物理盘 / SN / 挂载点</text>
+  <text x="758" y="348" font-size="13" fill="#9a3412">一一对应成清单</text>
+  <text x="758" y="370" font-size="13" fill="#9a3412">进度、排障、寄回都靠它</text>
+
+  <text x="30" y="438" font-size="16" font-weight="700" fill="#0f172a">数据流</text>
+  <rect x="20" y="452" width="170" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="38" y="484" font-size="14" font-weight="700" fill="#0f172a">客户硬盘</text>
+  <text x="38" y="510" font-size="13" fill="#475569">USB 或 SATA 直插</text>
+  <rect x="215" y="452" width="170" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="233" y="484" font-size="14" font-weight="700" fill="#0f172a">机房服务器</text>
+  <text x="233" y="510" font-size="13" fill="#475569">mount -o ro 只读</text>
+  <rect x="410" y="452" width="170" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="428" y="484" font-size="14" font-weight="700" fill="#0f172a">上传工具</text>
+  <text x="428" y="510" font-size="13" fill="#475569">bcecmd bos sync</text>
+  <rect x="605" y="452" width="170" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="623" y="484" font-size="14" font-weight="700" fill="#0f172a">客户 BOS 桶</text>
+  <text x="623" y="510" font-size="13" fill="#475569">按指定目录层级</text>
+  <rect x="800" y="452" width="155" height="80" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="818" y="484" font-size="14" font-weight="700" fill="#166534">核对验收</text>
+  <text x="818" y="510" font-size="13" fill="#14532d">数量、大小一致</text>
+
+  <path d="M192 492 L211 492" stroke="#16a34a" stroke-width="2" marker-end="url(#g)"/>
+  <path d="M387 492 L406 492" stroke="#16a34a" stroke-width="2" marker-end="url(#g)"/>
+  <path d="M582 492 L601 492" stroke="#16a34a" stroke-width="2" marker-end="url(#g)"/>
+  <path d="M777 492 L796 492" stroke="#16a34a" stroke-width="2" marker-end="url(#g)"/>
+  <text x="30" y="562" font-size="13" fill="#64748b">注：主机名、SN、机架位、单号、地址等现场信息以工单和值班群为准，本图不含任何真实值。</text>
+</svg>
