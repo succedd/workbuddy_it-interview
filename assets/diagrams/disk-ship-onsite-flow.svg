@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 560" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#334155"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#16a34a"/></marker>
+  </defs>
+  <rect width="1080" height="560" fill="#ffffff"/>
+  <text x="20" y="38" font-size="22" font-weight="700" fill="#0f172a">硬盘寄出上云：机房现场作业流程</text>
+  <text x="20" y="62" font-size="14" fill="#64748b">客户寄盘 → 现场收盘插盘 → 平台上传 → 卸载拔盘 → 批次寄回 → 通知客户</text>
+
+  <rect x="10" y="80" width="1060" height="90" rx="6" fill="#f0fdf4"/>
+  <rect x="10" y="180" width="1060" height="120" rx="6" fill="#eff6ff"/>
+  <rect x="10" y="310" width="1060" height="190" rx="6" fill="#fff7ed"/>
+  <text x="24" y="131" font-size="15" font-weight="700" fill="#166534">客户</text>
+  <text x="24" y="245" font-size="15" font-weight="700" fill="#1e40af">机房现场</text>
+  <text x="24" y="400" font-size="15" font-weight="700" fill="#9a3412">TAM</text>
+  <text x="24" y="420" font-size="15" font-weight="700" fill="#9a3412">上云平台</text>
+
+  <rect x="120" y="100" width="150" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="195" y="131" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">客户寄盘</text>
+  <text x="310" y="122" font-size="13" fill="#166534">客户需提供：硬盘型号与接口（SATA / USB）、数据量、</text>
+  <text x="310" y="142" font-size="13" fill="#166534">上传的 bucket 目录、BOS 上传用 AK/SK、快递单号</text>
+  <rect x="900" y="100" width="160" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="980" y="131" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">通知客户验收</text>
+
+  <rect x="120" y="210" width="150" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="195" y="232" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">机房现场收盘</text>
+  <text x="195" y="251" font-size="12" fill="#475569" text-anchor="middle">签收、入库工单</text>
+  <rect x="330" y="210" width="150" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="405" y="232" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">插盘</text>
+  <text x="405" y="251" font-size="12" fill="#475569" text-anchor="middle">逐盘登记硬盘 SN</text>
+  <rect x="715" y="210" width="150" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="790" y="240" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">拔盘</text>
+  <rect x="900" y="210" width="160" height="50" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="980" y="232" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">寄回硬盘</text>
+  <text x="980" y="251" font-size="12" fill="#475569" text-anchor="middle">按批次寄回</text>
+
+  <rect x="290" y="330" width="230" height="150" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="405" y="358" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">通知机房现场接盘</text>
+  <text x="304" y="388" font-size="13" fill="#334155">1. 提供机器 SN、机架位</text>
+  <text x="304" y="412" font-size="13" fill="#334155">2. 安排现场接到空闲机器上</text>
+  <text x="304" y="436" font-size="13" fill="#334155">3. 记录在用机器</text>
+  <rect x="545" y="330" width="135" height="150" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="612" y="358" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">数据上传中</text>
+  <text x="612" y="388" font-size="13" fill="#334155" text-anchor="middle">只读挂载</text>
+  <text x="612" y="412" font-size="13" fill="#334155" text-anchor="middle">记录机房内硬盘数</text>
+  <text x="612" y="436" font-size="13" fill="#334155" text-anchor="middle">已完成 / 上传中</text>
+  <rect x="705" y="330" width="355" height="150" rx="8" fill="#fff" stroke="#334155" stroke-width="1.5"/>
+  <text x="882" y="358" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">上传完成后</text>
+  <text x="720" y="388" font-size="13" fill="#334155">1. 记录单块盘上传结果（数据量、文件数）</text>
+  <text x="720" y="412" font-size="13" fill="#334155">2. 平台页面点「卸载」</text>
+  <text x="720" y="436" font-size="13" fill="#334155">3. 通知机房现场拔盘</text>
+  <text x="720" y="460" font-size="13" fill="#334155">4. 更新空闲机器信息</text>
+
+  <path d="M195 150 L195 208" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M270 235 L328 235" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M405 330 L405 262" stroke="#16a34a" stroke-width="2.4" marker-end="url(#g)"/>
+  <text x="414" y="300" font-size="12" fill="#15803d">通知现场</text>
+  <path d="M520 405 L543 405" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M680 405 L703 405" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M790 330 L790 262" stroke="#16a34a" stroke-width="2.4" marker-end="url(#g)"/>
+  <text x="799" y="300" font-size="12" fill="#15803d">通知现场</text>
+  <path d="M865 235 L898 235" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M980 210 L980 152" stroke="#334155" stroke-width="1.6" marker-end="url(#k)"/>
+
+  <text x="20" y="530" font-size="13" fill="#64748b">注：收件人为机房值班，电话和收件地址每次向值班获取；机器 SN、机架位、单号以工单和值班群为准，本图不含任何真实值。</text>
+</svg>
