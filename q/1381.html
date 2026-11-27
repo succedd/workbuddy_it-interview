@@ -104,7 +104,7 @@
     <h1>CISC 与 RISC 指令集架构的主要区别是什么？请从指令复杂度、寻址方式、寄存器、控制实现与流水线角度对比</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">嵌入式与物联网工程师</span><span class="chip">C/C++开发工程师</span><span class="chip">系统软件工程师</span><span class="chip tag">CISC</span><span class="chip tag">RISC</span><span class="chip tag">指令集架构</span><span class="chip tag">Load/Store</span></div>
     <div class="card"><h2>题目</h2><p>考察复杂指令集（CISC，如 x86）与精简指令集（RISC，如 ARM/MIPS）在设计哲学与硬件实现上的核心差异。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、核心区别总览</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：适中 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、核心区别总览</strong></p>
 <div class="tw"><table><thead><tr><th>对比维度</th><th>CISC（复杂指令集）</th><th>RISC（精简指令集）</th></tr></thead><tbody><tr><td>指令条数/复杂度</td><td>多且复杂，单条指令可做多步操作</td><td>少而简单，一条指令一个基本操作</td></tr><tr><td>指令格式与长度</td><td>变长格式，长短不一</td><td>定长格式，规整（易译码）</td></tr><tr><td>寻址方式</td><td>丰富（十几种）</td><td>少（通常仅寄存器/基址/变址等少数几种）</td></tr><tr><td>通用寄存器</td><td>较少</td><td>大量通用寄存器</td></tr><tr><td>访存方式</td><td>指令可直接访存（运算类也可内存操作数）</td><td>仅 Load/Store 访存，运算在寄存器间进行</td></tr><tr><td>控制器实现</td><td>多用微程序控制（规整易扩展）</td><td>多用硬布线控制（快）</td></tr><tr><td>流水线</td><td>指令长短不一，流水较难</td><td>指令规整，易于深度流水/超标量</td></tr><tr><td>编译角色</td><td>硬件做得多，编译相对简单</td><td>硬件简单，靠编译器优化调度</td></tr><tr><td>典型代表</td><td>x86、x86-64</td><td>ARM、MIPS、RISC-V、PowerPC</td></tr></tbody></table></div>
 <p><strong>二、设计哲学</strong></p>
 <ul>

@@ -104,7 +104,7 @@
     <h1>script 的 defer 和 async 有什么区别？img 的 loading 与 srcset/sizes 又是怎么决定「要不要加载」和「加载哪一张」的？</h1>
     <div class="chips"><span class="chip diff">初级</span><span class="chip">简答题</span><span class="chip">前端开发工程师</span><span class="chip">HTML/CSS/JS工程师</span><span class="chip">Web全栈工程师</span><span class="chip tag">HTML</span><span class="chip tag">defer</span><span class="chip tag">async</span><span class="chip tag">srcset</span><span class="chip tag">懒加载</span></div>
     <div class="card"><h2>题目</h2><p>考察点：资源加载属性的语义差异，这是首屏性能优化的基本功。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、defer vs async（经典脚本）</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>一、defer vs async（经典脚本）</strong></p>
 <div class="tw"><table><thead><tr><th>版本</th><th>下载</th><th>执行时机</th><th>执行顺序</th><th>是否阻塞解析</th></tr></thead><tbody><tr><td>无属性</td><td>阻塞</td><td>立即</td><td>按顺序</td><td>是</td></tr><tr><td><code>async</code></td><td>并行</td><td><strong>下载完立刻执行</strong>，可能打断解析</td><td><strong>不保证</strong></td><td>否</td></tr><tr><td><code>defer</code></td><td>并行</td><td><strong>文档解析完成后、DOMContentLoaded 之前</strong></td><td><strong>按出现顺序</strong></td><td>否</td></tr></tbody></table></div>
 <ul>
 <li>两者都指示浏览器在后台线程下载，<strong>获取期间不阻塞页面</strong>；差异在执行时机与顺序。</li>

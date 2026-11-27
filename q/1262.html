@@ -104,7 +104,7 @@
     <h1>场景题：订单、支付这类不能丢消息的队列要上 RabbitMQ，Classic Queue、Quorum Queue、Streams 应该怎么选？</h1>
     <div class="chips"><span class="chip diff">高级</span><span class="chip">场景题</span><span class="chip">后端架构师</span><span class="chip">系统运维工程师</span><span class="chip">Java后端工程师</span><span class="chip tag">RabbitMQ</span><span class="chip tag">Quorum Queue</span><span class="chip tag">高可用</span><span class="chip tag">选型</span></div>
     <div class="card"><h2>题目</h2><p>考察点：RabbitMQ 集群与队列类型的副本语义、选型依据。</p></div>
-    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 61 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先纠正一个常见误区：集群 ≠ 有副本</strong></p>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 62 天前更新 · 技术内容可能随版本变化，建议结合官方文档理解</div><p><strong>先纠正一个常见误区：集群 ≠ 有副本</strong></p>
 <p>RabbitMQ 的「集群」只让多个节点共同管理元数据和连接。<strong>普通集群模式下队列只存在于一个节点</strong>，其他节点只有队列元数据用于定位队列所在实例；客户端连到别的节点时，该节点要从队列所在节点拉取数据。所以普通集群只提升吞吐与连接处理能力，<strong>不提供队列级的数据冗余</strong>。</p>
 <p><strong>三种队列类型的定位</strong></p>
 <div class="tw"><table><thead><tr><th>类型</th><th>是否复制</th><th>特点</th><th>适用场景</th></tr></thead><tbody><tr><td><strong>Classic Queue</strong></td><td>非复制</td><td>单节点存储，延迟低、吞吐高</td><td>临时队列、极低延迟、高频创建删除队列、大规模 fanout</td></tr><tr><td><strong>Quorum Queue</strong>（3.8+）</td><td>复制型</td><td>基于 <strong>Raft</strong>，需多数节点确认（N/2+1）才算写入成功，主节点故障与网络分区语义更清晰</td><td>订单、支付、库存扣减等<strong>不能轻易丢消息</strong>的链路</td></tr><tr><td><strong>Streams</strong>（3.9+）</td><td>复制型</td><td>append-only 日志，消费后不删除，可按 offset 回放历史</td><td>事件溯源、日志分发、大量消息堆积与历史回放</td></tr></tbody></table></div>

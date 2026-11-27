@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？ · IT面试题库</title>
+  <meta name="description" content="现象 某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending。 控制台显示节点状态为 running，节点列表里也能看到「空闲量」。 客户的疑问：卡明明空着，任务为什么调度不上去？ 节点资源情况 节点规格：176 核 CPU / 960 GiB 内存 / 8 张 GPU 卡。 系统预留…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？ · IT面试题库">
+  <meta property="og:description" content="现象 某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending。 控制台显示节点状态为 running，节点列表里也能看到「空闲量」。 客户的疑问：卡明明空着，任务为什么调度不上去？ 节点资源情况 节点规格：176 核 CPU / 960 GiB 内存 / 8 张 GPU 卡。 系统预留…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/2081.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/2081.jpg">
+  <meta property="og:url" content="https://itinterview.com.cn/q/2081">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？ · IT面试题库">
+  <meta name="twitter:description" content="现象 某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending。 控制台显示节点状态为 running，节点列表里也能看到「空闲量」。 客户的疑问：卡明明空着，任务为什么调度不上去？ 节点资源情况 节点规格：176 核 CPU / 960 GiB 内存 / 8 张 GPU 卡。 系统预留…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/2081.jpg">
+  <meta name="twitter:image:alt" content="百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？ · IT面试题库">
+  <link rel="canonical" href="https://itinterview.com.cn/q/2081">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？","text":"场景：某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending，控制台显示节点 running 且有空闲量。节点规格 176 核 / 960 GiB / 8 卡，系统预留后最大可分配 170 核 / 898 GiB。请说明 Pending 的根因、百舸的调度判断公式、排查步骤和解决方法，并结合资源池、队列、节点、容器、任务、开发机的层级关系，回答客户的常见疑问。","answerCount":1,"datePublished":"2026-11-27T02:13:29.575Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"现象 某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending。 控制台显示节点状态为 running，节点列表里也能看到「空闲量」。 客户的疑问：卡明明空着，任务为什么调度不上去？ 节点资源情况 节点规格：176 核 CPU / 960 GiB 内存 / 8 张 GPU 卡。 系统预留：6 核 + 62 GiB 留给管控组件，最大可分配 = 170 核 / 898 GiB / 8 卡。 | 节点 | GPU 空闲 | CPU 已分配 | CPU 剩余 | 内存已分配 | 内存剩余 | |------|----------|------------|----------|------------|----------| | 节点A | 2 张 | 144 核 | 26 核 | 656 GiB | 242 GiB | | 节点B | 2 张 | 164 核 | 6 核 | 720 GiB | 178 GiB | | 节点C | 0 张 | 160 核 | 10 核 | 400 GiB | 498 GiB | | 节点D | 0 张 | 144 核 | 26 核 | 656 GiB | 242 GiB | 空闲的 4 张卡分散在节点A、节点B，每台各 2 张；另外 2 台节点 GPU 已占满。 有空闲卡的两台节点合计剩余：4 张卡 + 32 核 CPU + 420 GiB 内存。 说明：原文写作「剩余 2 核」，对照控制台截图，「2」是该节点的 GPU 空闲量，CPU 剩余按「最大可用量 − 分配量」计算为 26 核和 6 核，上表已按截图校正。 因果链 | 环节 | 发生了什么 | |------|------------| | 1. 请求值偏高 | 任务的 CPU / 内存 requests 设置过高 | | 2. 资源被占 | 已运行任务大量占用 CPU / 内存 | | 3. 单节点不足 | 2 台节点 GPU 已满；另 2 台各剩 2 张卡，但 CPU 只剩 26 核和 6 核 | | 4. 界面误导 | 控制台显示「有空闲量」，看起来资源够用 | | 5. 无法落点 | 新任务的申请量在任何一台节点上都无法同时满足 | | 6. 结果 | GPU 物理空闲，但容器创建不了，任务一直 Pending | 百舸是整机调度逻辑：任务申请的 GPU、CPU、内存必须在同一台节点上同时满足，不能跨节点拼凑。 空闲卡分散在 2 台节点，每台的 CPU 剩余都不够任务申请量。GPU 物理空闲，但 CPU 不足导致容器无法创建。 界面「空闲量」是累加值，不等于「单节点可用量」。 核心调度公式 以本次节点B为例： | 项目 | 数值 | |------|------| | 节点最大可分配 | 170 核 CPU | | 节点当前分配 | 164 核 CPU | | 节点剩余 | 170 − 164 = 6 核 | | 任务申请（假设） | 80 核 | | 判断 | 6 ，看 Events 里的 Pending 原因（如 Insufficient cpu / Insufficient memory）。 注意 排查优先级：先查 CPU / 内存，再查 GPU 硬件 / 驱动。 建议：资源使用率超过 80% 时设置告警，提前发现单节点资源紧张。 --- 附：百舸 AIHC 架构全解（背景知识） 一、百舸是什么 百舸（AIHC）是百度智能云专为 AI 训练 / 推理设计的 GPU 算力托管平台。客户不用管机器、不用装驱动、不用运维集群，只需提交任务，平台负责调度运行。 二、层级结构 三、各层详解（结合本案例数据） 1. 资源池 一批物理服务器的集合，是最顶层的资源边界。 | 资源池名称 | 资源池 ID | 节点数量 | |------------|-----------|----------| | | aihc- | 14 台 | 2. 队列 资源池内部的资源分区。每个队列管理一批固定节点，任务提交到哪个队列就只能用那批节点，队列之间资源完全隔离。 | 队列 | 节点数量 | GPU 卡数 | |------|----------|----------| | 队列1 | 4 台 | 32 张 | | 队列2 | 4 台 | 32 张 | | 队列3 | 4 台 | 32 张 | | 队列4 | 2 台 | 16 张 | 3. 节点 一台物理 GPU 服务器。 | 项目 | CPU | 内存 | GPU | |------|-----|------|-----| | 总量 | 176 核 | 960 GiB | 8 张 | | 系统预留（管控组件） | 6 核 | 62 GiB | 0 | | 最大可分配 | 170 核 | 898 GiB | 8 张 | 4. 容器（Container） 在节点上动态创建的隔离运行环境，任务的代码就跑在容器里。 每个容器占用一定量的 CPU / 内存 / GPU。 容器之间完全隔离，互不干扰。 任务结束后自动销毁，资源立即释放。 通俗理解：节点是战车，容器是战车上隔出来的独立驾驶舱，代码在驾驶舱里运行，跑完拆掉。 5. 任务（Job） 用户提交的一个计算请求，描述「我要运行什么代码、需要多少资源」。 关键调度规则：百舸是整机调度，任务所需资源必须在同一台节点上同时满足，不能跨节点拼凑。 调度判断公式：单节点（最大可分配量 − 当前分配量）≥ 任务申请量 → 才能在该节点调度。 调度流程： 6. 开发机 一种长期运行的交互式任务，可 SSH 登录操作，类似云服务器。 | 对比项 | 普通训练任务 | 开发机 | |--------|--------------|--------| | 生命周期 | 跑完自动销毁 | 长期运行，手动停止 | | 交互方式 | 提交代码等结果 | SSH 登录 | | 资源占用 | 按需申请 | 持续占用，不用也耗资源 | 注意：开发机不用时必须停止，否则会持续占用节点资源，挤压训练任务。 四、客户常见疑问速查 | 疑问 | 答案 | |------|------| | 有空闲卡却跑不了任务？ | CPU / 内存先不足，容器起不来，GPU 跟着闲置 | | 有余量还是 Pending？ | 余量是累加值，调度看单节点剩余量 | | 不同队列会互相抢资源吗？ | 不会，队列之间完全隔离 | | 开发机不用时要关掉吗？ | 必须关，不关会持续占用资源 | | 任务申请多少资源合适？ | 申请量小于单节点最大可分配量，留 10%~20% 余量 |","url":"https://itinterview.com.cn/question/2081"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"百度云","item":"https://itinterview.com.cn/category?cat=285"},{"@type":"ListItem","position":4,"name":"百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？","item":"https://itinterview.com.cn/q/2081"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？</h1>
+    <div class="chips"><span class="chip diff">中级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">云资源运维工程师</span><span class="chip">云解决方案架构师</span><span class="chip tag">百度智能云</span><span class="chip tag">百舸</span><span class="chip tag">AIHC</span><span class="chip tag">GPU调度</span><span class="chip tag">Pending</span><span class="chip tag">resources.requests</span></div>
+    <div class="card"><h2>题目</h2><p>场景：某客户在百舸某队列上有 4 张空闲 GPU 卡，提交训练任务后一直 Pending，控制台显示节点 running 且有空闲量。节点规格 176 核 / 960 GiB / 8 卡，系统预留后最大可分配 170 核 / 898 GiB。请说明 Pending 的根因、百舸的调度判断公式、排查步骤和解决方法，并结合资源池、队列、节点、容器、任务、开发机的层级关系，回答客户的常见疑问。</p></div>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 含示例/代码 · 来源：外部链接 · 未复核 · 近 7 天更新</div><h4>现象</h4>
+<ul>
+<li>某客户在百舸某队列上有 <strong>4 张空闲 GPU 卡</strong>，提交训练任务后一直 <strong>Pending</strong>。</li>
+<li>控制台显示节点状态为 <strong>running</strong>，节点列表里也能看到「空闲量」。</li>
+<li>客户的疑问：卡明明空着，任务为什么调度不上去？</li>
+</ul>
+<h4>节点资源情况</h4>
+<p><strong>节点规格</strong>：176 核 CPU / 960 GiB 内存 / 8 张 GPU 卡。</p>
+<p><strong>系统预留</strong>：6 核 + 62 GiB 留给管控组件，<strong>最大可分配 = 170 核 / 898 GiB / 8 卡</strong>。</p>
+<div class="tw"><table><thead><tr><th>节点</th><th>GPU 空闲</th><th>CPU 已分配</th><th>CPU 剩余</th><th>内存已分配</th><th>内存剩余</th></tr></thead><tbody><tr><td>节点A</td><td>2 张</td><td>144 核</td><td>26 核</td><td>656 GiB</td><td>242 GiB</td></tr><tr><td>节点B</td><td>2 张</td><td>164 核</td><td>6 核</td><td>720 GiB</td><td>178 GiB</td></tr><tr><td>节点C</td><td>0 张</td><td>160 核</td><td>10 核</td><td>400 GiB</td><td>498 GiB</td></tr><tr><td>节点D</td><td>0 张</td><td>144 核</td><td>26 核</td><td>656 GiB</td><td>242 GiB</td></tr></tbody></table></div>
+<ul>
+<li>空闲的 4 张卡分散在节点A、节点B，<strong>每台各 2 张</strong>；另外 2 台节点 GPU 已占满。</li>
+<li>有空闲卡的两台节点合计剩余：<strong>4 张卡 + 32 核 CPU + 420 GiB 内存</strong>。</li>
+</ul>
+<blockquote>说明：原文写作「剩余 2 核」，对照控制台截图，「2」是该节点的 <strong>GPU 空闲量</strong>，CPU 剩余按「最大可用量 − 分配量」计算为 26 核和 6 核，上表已按截图校正。</blockquote>
+<p><img src="/assets/diagrams/aihc-sched-pending.svg" alt="百舸整机调度：为什么有空闲卡任务还 Pending" loading="lazy"></p>
+<h4>因果链</h4>
+<div class="tw"><table><thead><tr><th>环节</th><th>发生了什么</th></tr></thead><tbody><tr><td>1. 请求值偏高</td><td>任务的 CPU / 内存 requests 设置过高</td></tr><tr><td>2. 资源被占</td><td>已运行任务大量占用 CPU / 内存</td></tr><tr><td>3. 单节点不足</td><td>2 台节点 GPU 已满；另 2 台各剩 2 张卡，但 CPU 只剩 26 核和 6 核</td></tr><tr><td>4. 界面误导</td><td>控制台显示「有空闲量」，看起来资源够用</td></tr><tr><td>5. 无法落点</td><td>新任务的申请量在<strong>任何一台节点上都无法同时满足</strong></td></tr><tr><td>6. 结果</td><td>GPU 物理空闲，但容器创建不了，任务一直 Pending</td></tr></tbody></table></div>
+<p><strong>百舸是整机调度逻辑</strong>：任务申请的 GPU、CPU、内存必须在<strong>同一台节点上同时满足</strong>，不能跨节点拼凑。</p>
+<ul>
+<li>空闲卡分散在 2 台节点，每台的 CPU 剩余都不够任务申请量。GPU 物理空闲，但 CPU 不足导致容器无法创建。</li>
+<li>界面「空闲量」是<strong>累加值</strong>，不等于「单节点可用量」。</li>
+</ul>
+<h4>核心调度公式</h4>
+<pre><code class="language-text">单节点（最大可分配量 − 当前分配量）≥ 任务申请量  →  才能调度</code></pre>
+<p>以本次节点B为例：</p>
+<div class="tw"><table><thead><tr><th>项目</th><th>数值</th></tr></thead><tbody><tr><td>节点最大可分配</td><td>170 核 CPU</td></tr><tr><td>节点当前分配</td><td>164 核 CPU</td></tr><tr><td>节点剩余</td><td>170 − 164 = <strong>6 核</strong></td></tr><tr><td>任务申请（假设）</td><td>80 核</td></tr><tr><td>判断</td><td>6 &lt; 80，<strong>无法调度</strong></td></tr></tbody></table></div>
+<p>界面显示的「空闲量」是所有节点的累加值，不等于单节点可用量，必须用上面公式<strong>逐节点</strong>计算。</p>
+<h4>解决方法</h4>
+<ul>
+<li>调小任务配置中的 <code>resources.requests.cpu</code> 和 <code>resources.requests.memory</code>，让单任务需求能在一台节点的剩余量内满足。</li>
+<li>修改后重新提交，<strong>任务成功调度</strong>。</li>
+</ul>
+<h4>排查步骤</h4>
+<ol>
+<li><strong>看「最大可用量 − 分配量」</strong>，不看「空闲量」。</li>
+<li><strong>查 Job 配置</strong>里 CPU / 内存的 requests 数值。</li>
+<li><strong>逐节点对比</strong>：任务申请量 vs 单节点剩余量（CPU、内存、GPU 三项都要比）。</li>
+<li><strong>查调度事件</strong>：<code>kubectl describe pod &lt;pod名&gt;</code>，看 Events 里的 Pending 原因（如 <code>Insufficient cpu</code> / <code>Insufficient memory</code>）。</li>
+</ol>
+<h4>注意</h4>
+<ul>
+<li><strong>排查优先级</strong>：先查 CPU / 内存，再查 GPU 硬件 / 驱动。</li>
+<li><strong>建议</strong>：资源使用率超过 80% 时设置告警，提前发现单节点资源紧张。</li>
+</ul>
+<p>---</p>
+<h4>附：百舸 AIHC 架构全解（背景知识）</h4>
+<h5>一、百舸是什么</h5>
+<p>百舸（AIHC）是百度智能云专为 AI 训练 / 推理设计的 GPU 算力托管平台。客户不用管机器、不用装驱动、不用运维集群，只需提交任务，平台负责调度运行。</p>
+<h5>二、层级结构</h5>
+<pre><code class="language-text">百舸平台
+└── 资源池（Resource Pool）
+    └── 队列（Queue）
+        └── 节点（Node）= 物理服务器
+            └── GPU 卡
+                └── 容器（Container）= 任务运行单元
+                    └── 任务（Job）代码在此运行</code></pre>
+<h5>三、各层详解（结合本案例数据）</h5>
+<p><strong>1. 资源池</strong></p>
+<p>一批物理服务器的集合，是最顶层的资源边界。</p>
+<div class="tw"><table><thead><tr><th>资源池名称</th><th>资源池 ID</th><th>节点数量</th></tr></thead><tbody><tr><td><code>&lt;资源池名称&gt;</code></td><td><code>aihc-&lt;资源池ID&gt;</code></td><td>14 台</td></tr></tbody></table></div>
+<p><strong>2. 队列</strong></p>
+<p>资源池内部的资源分区。每个队列管理一批固定节点，任务提交到哪个队列就只能用那批节点，<strong>队列之间资源完全隔离</strong>。</p>
+<div class="tw"><table><thead><tr><th>队列</th><th>节点数量</th><th>GPU 卡数</th></tr></thead><tbody><tr><td>队列1</td><td>4 台</td><td>32 张</td></tr><tr><td>队列2</td><td>4 台</td><td>32 张</td></tr><tr><td>队列3</td><td>4 台</td><td>32 张</td></tr><tr><td>队列4</td><td>2 台</td><td>16 张</td></tr></tbody></table></div>
+<p><strong>3. 节点</strong></p>
+<p>一台物理 GPU 服务器。</p>
+<div class="tw"><table><thead><tr><th>项目</th><th>CPU</th><th>内存</th><th>GPU</th></tr></thead><tbody><tr><td>总量</td><td>176 核</td><td>960 GiB</td><td>8 张</td></tr><tr><td>系统预留（管控组件）</td><td>6 核</td><td>62 GiB</td><td>0</td></tr><tr><td><strong>最大可分配</strong></td><td><strong>170 核</strong></td><td><strong>898 GiB</strong></td><td><strong>8 张</strong></td></tr></tbody></table></div>
+<p><strong>4. 容器（Container）</strong></p>
+<p>在节点上动态创建的隔离运行环境，任务的代码就跑在容器里。</p>
+<ul>
+<li>每个容器占用一定量的 CPU / 内存 / GPU。</li>
+<li>容器之间完全隔离，互不干扰。</li>
+<li>任务结束后自动销毁，资源立即释放。</li>
+<li><strong>通俗理解</strong>：节点是战车，容器是战车上隔出来的独立驾驶舱，代码在驾驶舱里运行，跑完拆掉。</li>
+</ul>
+<p><strong>5. 任务（Job）</strong></p>
+<p>用户提交的一个计算请求，描述「我要运行什么代码、需要多少资源」。</p>
+<ul>
+<li><strong>关键调度规则</strong>：百舸是整机调度，任务所需资源必须在同一台节点上同时满足，不能跨节点拼凑。</li>
+<li><strong>调度判断公式</strong>：单节点（最大可分配量 − 当前分配量）≥ 任务申请量 → 才能在该节点调度。</li>
+</ul>
+<p>调度流程：</p>
+<pre><code class="language-text">提交任务（申请 CPU + 内存 + GPU）
+        ↓
+调度器逐个扫描队列内节点
+        ↓
+找到满足条件的节点 → 在该节点创建容器 → 任务启动
+找不到             → 任务 Pending</code></pre>
+<p><strong>6. 开发机</strong></p>
+<p>一种长期运行的交互式任务，可 SSH 登录操作，类似云服务器。</p>
+<div class="tw"><table><thead><tr><th>对比项</th><th>普通训练任务</th><th>开发机</th></tr></thead><tbody><tr><td>生命周期</td><td>跑完自动销毁</td><td>长期运行，手动停止</td></tr><tr><td>交互方式</td><td>提交代码等结果</td><td>SSH 登录</td></tr><tr><td>资源占用</td><td>按需申请</td><td>持续占用，不用也耗资源</td></tr></tbody></table></div>
+<p><strong>注意</strong>：开发机不用时必须停止，否则会持续占用节点资源，挤压训练任务。</p>
+<h5>四、客户常见疑问速查</h5>
+<div class="tw"><table><thead><tr><th>疑问</th><th>答案</th></tr></thead><tbody><tr><td>有空闲卡却跑不了任务？</td><td>CPU / 内存先不足，容器起不来，GPU 跟着闲置</td></tr><tr><td>有余量还是 Pending？</td><td>余量是累加值，调度看单节点剩余量</td></tr><tr><td>不同队列会互相抢资源吗？</td><td>不会，队列之间完全隔离</td></tr><tr><td>开发机不用时要关掉吗？</td><td>必须关，不关会持续占用资源</td></tr><tr><td>任务申请多少资源合适？</td><td>申请量小于单节点最大可分配量，留 10%~20% 余量</td></tr></tbody></table></div></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/2081">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/2075">百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2076">百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2077">百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2078">一台 GPU 节点为何「反复不可用」：从告警现象到多层根因定位</a><span class="rel-n">新题</span></li></ul></div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=285&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
