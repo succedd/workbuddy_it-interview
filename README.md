@@ -318,6 +318,12 @@ node tools/gen-published.js
 
 > 按时间**逆序**记录（最新在最上方）。
 
+### 2026-11-27 · feat(题库): 2078 补充Xid109复盘细节（数据 version 60，缓存 20261127a → 20261127b）
+
+- 题 2078 补充 Xid 109 触发机制（同卡长渲染 + 另一上下文等待）、EccDisabled warn 级澄清、device plugin 默认忽略 Xid 列表核对（109 不在其中）。
+- 新增事件处理时间线、根治方案与进展、对客口径与红线、Xid 分类速查、经验与行动项。
+- 配图 `assets/diagrams/gpu-xid109-timeline.svg`、`assets/diagrams/gpu-xid109-chain.svg`；客户、节点、宿主机、SN、群号、人名均已脱敏为角色。
+
 ### 2026-11-27 · feat(题库): 新增百舸GPU任务调度失败案例题 2081（数据 version 59，缓存 20261126b → 20261127a）
 
 - 新增百度云题 2081「百舸GPU任务调度失败：节点有空闲卡，任务却一直 Pending，怎么定位？」，按原 Word 结构整理，乱码修复、错位表格重建。

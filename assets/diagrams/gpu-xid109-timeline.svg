@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 600" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+  <rect width="980" height="600" fill="#f8fafc"/>
+  <text x="30" y="38" font-size="22" font-weight="700" fill="#0f172a">事件处理时间线（10/18 晚到 10/19 上午）</text>
+  <text x="30" y="64" font-size="15" fill="#64748b">红色为报障，橙色为告警，蓝色为定位，绿色为根治与恢复</text>
+  <line x1="150" y1="92" x2="150" y2="580" stroke="#94a3b8" stroke-width="3"/>
+
+  <text x="130" y="113" font-size="14" fill="#334155" text-anchor="end">10/18 19:10</text>
+  <circle cx="150" cy="108" r="8" fill="#dc2626"/>
+  <rect x="175" y="88" width="785" height="40" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="192" y="113" font-size="14" fill="#7f1d1d">客户报障：节点「不可用」，正是国庆 10/02 故障、10/04 修复的那台，再次复发</text>
+
+  <text x="130" y="165" font-size="14" fill="#334155" text-anchor="end">19:22</text>
+  <circle cx="150" cy="160" r="8" fill="#dc2626"/>
+  <rect x="175" y="140" width="785" height="40" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="192" y="165" font-size="14" fill="#7f1d1d">TAM 整理节点、规格、队列和受影响开发机，标注重复性；建议客户先保存镜像</text>
+
+  <text x="130" y="217" font-size="14" fill="#334155" text-anchor="end">20:27</text>
+  <circle cx="150" cy="212" r="8" fill="#ea580c"/>
+  <rect x="175" y="192" width="785" height="40" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="192" y="217" font-size="14" fill="#7c2d12">资源池同学推送故障通告：P2 (ERROR) EccDisabled_Xid[109]，来源 BBC-HAS</text>
+
+  <text x="130" y="269" font-size="14" fill="#334155" text-anchor="end">20:44</text>
+  <circle cx="150" cy="264" r="8" fill="#ea580c"/>
+  <rect x="175" y="244" width="785" height="40" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="192" y="269" font-size="14" fill="#7c2d12">客户负载迁走后，节点自动封锁（cordon），进入自愈流程</text>
+
+  <text x="130" y="321" font-size="14" fill="#334155" text-anchor="end">20:54</text>
+  <circle cx="150" cy="316" r="8" fill="#2563eb"/>
+  <rect x="175" y="296" width="785" height="40" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="192" y="321" font-size="14" fill="#1e3a8a">资源池同学：Xid 109 不是硬件损坏，可自愈；对客先按「报了 Xid 109、已进入自愈」同步</text>
+
+  <text x="130" y="373" font-size="14" fill="#334155" text-anchor="end">22:53</text>
+  <circle cx="150" cy="368" r="8" fill="#2563eb"/>
+  <rect x="175" y="348" width="785" height="40" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="192" y="373" font-size="14" fill="#1e3a8a">HAS 平台：下周对 Xid 109 统一降级处理</text>
+
+  <text x="130" y="425" font-size="14" fill="#334155" text-anchor="end">10/19 10:34</text>
+  <circle cx="150" cy="420" r="8" fill="#16a34a"/>
+  <rect x="175" y="400" width="785" height="40" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="192" y="425" font-size="14" fill="#14532d">平台确认：HAS 降级 + DP 组件升级都做完，节点才不会再被自动置为不可用</text>
+
+  <text x="130" y="477" font-size="14" fill="#334155" text-anchor="end">11:18</text>
+  <circle cx="150" cy="472" r="8" fill="#16a34a"/>
+  <rect x="175" y="452" width="785" height="40" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="192" y="477" font-size="14" fill="#14532d">产研排期：10/21 凌晨对该批机器提前升级，按宿主机 SN 提交优先清单</text>
+
+  <text x="130" y="529" font-size="14" fill="#334155" text-anchor="end">11:36</text>
+  <circle cx="150" cy="524" r="8" fill="#16a34a"/>
+  <rect x="175" y="504" width="785" height="40" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="192" y="529" font-size="14" fill="#14532d">Xid 对齐群核实：EccDisabled 只是 warn 级标记，不是真实 ECC 故障；节点已恢复可用</text>
+
+  <text x="130" y="573" font-size="14" fill="#334155" text-anchor="end">11:43</text>
+  <circle cx="150" cy="568" r="8" fill="#16a34a"/>
+  <rect x="175" y="550" width="785" height="36" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="192" y="573" font-size="14" fill="#14532d">确认 10/21 起灰度，该节点所在批次申请优先升级</text>
+</svg>
