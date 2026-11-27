@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？ · IT面试题库</title>
+  <meta name="description" content="案例概要：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，承载百舸 AI 训练等业务。专线由火山云牵头、百度提供端口。客户、人员、实例 ID、端口与机房信息均已脱敏。 一、案例背景 业务目标：为百舸 AI 训练等长期云上业务提供稳定、低时延、高私密的网络底座。客户 IDC 侧业务网段（如 10.69.1…">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？ · IT面试题库">
+  <meta property="og:description" content="案例概要：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，承载百舸 AI 训练等业务。专线由火山云牵头、百度提供端口。客户、人员、实例 ID、端口与机房信息均已脱敏。 一、案例背景 业务目标：为百舸 AI 训练等长期云上业务提供稳定、低时延、高私密的网络底座。客户 IDC 侧业务网段（如 10.69.1…">
+  <meta property="og:image" content="https://itinterview.com.cn/assets/og/q/2082.jpg">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="472">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？ · IT面试题库">
+  <link rel="image_src" href="https://itinterview.com.cn/assets/og/q/2082.jpg">
+  <meta property="og:url" content="https://itinterview.com.cn/q/2082">
+  <meta property="og:site_name" content="IT面试题库">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？ · IT面试题库">
+  <meta name="twitter:description" content="案例概要：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，承载百舸 AI 训练等业务。专线由火山云牵头、百度提供端口。客户、人员、实例 ID、端口与机房信息均已脱敏。 一、案例背景 业务目标：为百舸 AI 训练等长期云上业务提供稳定、低时延、高私密的网络底座。客户 IDC 侧业务网段（如 10.69.1…">
+  <meta name="twitter:image" content="https://itinterview.com.cn/assets/og/q/2082.jpg">
+  <meta name="twitter:image:alt" content="三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？ · IT面试题库">
+  <link rel="canonical" href="https://itinterview.com.cn/q/2082">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"QAPage","mainEntity":{"@type":"Question","name":"三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？","text":"场景：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，火山云做中转枢纽，承载百舸 AI 训练业务。专线链路状态 UP，但百度侧只学到约 100 条路由且只对应一条路径，部分 IDC 网段不通；后台 BGP 路由配额已扩到 300 并显示生效。请说明主备路由是怎么形成的、BGP 如何判定主备、为什么配额扩了仍只收 100 条、超限后的行为、如何定位与解决，以及对客沟通口径和预防措施。","answerCount":1,"datePublished":"2026-11-27T03:09:24.283Z","author":{"@type":"Organization","name":"IT面试题库"},"acceptedAnswer":{"@type":"Answer","text":"案例概要：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，承载百舸 AI 训练等业务。专线由火山云牵头、百度提供端口。客户、人员、实例 ID、端口与机房信息均已脱敏。 一、案例背景 业务目标：为百舸 AI 训练等长期云上业务提供稳定、低时延、高私密的网络底座。客户 IDC 侧业务网段（如 10.69.172.0/24）经火山云中转，最终把路由宣告到百度云。 多云现状： | 维度 | 情况 | |------|------| | 数据侧 | 业务数据、镜像在火山云（vepfs、镜像仓库） | | 算力侧 | 百度云苏州昆山机房 4090 集群，约 11 台共 88 卡 + PFS-L3 | | 既有互联 | 火山云已与阿里云（100G）、IDC 互联 | 痛点： 两云间数据高频流转此前走公网，速度慢。 海外同事访问百度云开发机上传仅 11KB/s，同期访问火山云可稳定 5MB/s。 业务方要求国庆前拉通，9 月底是硬节点。 故障现象：百度侧只学到约 100 条路由，且只对应一条路径；部分网段（如 10.69.172.0/24）不通，但专线链路状态是 UP。这是典型的「链路通、业务不通」隐蔽故障。 关键协作方： | 角色 | 职责 | |------|------| | 客户网络负责人 | 网络对接决策、阿里云对接、配额申请与路由排查 | | 客户 IT 负责人 / 客户牵头 | 业务与采购协调 | | 火山云销售 | 专线拉通牵头、变更时间最终确认 | | 火山云技术 | 火山侧对接、多云最佳实践、备份路由答疑 | | 百度侧（TAM + 网络/值班同学） | 端口、工勘、网络技术、值班保障、配额推进 | | 线路服务商（运营商侧） | 物理专线铺设、线路验收 | 二、网络拓扑图（客户侧） 图中红色箭头与红框为客户标注的重点排查路径与关键网段。 三、拓扑解读 各节点网段与接口： | 节点 | 通告/承载网段 | 互联接口 | 角色 | |------|---------------|----------|------| | 火山云 | 10.92.0.0/16、10.94.0.0/16 | .1（朝阿里）、.17（朝百度）、.7（朝交换机） | 中转枢纽 | | 阿里云 | 10.93.0.0/16 | .2（朝火山，100G）、.9/.13（朝交换机） | 中转 / 旁路 | | 百度云 | 10.95.0.0/16 | .18（朝火山，10G） | 本次收路由的一端 | | 核心交换机（客户 IDC） | 10.69.172.0/24（红框重点） | .6（直连火山）、.10/.14（朝阿里） | 路由起点 | 互联接口均为 10.88.254.x 段，表中只写末位。 链路带宽： | 链路 | 带宽 | |------|------| | 阿里云 ↔ 火山云 | 100G | | 火山云 ↔ 百度云 | 10G | | 阿里云 ↔ 交换机 | 10G + 300M | | 交换机 ↔ 火山云 | 直连一条（图中红色箭头向上） | 四、核心问题：为什么是「主备路由」？ 4.0 业务动因：为什么要做主备 | 动因 | 说明 | |------|------| | 1. 业务连续性 / 容灾（最根本） | GPU 训练、数据同步跑在多云上，IDC ↔ 百度云流量经火山中转。只有一条链路时，光缆中断、运营商维护或端口故障都会让业务全停。主备设计让主路径故障时 BGP 自动切到备路径，无需人工干预 | | 2. 复用已有链路，省钱省工期 | 客户本就有到阿里云的专线（10G + 300M）。新拉一条 IDC 直连火山的物理线常需 2～3 个月且要端口审批，复用阿里云链路绕行更经济 | | 3. 多云互联天然多路径 | 三云互联、火山中转的架构下，同一 IDC 网段到百度本就有多条可达路径，BGP 必然要分主次 | 一句话：主备的本质不是「同时用两条」，而是「单条故障时还能活」。本次故障是「备份路由未正常宣告 + 专线配额卡 100」，导致冗余失效，不修好等于白做了容灾。 4.1 什么是主备路由 同一目的网段存在多条可达路径时，BGP 不会同时用它们转发，而是按优选规则选一条作为主路由（Primary，实际转发），其余作为备路由（Backup，主路故障才顶上）。这是「平时主用、故障切备」的 Active-Standby 冗余设计。 4.2 两条路径从哪来 交换机承载的 10.69.172.0/24 要到达火山云（再到百度云），物理上有两条路： | 路径 | 走向 | AS-Path | |------|------|---------| | 路径①（主，直连） | 交换机 .6 → 火山云 .7 | 短，约 2 跳 | | 路径②（备，绕阿里） | 交换机 .10/.14 → 阿里云 .9/.13 → 阿里云 .2 → 火山云 .1（100G） | 长，约 3 跳 | 所以火山云上 10.69.172.0/24 这类 IDC 网段会学到两条：一条从 IDC 直接学来，一条经阿里云中转学来。这就是群里反馈的「火山上有从阿里和 IDC 学来的主备路由条目」。 4.3 BGP 怎么判定主备 BGP 选路的关键指标之一是 AS-Path 长度，穿过的自治域越少越优。 | 路径 | 判定 | 状态 | 是否对外宣告 | |------|------|------|--------------| | 路径①（2 跳） | 最优 = 主路由 | 可用 | 宣告 | | 路径②（3 跳） | 次优 = 备路由 | 未生效 | 默认不重复宣告 | 主备不是人为配两条，而是同一网段的两条物理路径被 BGP 按 AS-Path 自动分出主次。这是正常的择优收敛，不是「宣告缺失」。 五、为什么引发故障：双层根因 主备本身是好事，但这次它和两个坑叠加，导致百度侧学不全路由。 第 1 层：备份路由默认不被宣告（选路/宣告行为） 设备默认只宣告自己认为最优的那条（最短 AS-Path 的主路由）。 绕阿里的备份路径（约 3 跳）状态为「未生效」，不被重复宣告。 结果是只有一条路径的路由被传递下去，与「只学到约 100 条、仅一条路径」吻合。 第 2 层：专线通道路由限制卡在 100（本次最终卡点） 百度侧对通过 BGP 从对端动态学到的路由条数有上限，即专线通道的「路由限制」。 | 层级 | 本次状态 | |------|----------| | 后台 BGP 路由条目配额 | 已申请扩到 300 并生效 | | 专线通道页面「路由限制」 | 没有同步编辑，仍为 100 | | 实际生效上限 | 100，超出部分被静默丢弃，10.69.172.0/24 等排在后面的网段学不进来 | 最大易错点：以为提工单把配额扩到 300 就完事了。实际上配额是「双层」的，后台配额是第一层，专线通道页面的「路由限制」需要单独编辑才生效。两层没对齐，等于白扩。 六、超限行为：为什么「专线通着、网段却不通」 依据百度云专线 ET 报警策略，BGP 路由超限分三档： | 阶段 | 事件 | 级别 | 行为 | |------|------|------|------| | 100% | BGP路由超限告错 | 故障 | 超出路由被静默丢弃，对应网段可能不可达；BGP 会话不中断 | | 恢复后 | BGP路由数量恢复 | 通知 | 恢复正常 | 关键在 > 100% 这一档：超出的路由被悄悄丢掉，但会话不断，所以专线状态是 UP，被丢掉的网段却不可达，非常隐蔽。 对比提醒：VPN 的 BGP 超限是直接断会话；专线是「留会话、丢多余路由」，排障时不要混淆。 七、如何定位 遇到「专线 UP、部分网段不通 / 路由学不全」时，按以下顺序排查： | 步骤 | 检查内容 | 判断依据 | |------|----------|----------| | 1. 核对路由条数与配额 | 专线通道实际学到的 BGP 路由条数，对照通道页面「路由限制」与后台配额 | 页面值仍是旧值（如 100），即「双层未对齐」 | | 2. 要 CSN / 对端路由表截图 | 同一前缀多条路径的 AS-Path 与状态 | 短路径「可用」、长路径「未生效」是正常收敛；据此区分「备份未宣告」还是「配额丢弃」 | | 3. 定位具体丢失网段 | 单条前缀（如 10.69.172.0/24）在各跳的宣告与过滤策略 | 找到在哪一跳丢失 | | 4. 专线通用兜底排查 | 两端路由表是否配了对端路由、VPC 下一跳是否指向专线网关；网段是否与 VPC CIDR 重叠；专线网关与接入点是否同区域 | 用专线通道实例诊断与链路探测定位 | | 5. 看报警事件 | BCM 事件列表是否有「BGP路由超限告警/告错」 | 直接佐证是否踩到配额上限 | 八、解决方案 | 动作 | 负责方 | 说明 | |------|--------|------| | 专线侧改配额（本次关键动作） | 客户 / 百度配合 | 在专线通道页面把「路由限制」从 100 编辑为 300，与后台配额对齐 | | 让备份路由生效 | 火山云侧为主 | 调整 BGP 宣告/选路策略（AS-Path 相关），让绕阿里的备份路径被正常宣告，保证主路径故障时能切换。百度侧配置已就绪，随时配合联调 | | 验证闭环 | 三方 | 核对路由条数与 10.69.172.0/24 等网段连通性，完成端到端闭环 | 九、对客沟通口径 定性：「这是 BGP 正常的最短 AS-Path 择优收敛，链路可用性不受影响；备份路径处于『未生效』是正常现象，不是百度侧宣告缺失。」 分工：「补充宣告备份路由的待办主要在火山云侧；百度侧配额与配置已就绪，随时配合联调验证。」避免客户误以为问题卡在百度侧。 动作：「请在专线通道页面把『路由限制』编辑为 300（与后台配额对齐），改完我们一起验证路由条数与关键网段连通性。」 十、预防 Checklist [ ] 申请扩 BGP 路由配额后，同步编辑专线通道页面的「路由限制」，确认后台与页面一致。 [ ] 多云 / 多路径场景，提前确认主备路径的 AS-Path 规划，必要时在对端配置策略显式宣告备份路由。 [ ] 为专线配置 BGP 路由超限告警（≥ 75%） 的 BCM 监控，避免悄悄丢路由。 [ ] 关注专线到期提醒（到期前 7/3/1 天及当天）；到期后 7 天停服，第 30 天释放且不可恢复。 [ ] 变更前后比对路由表快照（条数、关键前缀、AS-Path / 状态），留证便于回溯。 十一、涉及的百度云产品 | 产品 | 在本案例中的角色 | 关键配额/动作 | 官方文档 | |------|------------------|---------------|----------| | 专线接入 ET（专线通道） | 火山云 ↔ 百度云的 10G 链路，承载 BGP 路由学习 | 通道「路由限制」100 → 300，需页面单独编辑 | 专线通道路由配置、使用限制、更新专线通道、ET 报警策略 | | 云智能网 CSN | 百度侧多路由 / 主备互联与汇聚底座 | 路由表总容量配额、主备路由策略 | CSN 配额、CSN 主备路由策略 | 十二、延伸速查：ET 与 CSN 要点 专线接入 ET（本地 IDC ↔ 云上 VPC 的专属物理连接） | 要点 | 内容 | |------|------| | 四大组件 | 专线接入点（物理位置）、物理专线（物理链路）、专线通道（逻辑接口，支持静态路由与 BGP）、专线网关（VPC 路由表下一跳） | | 接入模式 | 自主申请：独享端口，施工 2～3 个月，1G～400G；合作伙伴共享专线：1 个月内，适合 \u003c 1G，按 VLAN ID 隔离 | | 打通流程 | 申请物理专线 → 百度审核并办理施工工单 / LOA → 运营商铺线 → 创建专线通道 / 专线网关 → VPC 路由表下一跳指向专线网关 | | 关键限制 | 一个通道对一个 VPC 只能连一个专线网关；专线网关与接入点须同区域；对端网段不可与 VPC CIDR 重叠 | | 到期风险 | 到期后 7 天未续费停服；停服后数据保留 23 天，第 30 天释放；续费不支持修改端口规格 | 云智能网 CSN（多云 / 多 VPC 的云上网络互联） 统一纳管同账号多 VPC、跨账号、专线接入的互通，与 ET 配合解决「云上网络怎么连起来」。 常见组合：物理专线到百度后，多个 VPC / 账号之间经 CSN 互联；主备路由策略在 CSN 侧按 AS-Path 等属性控制。 十三、经验与易错点 本案例 = 跨云多路径形成的主备路由 + 专线 BGP 路由「双层配额」没对齐。 主备路由由「同一网段两条物理路径、BGP 按 AS-Path 自动分主次」产生，不是人为配置，目的是容灾。 备份路由（长 AS-Path）默认不被宣告，加上通道「路由限制」仍是 100，超出路由被静默丢弃。 现象是「专线 UP、部分网段不通」，务必检查通道页面路由限制与后台配额是否一致、备份路由是否正常宣告。 对客说清「正常择优收敛、链路可用性不受影响」，并明确分工，避免误判问题卡在百度侧。 十四、方案选型：为什么是「全互通直连」（9/21 会议结论） 核心决策：全互通方案。百度云规划网段 10.95.0.0/16，建立 BGP 时只需发布该网段。当前无业务侧路由隔离需求，百度云专线直接加入火山云现有 CN，实现与阿里云、IDC 全互通，无需额外路由控制。 CN 是什么：火山云侧的统一云网络汇聚节点（中央交换枢纽），火山云、阿里云、IDC 均经其互联。百度接入 CN 后即与阿里云、IDC 全互通。CN 的官方全称在内部资料中未见，此处为基于会议与拓扑的解读。 为什么选直连而非三方互联： | 维度 | 火山 - 百度专线直连（选中） | 百度 + 阿里 + IDC 三方互联 | |------|-----------------------------|----------------------------| | 容灾能力 | 无额外跨云容灾线路 | 故障时节点可绕行容灾 | | 路由复杂度 | 低 | 高 | | 业务接受度 | 可接受百度云专线短时中断 | 暂未获业务侧容灾需求认可 | 结论：数据源在火山云，火山 - 百度直接拉通最优；并入 CN 后可同时访问阿里云、IDC（如公司 gitlab），一套网络解决多云互通。新专线为同园区同楼拉纤，成本低、工期短。专线开通由火山云牵头，百度提供端口与施工授权（LOA）。 十五、施工交付关键节点（9/16 - 9/28） | 时间 | 节点 | 说明 | |------|------|------| | 9/16 | 端口审批完成 | 物理专线 dcphy-xxxx（百度 To 火山），接入点苏州昆山某机房，某 25GE 端口，带宽 10G | | 9/18 | LOA 施工授权通过 | 首次申请因施工人员变动被退回，重提后通过 | | 9/22 → 9/24 | 跳纤施工（关键转折） | 9/22 声称完成；9/23 发现 ODF 无收光、火山侧接口 DOWN；9/24 查明机房跳线段有两芯从未布放，当天补布后两端端口 UP | | 9/28 | 线路交付验收 | 报竣审批通过；两端配置互联 IP，直连互 ping 测通（测直连不需要路由）；百度端口费已付，火山侧线路费节后处理，国庆按测试使用 | 口径提醒：聊天记录显示审批端口为 10G，会议文档曾称施工 40G 专线。40G 的审批 / 扩容状态在可见记录中无直接表述，对外汇报前需与百度网络同学确认。 经验：「声称完成」但现场跳线从未布放，直到发现无收光才回溯定位。专线施工务必以两端端口 UP + 实际收光为准，不能只凭驻场口头确认。 十六、真实排查时间线（9/28 - 9/30） 问题从「配额超限」表象到「实际只收 100 条」根因，经历 3 天多轮排查： | 时间 | 事件 | |------|------| | 9/28 18:06 | 客户反馈 BGP 路由条目配额超限，早上申请扩到 300（配额项 channelBgpRouteLimit）未审批，百度侧推进 | | 9/28 | 产研审核通过，CSN 路由条目配额 100 → 300；客户确认路由策略配额不需要 | | 9/28 20:52 | 客户反馈配额中心显示 300 已生效，但实际路由仍只有 100 条；预期「一跳直连 + 两跳中转」都应学到 | | 9/29 | 客户确认：配额中心 300，实际只收到火山的 100 条；补充三云拓扑图 | | 9/30 | 客户提供 CSN 截图：已发布路由条目 220/406；default 路由表已学到 10.69.172.0/24 → To 火山专线通道，状态可用 | | 9/30 | 客户问「备份路由不会被传递出去吗」，火山技术答复「不会的，生效了才会传递」，印证备份路由未生效则不宣告 | | 9/30 13:40 | 百度云无法经火山学到阿里云网段 10.93.0.0/26；火山侧有从阿里和 IDC 学来的主备路由条目 | | 9/30 13:57 | 确认 channelBgpRouteLimit=300 已生效 | | 9/30 15:12 - 15:21 | 澄清 CSN 入 / 出向路由策略条目配额（=100）是策略规则上限，客户未配策略，不构成限制，避免误申请 | | 9/30 15:33 | 客户发现仍只收 100 条，判断「其他路由被冲掉了」，即撞上限后新路由被丢弃的典型信号 | | 9/30 16:20 | 与产研核实：页面 BGP 路由条目上限仍是 100，只申请配额不改专线配置无效 | | 9/30 16:22 | 客户修改专线配置后恢复，问题闭环（待最终验证） | 4 类独立配额（最易混淆）： | 配额类型 | 管什么 | 本案例情况 | |----------|--------|------------| | 专线通道 BGP 路由条目（channelBgpRouteLimit） | 通过 BGP 从对端动态学到的路由条数上限 | 本次卡点：配额扩到 300，但通道页面仍为 100 | | CSN 路由条目数量 | CSN 路由表能存多少条路由 | 已由 100 扩到 300 | | CSN 入 / 出向路由策略条目（csnIngressRoutePolicyQuota / csnEgressRoutePolicyQuota） | 路由策略规则上限 | 客户未配策略，不构成限制 | | BGP Peer 上限 | 能建几个 BGP 邻居 | 非卡点 | 一句话根因：配额生效 ≠ 配置生效。 配额中心显示 300，不代表专线通道页面的「路由限制」已改，两层必须同步编辑才能真正放开。 十七、待确认与风险事项（截至 9/30） | 事项 | 状态 | 跟进方 | |------|------|--------| | 40G 端口审批 / 扩容状态 | 待确认（已批为 10G） | 百度网络同学 | | 火山侧线路费支付 | 节后处理，国庆按测试使用 | 运营商侧、客户网络负责人 | | 阿里云路由发布规则 | 存在不确定性 | 客户网络负责人单独对接 | | BGP 路由条目 100 / 300 生效核实 | 9/30 已改专线配置，待最终验证 | TAM、百度产研 | 本节基于项目会议纪要与专线群记录整理，属内部复盘参考。火山侧 CSN 口径以火山引擎官方文档为准。 十八、全互通架构与业务数据流 核心结构：百度云专线接入火山云 CN 汇聚节点，经 CN 与阿里云、IDC 全互通，百度侧只需发布 10.95.0.0/16。 三大云域： | 云域 | 内容 | |------|------| | 百度云（苏州） | 苏州昆山某机房；4090 × 11 台（88 卡）+ PFS-L3；网段 10.95.0.0/16；某 25GE 端口（10G） | | 火山云 CN（中央枢纽） | 同园区楼内跳纤；汇接阿里云、IDC、上海机房；数据源 vepfs、镜像仓库在此侧 | | 阿里云 · IDC · 客户本地 | 阿里云与火山互联 100G；IDC 既有资源（如公司 gitlab）；客户本地代码 / 测试环境；本地 ↔ 阿里主备链路（客户侧设计，待核实） | 链路状态： | 段落 | 带宽 / 标识 | 状态 | |------|-------------|------| | 百度云 ↔ 火山云 CN | 新建专线 10G（dcphy-xxxx） | 9/24 两端端口 UP（本项目本体） | | 火山云 CN ↔ 阿里云 | 既有互联 100G | 既有 | | 火山云 CN ↔ IDC / 上海机房 | 40G（上海某 IDC） | 既有 | | 客户本地 ↔ 阿里云 | 主备链路 | 客户侧既有，待核实 | 业务数据流（拉通后的收益）： 1. 数据 / 镜像（火山云 vepfs）→ 新专线 → 百度云 4090 训练 → ckpt / 权重写入 PFS-L3 → 回传同步。 2. 全互通后，百度云可经 CN 直达阿里云、IDC（如公司 gitlab），避免多头拉线。 3. 海外同事访问不再依赖公网加速，解决此前上传仅 11KB/s 的瓶颈。 十九、专线连通后的测试验证步骤（百度侧） 物理专线布通（9/24 两端端口 UP）后，百度侧按标准 ET 流程创建云上资源并验证连通性。 前置确认： 物理专线 dcphy-xxxx（百度 To 火山），接入点苏州昆山某机房，某 25GE 端口（10G）。 费用：百度云端口费已付；火山侧线路费、端口费由客户 / 火山侧处理。 BGP 发布网段为 10.95.0.0/16（会议已确认）。 三步操作： | 步骤 | 动作 | 官方文档 | |------|------|----------| | 1. 创建专线通道 | 关联物理专线 | 创建专线通道 | | 2. 创建专线网关 | 绑定测试 VPC | 创建专线网关 | | 3. 配置专线路由 | BGP 建连并发布 10.95.0.0/16 | 配置专线路由 | 连通性验证： 测试 VPC 内创建 1～2 台 BCC，与火山侧实例互 ping，并用大文件传输验证带宽。 验证路由传递：10.95.0.0/16 是否收敛到火山侧 CN。 评估对现网影响，回应客户两点担忧：对接是否影响现网、路由能否正常传递。 客户侧后续动作（提前知悉）： 专线拉通后客户需要 VPC 内网 IP 配置，用于把开发机公网 IP 换成内网 IP。 百度侧提前规划内网 IP 段（10.95.0.0/16 及 VPC 子网划分），测试通过后同步给客户网络负责人。","url":"https://itinterview.com.cn/question/2082"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://itinterview.com.cn/"},{"@type":"ListItem","position":2,"name":"云原生与DevOps","item":"https://itinterview.com.cn/category?cat=135"},{"@type":"ListItem","position":3,"name":"百度云","item":"https://itinterview.com.cn/category?cat=285"},{"@type":"ListItem","position":4,"name":"三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？","item":"https://itinterview.com.cn/q/2082"}]}</script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#334155;margin:0;background:#f8fafc;line-height:1.75; }
+    .wrap { max-width:760px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom)); }
+    .brand { display:inline-flex;align-items:center;gap:8px;margin:18px 0 10px;color:#2563EB;font-weight:700;text-decoration:none;font-size:15px; }
+    .brand .logo { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2563EB,#38bdf8);color:#fff;font-family:monospace;font-weight:800; }
+    h1 { font-size:22px;line-height:1.45;color:#0f172a;margin:6px 0 10px; }
+    .chips { margin:0 0 16px; }
+    .chip { display:inline-block;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 10px;font-size:12px;margin:0 6px 6px 0; }
+    .chip.diff { background:#dbeafe;color:#1d4ed8; }
+    .chip.tag { background:#ecfdf5;color:#047857; }
+    .card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin:14px 0; }
+    .card h2 { font-size:13px;letter-spacing:2px;color:#94a3b8;margin:0 0 10px;font-weight:600; }
+    .card img { max-width:100%;height:auto; }
+    .card h3,.card h4 { font-size:16px;font-weight:700;color:#0f172a;margin:22px 0 8px;letter-spacing:0; }
+    .card h5 { font-size:14.5px;font-weight:700;color:#1e293b;margin:16px 0 6px; }
+    .tw { overflow-x:auto;margin:10px 0; }
+    table { border-collapse:collapse;width:100%;font-size:13.5px; }
+    th,td { border:1px solid #e2e8f0;padding:6px 10px;text-align:left;vertical-align:top; }
+    th { background:#f1f5f9; }
+    pre { background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px;overflow:auto;font-size:13px;line-height:1.6; }
+    code { font-family:ui-monospace,Consolas,"JetBrains Mono",monospace; }
+    p code, li code { background:#eef2f7;border-radius:4px;padding:1px 5px;font-size:.92em; }
+    blockquote { margin:8px 0;padding:6px 12px;border-left:3px solid #93c5fd;background:#eff6ff;border-radius:0 8px 8px 0;color:#475569; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .rel { list-style:none;margin:0;padding:0; }
+    .rel li { display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed #e2e8f0; }
+    .rel li:last-child { border-bottom:none; }
+    .rel a { color:#2563EB;text-decoration:none;font-size:14px;flex:1;min-width:0; }
+    .rel a:active { color:#1d4ed8; }
+    .rel-n { flex-shrink:0;font-size:11px;color:#94a3b8;white-space:nowrap; }
+    .cta-row { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;margin:22px 0 10px; }
+    .cta { display:inline-flex;align-items:center;justify-content:center;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;border-radius:10px;padding:13px 16px;font-size:15px;border:none;cursor:pointer;font-family:inherit; }
+    .cta:active { background:#1d4ed8; }
+    .cta.alt { background:#fff;color:#2563EB;border:1px solid #bfdbfe; }
+    .cta.alt:active { background:#eff6ff; }
+    @media (max-width:420px){ .cta-row { grid-template-columns:1fr; } }
+    .jumpnote { text-align:center;color:#94a3b8;font-size:12px;margin-top:8px; }
+    /* 底部读完引导条：默认藏在屏幕外，滚动接近文末时滑入（可关闭） */
+    .guide { position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(110%);transition:transform .35s ease;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -6px 24px rgba(15,23,42,.12);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px; }
+    .guide.show { transform:translateY(0); }
+    .guide .g-text { flex:1;font-size:13px;color:#475569;line-height:1.5;min-width:0; }
+    .guide .g-text b { color:#0f172a; }
+    .guide .g-btn { flex-shrink:0;background:#2563EB;color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-radius:999px;padding:9px 14px;white-space:nowrap; }
+    .guide .g-btn:active { background:#1d4ed8; }
+    .guide .g-x { flex-shrink:0;border:none;background:none;color:#94a3b8;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer;font-family:inherit; }
+    .guide .g-x:active { color:#475569; }
+    @media (prefers-reduced-motion: reduce) { .guide { transition:none; } }
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: dark; }
+      body { background:#0b1220;color:#cbd5e1; }
+      h1 { color:#f1f5f9; }
+      .card { background:#111a2c;border-color:#1e293b; }
+      .card h2 { color:#64748b; }
+      .card h3,.card h4,.card h5 { color:#f1f5f9; }
+      th,td { border-color:#1e293b; }
+      th { background:#0f1a2e; }
+      .chip { background:#1e293b;color:#94a3b8; }
+      .chip.diff { background:#1e3a8a;color:#bfdbfe; }
+      .chip.tag { background:#064e3b;color:#a7f3d0; }
+      p code, li code { background:#1e293b; }
+      blockquote { background:#0f1a2e;border-left-color:#1d4ed8; }
+      .guide { background:#111a2c;border-top-color:#1e293b;box-shadow:0 -6px 24px rgba(0,0,0,.45); }
+      .guide .g-text { color:#94a3b8; }
+      .guide .g-text b { color:#f1f5f9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="https://itinterview.com.cn/"><span class="logo">I</span> IT 面试题库</a>
+    <h1>三云专线踩坑：为什么会形成主备路由，BGP 路由双层配额又是怎么卡住的？</h1>
+    <div class="chips"><span class="chip diff">高级</span><span class="chip">故障排查题</span><span class="chip">公有云售后技术支持</span><span class="chip">网络工程师</span><span class="chip">云解决方案架构师</span><span class="chip tag">百度智能云</span><span class="chip tag">专线ET</span><span class="chip tag">CSN</span><span class="chip tag">BGP</span><span class="chip tag">主备路由</span><span class="chip tag">AS-Path</span></div>
+    <div class="card"><h2>题目</h2><p>场景：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，火山云做中转枢纽，承载百舸 AI 训练业务。专线链路状态 UP，但百度侧只学到约 100 条路由且只对应一条路径，部分 IDC 网段不通；后台 BGP 路由配额已扩到 300 并显示生效。请说明主备路由是怎么形成的、BGP 如何判定主备、为什么配额扩了仍只收 100 条、超限后的行为、如何定位与解决，以及对客沟通口径和预防措施。</p></div>
+    <div class="card"><h2>参考答案</h2><div style="font-size:12px;color:#64748b;margin-bottom:10px">内容深度：详细 · 无代码示例 · 来源：外部链接 · 未复核 · 近 7 天更新</div><blockquote><strong>案例概要</strong>：某客户通过「阿里云 - 火山云 - 百度云」三云专线互联，承载百舸 AI 训练等业务。专线由火山云牵头、百度提供端口。客户、人员、实例 ID、端口与机房信息均已脱敏。</blockquote>
+<h4>一、案例背景</h4>
+<p><strong>业务目标</strong>：为百舸 AI 训练等长期云上业务提供稳定、低时延、高私密的网络底座。客户 IDC 侧业务网段（如 <code>10.69.172.0/24</code>）经火山云中转，最终把路由宣告到百度云。</p>
+<p><strong>多云现状</strong>：</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>情况</th></tr></thead><tbody><tr><td>数据侧</td><td>业务数据、镜像在火山云（vepfs、镜像仓库）</td></tr><tr><td>算力侧</td><td>百度云苏州昆山机房 4090 集群，约 11 台共 88 卡 + PFS-L3</td></tr><tr><td>既有互联</td><td>火山云已与阿里云（100G）、IDC 互联</td></tr></tbody></table></div>
+<p><strong>痛点</strong>：</p>
+<ul>
+<li>两云间数据高频流转此前走公网，速度慢。</li>
+<li>海外同事访问百度云开发机上传仅 <strong>11KB/s</strong>，同期访问火山云可稳定 5MB/s。</li>
+<li>业务方要求国庆前拉通，9 月底是硬节点。</li>
+</ul>
+<p><strong>故障现象</strong>：百度侧只学到约 <strong>100 条</strong>路由，且只对应一条路径；部分网段（如 <code>10.69.172.0/24</code>）不通，但专线链路状态是 <strong>UP</strong>。这是典型的「链路通、业务不通」隐蔽故障。</p>
+<p><strong>关键协作方</strong>：</p>
+<div class="tw"><table><thead><tr><th>角色</th><th>职责</th></tr></thead><tbody><tr><td>客户网络负责人</td><td>网络对接决策、阿里云对接、配额申请与路由排查</td></tr><tr><td>客户 IT 负责人 / 客户牵头</td><td>业务与采购协调</td></tr><tr><td>火山云销售</td><td>专线拉通牵头、变更时间最终确认</td></tr><tr><td>火山云技术</td><td>火山侧对接、多云最佳实践、备份路由答疑</td></tr><tr><td>百度侧（TAM + 网络/值班同学）</td><td>端口、工勘、网络技术、值班保障、配额推进</td></tr><tr><td>线路服务商（运营商侧）</td><td>物理专线铺设、线路验收</td></tr></tbody></table></div>
+<h4>二、网络拓扑图（客户侧）</h4>
+<p><img src="/assets/q/q2082-topology.jpg" alt="三云专线互联拓扑：阿里云、火山云、百度云与客户 IDC 核心交换机" loading="lazy"></p>
+<p>图中红色箭头与红框为客户标注的重点排查路径与关键网段。</p>
+<h4>三、拓扑解读</h4>
+<p><strong>各节点网段与接口</strong>：</p>
+<div class="tw"><table><thead><tr><th>节点</th><th>通告/承载网段</th><th>互联接口</th><th>角色</th></tr></thead><tbody><tr><td>火山云</td><td><code>10.92.0.0/16</code>、<code>10.94.0.0/16</code></td><td>.1（朝阿里）、.17（朝百度）、.7（朝交换机）</td><td>中转枢纽</td></tr><tr><td>阿里云</td><td><code>10.93.0.0/16</code></td><td>.2（朝火山，100G）、.9/.13（朝交换机）</td><td>中转 / 旁路</td></tr><tr><td>百度云</td><td><code>10.95.0.0/16</code></td><td>.18（朝火山，10G）</td><td>本次收路由的一端</td></tr><tr><td>核心交换机（客户 IDC）</td><td><code>10.69.172.0/24</code>（红框重点）</td><td>.6（直连火山）、.10/.14（朝阿里）</td><td>路由起点</td></tr></tbody></table></div>
+<blockquote>互联接口均为 <code>10.88.254.x</code> 段，表中只写末位。</blockquote>
+<p><strong>链路带宽</strong>：</p>
+<div class="tw"><table><thead><tr><th>链路</th><th>带宽</th></tr></thead><tbody><tr><td>阿里云 ↔ 火山云</td><td>100G</td></tr><tr><td>火山云 ↔ 百度云</td><td>10G</td></tr><tr><td>阿里云 ↔ 交换机</td><td>10G + 300M</td></tr><tr><td>交换机 ↔ 火山云</td><td>直连一条（图中红色箭头向上）</td></tr></tbody></table></div>
+<h4>四、核心问题：为什么是「主备路由」？</h4>
+<h5>4.0 业务动因：为什么要做主备</h5>
+<div class="tw"><table><thead><tr><th>动因</th><th>说明</th></tr></thead><tbody><tr><td><strong>1. 业务连续性 / 容灾</strong>（最根本）</td><td>GPU 训练、数据同步跑在多云上，IDC ↔ 百度云流量经火山中转。只有一条链路时，光缆中断、运营商维护或端口故障都会让业务全停。主备设计让主路径故障时 BGP 自动切到备路径，无需人工干预</td></tr><tr><td><strong>2. 复用已有链路，省钱省工期</strong></td><td>客户本就有到阿里云的专线（10G + 300M）。新拉一条 IDC 直连火山的物理线常需 2～3 个月且要端口审批，复用阿里云链路绕行更经济</td></tr><tr><td><strong>3. 多云互联天然多路径</strong></td><td>三云互联、火山中转的架构下，同一 IDC 网段到百度本就有多条可达路径，BGP 必然要分主次</td></tr></tbody></table></div>
+<p><strong>一句话</strong>：主备的本质不是「同时用两条」，而是「单条故障时还能活」。本次故障是「备份路由未正常宣告 + 专线配额卡 100」，导致冗余失效，不修好等于白做了容灾。</p>
+<h5>4.1 什么是主备路由</h5>
+<p>同一目的网段存在多条可达路径时，BGP 不会同时用它们转发，而是按优选规则选一条作为<strong>主路由</strong>（Primary，实际转发），其余作为<strong>备路由</strong>（Backup，主路故障才顶上）。这是「平时主用、故障切备」的 Active-Standby 冗余设计。</p>
+<h5>4.2 两条路径从哪来</h5>
+<p>交换机承载的 <code>10.69.172.0/24</code> 要到达火山云（再到百度云），物理上有两条路：</p>
+<div class="tw"><table><thead><tr><th>路径</th><th>走向</th><th>AS-Path</th></tr></thead><tbody><tr><td><strong>路径①（主，直连）</strong></td><td>交换机 .6 → 火山云 .7</td><td>短，约 2 跳</td></tr><tr><td><strong>路径②（备，绕阿里）</strong></td><td>交换机 .10/.14 → 阿里云 .9/.13 → 阿里云 .2 → 火山云 .1（100G）</td><td>长，约 3 跳</td></tr></tbody></table></div>
+<p>所以火山云上 <code>10.69.172.0/24</code> 这类 IDC 网段会学到两条：一条从 IDC 直接学来，一条经阿里云中转学来。这就是群里反馈的「火山上有从阿里和 IDC 学来的主备路由条目」。</p>
+<h5>4.3 BGP 怎么判定主备</h5>
+<p>BGP 选路的关键指标之一是 <strong>AS-Path 长度</strong>，穿过的自治域越少越优。</p>
+<div class="tw"><table><thead><tr><th>路径</th><th>判定</th><th>状态</th><th>是否对外宣告</th></tr></thead><tbody><tr><td>路径①（2 跳）</td><td>最优 = 主路由</td><td>可用</td><td>宣告</td></tr><tr><td>路径②（3 跳）</td><td>次优 = 备路由</td><td>未生效</td><td>默认不重复宣告</td></tr></tbody></table></div>
+<p>主备不是人为配两条，而是同一网段的两条物理路径被 BGP 按 AS-Path <strong>自动分出主次</strong>。这是正常的择优收敛，不是「宣告缺失」。</p>
+<h4>五、为什么引发故障：双层根因</h4>
+<p>主备本身是好事，但这次它和两个坑叠加，导致百度侧学不全路由。</p>
+<p><strong>第 1 层：备份路由默认不被宣告（选路/宣告行为）</strong></p>
+<ul>
+<li>设备默认只宣告自己认为最优的那条（最短 AS-Path 的主路由）。</li>
+<li>绕阿里的备份路径（约 3 跳）状态为「未生效」，不被重复宣告。</li>
+<li>结果是只有一条路径的路由被传递下去，与「只学到约 100 条、仅一条路径」吻合。</li>
+</ul>
+<p><strong>第 2 层：专线通道路由限制卡在 100（本次最终卡点）</strong></p>
+<p>百度侧对通过 BGP 从对端动态学到的路由条数有上限，即专线通道的「路由限制」。</p>
+<div class="tw"><table><thead><tr><th>层级</th><th>本次状态</th></tr></thead><tbody><tr><td>后台 BGP 路由条目配额</td><td>已申请扩到 <strong>300</strong> 并生效</td></tr><tr><td>专线通道页面「路由限制」</td><td>没有同步编辑，仍为 <strong>100</strong></td></tr><tr><td>实际生效上限</td><td><strong>100</strong>，超出部分被静默丢弃，<code>10.69.172.0/24</code> 等排在后面的网段学不进来</td></tr></tbody></table></div>
+<blockquote><strong>最大易错点</strong>：以为提工单把配额扩到 300 就完事了。实际上配额是「双层」的，后台配额是第一层，专线通道页面的「路由限制」需要<strong>单独编辑</strong>才生效。两层没对齐，等于白扩。</blockquote>
+<h4>六、超限行为：为什么「专线通着、网段却不通」</h4>
+<p>依据百度云专线 ET 报警策略，BGP 路由超限分三档：</p>
+<div class="tw"><table><thead><tr><th>阶段</th><th>事件</th><th>级别</th><th>行为</th></tr></thead><tbody><tr><td>&lt; 75%</td><td>无</td><td>正常</td><td>路由全部正常学习</td></tr><tr><td>≥ 75%</td><td>BGP路由超限告警</td><td>故障（预警）</td><td>路由仍工作，提示快满</td></tr><tr><td>&gt; 100%</td><td>BGP路由超限告错</td><td>故障</td><td><strong>超出路由被静默丢弃</strong>，对应网段可能不可达；<strong>BGP 会话不中断</strong></td></tr><tr><td>恢复后</td><td>BGP路由数量恢复</td><td>通知</td><td>恢复正常</td></tr></tbody></table></div>
+<p>关键在 &gt; 100% 这一档：超出的路由被悄悄丢掉，但会话不断，所以专线状态是 UP，被丢掉的网段却不可达，非常隐蔽。</p>
+<blockquote><strong>对比提醒</strong>：VPN 的 BGP 超限是直接<strong>断会话</strong>；专线是「留会话、丢多余路由」，排障时不要混淆。</blockquote>
+<h4>七、如何定位</h4>
+<p>遇到「专线 UP、部分网段不通 / 路由学不全」时，按以下顺序排查：</p>
+<div class="tw"><table><thead><tr><th>步骤</th><th>检查内容</th><th>判断依据</th></tr></thead><tbody><tr><td>1. 核对路由条数与配额</td><td>专线通道实际学到的 BGP 路由条数，对照通道页面「路由限制」与后台配额</td><td>页面值仍是旧值（如 100），即「双层未对齐」</td></tr><tr><td>2. 要 CSN / 对端路由表截图</td><td>同一前缀多条路径的 AS-Path 与状态</td><td>短路径「可用」、长路径「未生效」是正常收敛；据此区分「备份未宣告」还是「配额丢弃」</td></tr><tr><td>3. 定位具体丢失网段</td><td>单条前缀（如 <code>10.69.172.0/24</code>）在各跳的宣告与过滤策略</td><td>找到在哪一跳丢失</td></tr><tr><td>4. 专线通用兜底排查</td><td>两端路由表是否配了对端路由、VPC 下一跳是否指向专线网关；网段是否与 VPC CIDR 重叠；专线网关与接入点是否同区域</td><td>用专线通道实例诊断与链路探测定位</td></tr><tr><td>5. 看报警事件</td><td>BCM 事件列表是否有「BGP路由超限告警/告错」</td><td>直接佐证是否踩到配额上限</td></tr></tbody></table></div>
+<h4>八、解决方案</h4>
+<div class="tw"><table><thead><tr><th>动作</th><th>负责方</th><th>说明</th></tr></thead><tbody><tr><td><strong>专线侧改配额</strong>（本次关键动作）</td><td>客户 / 百度配合</td><td>在专线通道页面把「路由限制」从 100 编辑为 300，与后台配额对齐</td></tr><tr><td><strong>让备份路由生效</strong></td><td>火山云侧为主</td><td>调整 BGP 宣告/选路策略（AS-Path 相关），让绕阿里的备份路径被正常宣告，保证主路径故障时能切换。百度侧配置已就绪，随时配合联调</td></tr><tr><td><strong>验证闭环</strong></td><td>三方</td><td>核对路由条数与 <code>10.69.172.0/24</code> 等网段连通性，完成端到端闭环</td></tr></tbody></table></div>
+<h4>九、对客沟通口径</h4>
+<ul>
+<li><strong>定性</strong>：「这是 BGP 正常的最短 AS-Path 择优收敛，链路可用性不受影响；备份路径处于『未生效』是正常现象，不是百度侧宣告缺失。」</li>
+<li><strong>分工</strong>：「补充宣告备份路由的待办主要在火山云侧；百度侧配额与配置已就绪，随时配合联调验证。」避免客户误以为问题卡在百度侧。</li>
+<li><strong>动作</strong>：「请在专线通道页面把『路由限制』编辑为 300（与后台配额对齐），改完我们一起验证路由条数与关键网段连通性。」</li>
+</ul>
+<h4>十、预防 Checklist</h4>
+<ul>
+<li>[ ] 申请扩 BGP 路由配额后，<strong>同步编辑专线通道页面的「路由限制」</strong>，确认后台与页面一致。</li>
+<li>[ ] 多云 / 多路径场景，提前确认主备路径的 AS-Path 规划，必要时在对端配置策略显式宣告备份路由。</li>
+<li>[ ] 为专线配置 <strong>BGP 路由超限告警（≥ 75%）</strong> 的 BCM 监控，避免悄悄丢路由。</li>
+<li>[ ] 关注专线到期提醒（到期前 7/3/1 天及当天）；到期后 7 天停服，第 30 天释放且不可恢复。</li>
+<li>[ ] 变更前后比对路由表快照（条数、关键前缀、AS-Path / 状态），留证便于回溯。</li>
+</ul>
+<h4>十一、涉及的百度云产品</h4>
+<div class="tw"><table><thead><tr><th>产品</th><th>在本案例中的角色</th><th>关键配额/动作</th><th>官方文档</th></tr></thead><tbody><tr><td>专线接入 ET（专线通道）</td><td>火山云 ↔ 百度云的 10G 链路，承载 BGP 路由学习</td><td>通道「路由限制」100 → 300，需页面单独编辑</td><td>专线通道路由配置、使用限制、更新专线通道、ET 报警策略</td></tr><tr><td>云智能网 CSN</td><td>百度侧多路由 / 主备互联与汇聚底座</td><td>路由表总容量配额、主备路由策略</td><td>CSN 配额、CSN 主备路由策略</td></tr></tbody></table></div>
+<h4>十二、延伸速查：ET 与 CSN 要点</h4>
+<p><strong>专线接入 ET</strong>（本地 IDC ↔ 云上 VPC 的专属物理连接）</p>
+<div class="tw"><table><thead><tr><th>要点</th><th>内容</th></tr></thead><tbody><tr><td>四大组件</td><td>专线接入点（物理位置）、物理专线（物理链路）、专线通道（逻辑接口，支持静态路由与 BGP）、专线网关（VPC 路由表下一跳）</td></tr><tr><td>接入模式</td><td>自主申请：独享端口，施工 2～3 个月，1G～400G；合作伙伴共享专线：1 个月内，适合 &lt; 1G，按 VLAN ID 隔离</td></tr><tr><td>打通流程</td><td>申请物理专线 → 百度审核并办理施工工单 / LOA → 运营商铺线 → 创建专线通道 / 专线网关 → VPC 路由表下一跳指向专线网关</td></tr><tr><td>关键限制</td><td>一个通道对一个 VPC 只能连一个专线网关；专线网关与接入点须同区域；对端网段不可与 VPC CIDR 重叠</td></tr><tr><td>到期风险</td><td>到期后 7 天未续费停服；停服后数据保留 23 天，第 30 天释放；续费不支持修改端口规格</td></tr></tbody></table></div>
+<p><strong>云智能网 CSN</strong>（多云 / 多 VPC 的云上网络互联）</p>
+<ul>
+<li>统一纳管同账号多 VPC、跨账号、专线接入的互通，与 ET 配合解决「云上网络怎么连起来」。</li>
+<li>常见组合：物理专线到百度后，多个 VPC / 账号之间经 CSN 互联；主备路由策略在 CSN 侧按 AS-Path 等属性控制。</li>
+</ul>
+<h4>十三、经验与易错点</h4>
+<p><strong>本案例 = 跨云多路径形成的主备路由 + 专线 BGP 路由「双层配额」没对齐。</strong></p>
+<ul>
+<li>主备路由由「同一网段两条物理路径、BGP 按 AS-Path 自动分主次」产生，不是人为配置，目的是容灾。</li>
+<li>备份路由（长 AS-Path）默认不被宣告，加上通道「路由限制」仍是 100，超出路由被静默丢弃。</li>
+<li>现象是「专线 UP、部分网段不通」，务必检查通道页面路由限制与后台配额是否一致、备份路由是否正常宣告。</li>
+<li>对客说清「正常择优收敛、链路可用性不受影响」，并明确分工，避免误判问题卡在百度侧。</li>
+</ul>
+<h4>十四、方案选型：为什么是「全互通直连」（9/21 会议结论）</h4>
+<p><strong>核心决策</strong>：全互通方案。百度云规划网段 <code>10.95.0.0/16</code>，建立 BGP 时只需发布该网段。当前无业务侧路由隔离需求，百度云专线直接加入火山云现有 CN，实现与阿里云、IDC 全互通，无需额外路由控制。</p>
+<blockquote><strong>CN 是什么</strong>：火山云侧的统一云网络汇聚节点（中央交换枢纽），火山云、阿里云、IDC 均经其互联。百度接入 CN 后即与阿里云、IDC 全互通。CN 的官方全称在内部资料中未见，此处为基于会议与拓扑的解读。</blockquote>
+<p><strong>为什么选直连而非三方互联</strong>：</p>
+<div class="tw"><table><thead><tr><th>维度</th><th>火山 - 百度专线直连（选中）</th><th>百度 + 阿里 + IDC 三方互联</th></tr></thead><tbody><tr><td>容灾能力</td><td>无额外跨云容灾线路</td><td>故障时节点可绕行容灾</td></tr><tr><td>路由复杂度</td><td>低</td><td>高</td></tr><tr><td>业务接受度</td><td>可接受百度云专线短时中断</td><td>暂未获业务侧容灾需求认可</td></tr></tbody></table></div>
+<p><strong>结论</strong>：数据源在火山云，火山 - 百度直接拉通最优；并入 CN 后可同时访问阿里云、IDC（如公司 gitlab），一套网络解决多云互通。新专线为同园区同楼拉纤，成本低、工期短。专线开通由火山云牵头，百度提供端口与施工授权（LOA）。</p>
+<h4>十五、施工交付关键节点（9/16 - 9/28）</h4>
+<div class="tw"><table><thead><tr><th>时间</th><th>节点</th><th>说明</th></tr></thead><tbody><tr><td>9/16</td><td>端口审批完成</td><td>物理专线 <code>dcphy-xxxx</code>（百度 To 火山），接入点苏州昆山某机房，某 25GE 端口，带宽 10G</td></tr><tr><td>9/18</td><td>LOA 施工授权通过</td><td>首次申请因施工人员变动被退回，重提后通过</td></tr><tr><td>9/22 → 9/24</td><td>跳纤施工（关键转折）</td><td>9/22 声称完成；9/23 发现 ODF 无收光、火山侧接口 DOWN；9/24 查明机房跳线段有两芯从未布放，当天补布后两端端口 UP</td></tr><tr><td>9/28</td><td>线路交付验收</td><td>报竣审批通过；两端配置互联 IP，直连互 ping 测通（测直连不需要路由）；百度端口费已付，火山侧线路费节后处理，国庆按测试使用</td></tr></tbody></table></div>
+<blockquote><strong>口径提醒</strong>：聊天记录显示审批端口为 10G，会议文档曾称施工 40G 专线。40G 的审批 / 扩容状态在可见记录中无直接表述，对外汇报前需与百度网络同学确认。</blockquote>
+<blockquote><strong>经验</strong>：「声称完成」但现场跳线从未布放，直到发现无收光才回溯定位。专线施工务必以<strong>两端端口 UP + 实际收光</strong>为准，不能只凭驻场口头确认。</blockquote>
+<h4>十六、真实排查时间线（9/28 - 9/30）</h4>
+<p>问题从「配额超限」表象到「实际只收 100 条」根因，经历 3 天多轮排查：</p>
+<div class="tw"><table><thead><tr><th>时间</th><th>事件</th></tr></thead><tbody><tr><td>9/28 18:06</td><td>客户反馈 BGP 路由条目配额超限，早上申请扩到 300（配额项 <code>channelBgpRouteLimit</code>）未审批，百度侧推进</td></tr><tr><td>9/28</td><td>产研审核通过，CSN 路由条目配额 100 → 300；客户确认路由策略配额不需要</td></tr><tr><td>9/28 20:52</td><td>客户反馈配额中心显示 300 已生效，但实际路由仍只有 100 条；预期「一跳直连 + 两跳中转」都应学到</td></tr><tr><td>9/29</td><td>客户确认：配额中心 300，实际只收到火山的 100 条；补充三云拓扑图</td></tr><tr><td>9/30</td><td>客户提供 CSN 截图：已发布路由条目 220/406；default 路由表已学到 <code>10.69.172.0/24</code> → To 火山专线通道，状态可用</td></tr><tr><td>9/30</td><td>客户问「备份路由不会被传递出去吗」，火山技术答复「<strong>不会的，生效了才会传递</strong>」，印证备份路由未生效则不宣告</td></tr><tr><td>9/30 13:40</td><td>百度云无法经火山学到阿里云网段 <code>10.93.0.0/26</code>；火山侧有从阿里和 IDC 学来的主备路由条目</td></tr><tr><td>9/30 13:57</td><td>确认 <code>channelBgpRouteLimit=300</code> 已生效</td></tr><tr><td>9/30 15:12 - 15:21</td><td>澄清 CSN 入 / 出向路由策略条目配额（=100）是策略规则上限，客户未配策略，不构成限制，避免误申请</td></tr><tr><td>9/30 15:33</td><td>客户发现仍只收 100 条，判断「其他路由被冲掉了」，即撞上限后新路由被丢弃的典型信号</td></tr><tr><td>9/30 16:20</td><td>与产研核实：页面 BGP 路由条目上限仍是 100，只申请配额不改专线配置无效</td></tr><tr><td>9/30 16:22</td><td>客户修改专线配置后恢复，问题闭环（待最终验证）</td></tr></tbody></table></div>
+<p><strong>4 类独立配额（最易混淆）</strong>：</p>
+<div class="tw"><table><thead><tr><th>配额类型</th><th>管什么</th><th>本案例情况</th></tr></thead><tbody><tr><td>专线通道 BGP 路由条目（<code>channelBgpRouteLimit</code>）</td><td>通过 BGP 从对端动态学到的路由条数上限</td><td><strong>本次卡点</strong>：配额扩到 300，但通道页面仍为 100</td></tr><tr><td>CSN 路由条目数量</td><td>CSN 路由表能存多少条路由</td><td>已由 100 扩到 300</td></tr><tr><td>CSN 入 / 出向路由策略条目（<code>csnIngressRoutePolicyQuota</code> / <code>csnEgressRoutePolicyQuota</code>）</td><td>路由策略规则上限</td><td>客户未配策略，不构成限制</td></tr><tr><td>BGP Peer 上限</td><td>能建几个 BGP 邻居</td><td>非卡点</td></tr></tbody></table></div>
+<p><strong>一句话根因：配额生效 ≠ 配置生效。</strong> 配额中心显示 300，不代表专线通道页面的「路由限制」已改，两层必须同步编辑才能真正放开。</p>
+<h4>十七、待确认与风险事项（截至 9/30）</h4>
+<div class="tw"><table><thead><tr><th>事项</th><th>状态</th><th>跟进方</th></tr></thead><tbody><tr><td>40G 端口审批 / 扩容状态</td><td>待确认（已批为 10G）</td><td>百度网络同学</td></tr><tr><td>火山侧线路费支付</td><td>节后处理，国庆按测试使用</td><td>运营商侧、客户网络负责人</td></tr><tr><td>阿里云路由发布规则</td><td>存在不确定性</td><td>客户网络负责人单独对接</td></tr><tr><td>BGP 路由条目 100 / 300 生效核实</td><td>9/30 已改专线配置，待最终验证</td><td>TAM、百度产研</td></tr></tbody></table></div>
+<blockquote>本节基于项目会议纪要与专线群记录整理，属内部复盘参考。火山侧 CSN 口径以火山引擎官方文档为准。</blockquote>
+<h4>十八、全互通架构与业务数据流</h4>
+<p>核心结构：百度云专线接入火山云 CN 汇聚节点，经 CN 与阿里云、IDC 全互通，百度侧只需发布 <code>10.95.0.0/16</code>。</p>
+<p><strong>三大云域</strong>：</p>
+<div class="tw"><table><thead><tr><th>云域</th><th>内容</th></tr></thead><tbody><tr><td>百度云（苏州）</td><td>苏州昆山某机房；4090 × 11 台（88 卡）+ PFS-L3；网段 <code>10.95.0.0/16</code>；某 25GE 端口（10G）</td></tr><tr><td>火山云 CN（中央枢纽）</td><td>同园区楼内跳纤；汇接阿里云、IDC、上海机房；数据源 vepfs、镜像仓库在此侧</td></tr><tr><td>阿里云 · IDC · 客户本地</td><td>阿里云与火山互联 100G；IDC 既有资源（如公司 gitlab）；客户本地代码 / 测试环境；本地 ↔ 阿里主备链路（客户侧设计，待核实）</td></tr></tbody></table></div>
+<p><strong>链路状态</strong>：</p>
+<div class="tw"><table><thead><tr><th>段落</th><th>带宽 / 标识</th><th>状态</th></tr></thead><tbody><tr><td>百度云 ↔ 火山云 CN</td><td>新建专线 10G（<code>dcphy-xxxx</code>）</td><td>9/24 两端端口 UP（本项目本体）</td></tr><tr><td>火山云 CN ↔ 阿里云</td><td>既有互联 100G</td><td>既有</td></tr><tr><td>火山云 CN ↔ IDC / 上海机房</td><td>40G（上海某 IDC）</td><td>既有</td></tr><tr><td>客户本地 ↔ 阿里云</td><td>主备链路</td><td>客户侧既有，待核实</td></tr></tbody></table></div>
+<p><strong>业务数据流（拉通后的收益）</strong>：</p>
+<ol>
+<li>数据 / 镜像（火山云 vepfs）→ 新专线 → 百度云 4090 训练 → ckpt / 权重写入 PFS-L3 → 回传同步。</li>
+<li>全互通后，百度云可经 CN 直达阿里云、IDC（如公司 gitlab），避免多头拉线。</li>
+<li>海外同事访问不再依赖公网加速，解决此前上传仅 11KB/s 的瓶颈。</li>
+</ol>
+<h4>十九、专线连通后的测试验证步骤（百度侧）</h4>
+<p>物理专线布通（9/24 两端端口 UP）后，百度侧按标准 ET 流程创建云上资源并验证连通性。</p>
+<p><strong>前置确认</strong>：</p>
+<ul>
+<li>物理专线 <code>dcphy-xxxx</code>（百度 To 火山），接入点苏州昆山某机房，某 25GE 端口（10G）。</li>
+<li>费用：百度云端口费已付；火山侧线路费、端口费由客户 / 火山侧处理。</li>
+<li>BGP 发布网段为 <code>10.95.0.0/16</code>（会议已确认）。</li>
+</ul>
+<p><strong>三步操作</strong>：</p>
+<div class="tw"><table><thead><tr><th>步骤</th><th>动作</th><th>官方文档</th></tr></thead><tbody><tr><td>1. 创建专线通道</td><td>关联物理专线</td><td>创建专线通道</td></tr><tr><td>2. 创建专线网关</td><td>绑定测试 VPC</td><td>创建专线网关</td></tr><tr><td>3. 配置专线路由</td><td>BGP 建连并发布 <code>10.95.0.0/16</code></td><td>配置专线路由</td></tr></tbody></table></div>
+<p><strong>连通性验证</strong>：</p>
+<ul>
+<li>测试 VPC 内创建 1～2 台 BCC，与火山侧实例互 ping，并用大文件传输验证带宽。</li>
+<li>验证路由传递：<code>10.95.0.0/16</code> 是否收敛到火山侧 CN。</li>
+<li>评估对现网影响，回应客户两点担忧：对接是否影响现网、路由能否正常传递。</li>
+</ul>
+<p><strong>客户侧后续动作（提前知悉）</strong>：</p>
+<ul>
+<li>专线拉通后客户需要 VPC 内网 IP 配置，用于把开发机公网 IP 换成内网 IP。</li>
+<li>百度侧提前规划内网 IP 段（<code>10.95.0.0/16</code> 及 VPC 子网划分），测试通过后同步给客户网络负责人。</li>
+</ul></div>
+    <div class="cta-row">
+      <a class="cta" href="https://itinterview.com.cn/question/2082">练这道题</a>
+      <button class="cta alt" id="copy-link" type="button">复制链接</button>
+    </div>
+    <div class="card"><h2>同分类 · 高频题</h2><ul class="rel"><li><a href="https://itinterview.com.cn/q/2075">百度百舸创建开发机一直「部署中」，进度显示「发生过拉取镜像失败，网络异常」，怎么排查和解决？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2076">百度百舸开发机 SSH 连接超时，服务端一切正常，只有 BLB 内网地址，客户通过专线和跨地域对等连接访问，怎么排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2077">百度智能云出口网关加速 EGA 实战：开发机和分布式训练访问 Hugging Face/GitHub/Docker/OpenAI，域名已开白仍连不上 ChatGPT，怎么接入和排查？</a><span class="rel-n">新题</span></li><li><a href="https://itinterview.com.cn/q/2078">一台 GPU 节点为何「反复不可用」：从告警现象到多层根因定位</a><span class="rel-n">新题</span></li></ul></div>
+    <p class="jumpnote">题目与答案就在本页；收藏、批注和错题重练在应用内</p>
+  </div>
+  <div class="guide" id="guide">
+    <span class="g-text">这道题看完了？<b>连刷同类题</b>，趁热打铁效果最好</span>
+    <a class="g-btn" href="https://itinterview.com.cn/practice?scope=cat&cat=285&mode=random">进入刷题</a>
+    <button class="g-x" id="guide-x" type="button" aria-label="关闭引导">✕</button>
+  </div>
+  <script>(function(){try{var b=document.getElementById("copy-link");if(b)b.addEventListener("click",function(){var t=b.textContent;navigator.clipboard.writeText(location.href).then(function(){b.textContent="已复制";setTimeout(function(){b.textContent=t;},1500);},function(){b.textContent="复制失败";setTimeout(function(){b.textContent=t;},1500);});});}catch(e){}try{if(sessionStorage.getItem("iti_share_guide_done")==="1")return;var bar=document.getElementById("guide");if(!bar)return;var off=function(){try{sessionStorage.setItem("iti_share_guide_done","1");}catch(e){}bar.classList.remove("show");document.body.classList.remove("guide-on");};var x=document.getElementById("guide-x");if(x)x.addEventListener("click",off);var check=function(){var d=document.documentElement;var bottom=(d.scrollHeight||document.body.scrollHeight)-(window.innerHeight+(window.scrollY||d.scrollTop||0));if(bottom<=window.innerHeight*0.8){bar.classList.add("show");document.body.classList.add("guide-on");window.removeEventListener("scroll",check);}};window.addEventListener("scroll",check,{passive:true});}catch(e){}})();</script>
+</body>
+</html>
